@@ -7,7 +7,7 @@ async def run():
     drone = System()
     
     # Connect to the drone
-    await drone.connect(system_address="serial:///dev/serial0:57600")
+    await drone.connect(system_address="serial:///dev/ttyACM0:115200")
 
     # Wait for the drone to connect
     print("Waiting for drone to connect...")
@@ -35,5 +35,4 @@ async def run():
     await drone.action.disarm()
 
 if __name__ == "__main__":
-    loop = asyncio.get_event_loop()
-    loop.run_until_complete(run())
+    run()
