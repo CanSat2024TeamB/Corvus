@@ -40,6 +40,6 @@ async def run():
     await drone.action.disarm()
 
 if __name__ == "__main__":
-    asycio.run(run())
+    asyncio.run(run())
 
  
