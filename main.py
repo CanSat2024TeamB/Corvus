@@ -7,7 +7,7 @@ async def run():
     drone = System()
     
     # Connect to the drone
-
+    print("connecting now")
     await drone.connect(system_address="serial:///dev/ttyACM0:115200")
 
 
@@ -23,7 +23,7 @@ async def run():
     # Check if drone is armable
 
     print("Waiting for drone to be armable...")
-    async for is_armable in drone.telemetry.is_armable():
+    async for is_armable in drone.telemetry.health():
         if is_armable:
             print("Drone is armable")
             break
@@ -31,7 +31,7 @@ async def run():
 
     # Arm the drone
     print("Arming the drone...")
-    await drone.action.arm()
+    await drone.action.arm_force()
     # Wait for a few seconds before disarming
     await asyncio.sleep(10)
 
@@ -40,7 +40,6 @@ async def run():
     await drone.action.disarm()
 
 if __name__ == "__main__":
-
-    run()
+    asycio.run(run())
 
  
