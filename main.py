@@ -16,7 +16,6 @@ async def run():
             print(f"Connected to drone!")
             break
 
-    # Check if drone is armable
     print("Waiting for drone to be armable...")
     async for is_armable in drone.telemetry.is_armable():
         if is_armable:
