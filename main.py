@@ -32,7 +32,14 @@ async def run():
     # Arm the drone
     print("Arming the drone...")
     await drone.action.arm_force()
+
+    async for is_armed in drone.telemetry.armed():
+        if is_armed:
+            print("drone is armed")
+            break
+
     # Wait for a few seconds before disarming
+    print("waiting 10 sec")
     await asyncio.sleep(10)
 
     # Disarm the drone
