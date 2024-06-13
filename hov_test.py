@@ -36,7 +36,7 @@ async def run():
 
     # Arm the drone
     print("Arming the drone...")
-    await drone.action.arm()
+    await drone.action.arm_force()
 
     async for is_armed in drone.telemetry.armed():
         if is_armed:
@@ -46,7 +46,7 @@ async def run():
 async def flight():
     global lider
     global drone
-
+    
     await drone.action.takeoff()
 
     while lidar <= 0.3:
