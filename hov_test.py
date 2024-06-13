@@ -2,6 +2,7 @@ import asyncio
 from mavsdk import System
 
 lidar = -1
+drone = 0
 
 async def Get_lidar(drone):
     global lidar
@@ -9,6 +10,7 @@ async def Get_lidar(drone):
         lidar = distance_sensor.current_distance_m
 
 async def run():
+    global drone
     # Create a drone object
     drone = System()
     
@@ -38,17 +40,15 @@ async def run():
 
     # Arm the drone
     print("Arming the drone...")
-    await drone.action.arm()
+    await drone.action.arm_force()
 
-    async for is_armed in drone.telemetry.armed():
-        if is_armed:
-            print("drone is armed")
-            break
+    #async for is_armed in drone.telemetry.armed():
+    #    if is_armed:
+    #        print("drone is armed")
+    #        break
 
-
-    Get_lidar(drone)
-
-    
+async def flight():
+    global drone
     await drone.action.takeoff()
     while lidar <= 0.3:
         await asyncio.sleep(0.1)
@@ -59,3 +59,5 @@ async def run():
 
 if __name__ == "__main__":
     asyncio.run(run())
+    asyncio.run(Get_lidar())
+    asyncio.run(flight())
