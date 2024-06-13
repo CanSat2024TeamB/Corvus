@@ -50,8 +50,8 @@ async def run():
 
     
     await drone.action.takeoff()
-    while lidar <= 1.5:
-        await asyncio.sleep(0.5)
+    while lidar <= 0.3:
+        await asyncio.sleep(0.1)
     await drone.action.hold()
     await asyncio.sleep(5)
     await drone.action.land()  
