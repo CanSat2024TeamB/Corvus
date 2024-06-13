@@ -4,7 +4,7 @@ from mavsdk import System
 lidar = -1
 drone = System()
 
-async def Get_lidar(drone):
+async def update_lidar(drone):
     global lidar
     async for distance_sensor in drone.telemetry.distance_sensor():
         lidar = distance_sensor.current_distance_m
@@ -59,5 +59,5 @@ async def flight():
 
 if __name__ == "__main__":
     asyncio.run(run())
-    asyncio.run(Get_lidar())
+    asyncio.run(update_lidar())
     asyncio.run(flight())
