@@ -44,6 +44,7 @@ async def run():
     #        break
 
 async def flight():
+    global lider
     global drone
 
     await drone.action.takeoff()
