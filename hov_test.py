@@ -36,12 +36,12 @@ async def run():
 
     # Arm the drone
     print("Arming the drone...")
-    await drone.action.arm_force()
+    await drone.action.arm()
 
-    #async for is_armed in drone.telemetry.armed():
-    #    if is_armed:
-    #        print("drone is armed")
-    #        break
+    async for is_armed in drone.telemetry.armed():
+        if is_armed:
+            print("drone is armed")
+            break
 
 async def flight():
     global lider
