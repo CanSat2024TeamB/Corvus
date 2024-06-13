@@ -3,6 +3,11 @@ from mavsdk import System
 
 lidar = -1
 
+async def Get_lidar(drone) -> None:
+        global lidar
+        async for distance_sensor in drone.telemetry.distance_sensor():
+            lidar = distance_sensor.current_distance_m
+
 async def run():
     # Create a drone object
     drone = System()
@@ -40,6 +45,7 @@ async def run():
             print("drone is armed")
             break
 
+
     Get_lidar(drone)
 
     
@@ -50,10 +56,6 @@ async def run():
     await asyncio.sleep(5)
     await drone.action.land()  
 
+
 if __name__ == "__main__":
     asyncio.run(run())
-
-async def Get_lidar(drone) -> None:
-        global lidar
-        async for distance_sensor in drone.telemetry.distance_sensor():
-            lidar = distance_sensor.current_distance_m

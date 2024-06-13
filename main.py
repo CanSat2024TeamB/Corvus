@@ -21,7 +21,7 @@ async def run():
             break
 
 
- 
+
 
     print("Waiting for drone to be armable...")
     async for is_armable in drone.telemetry.health():
