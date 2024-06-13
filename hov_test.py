@@ -45,7 +45,8 @@ async def run():
         await asyncio.sleep(0.5)
     await drone.action.hold()
     await asyncio.sleep(5)
-    await drone.action.land()  
+    await drone.action.land() 
+    #await drone.action.disarm()
 
 if __name__ == "__main__":
     asyncio.run(run())
