@@ -4,7 +4,7 @@ from mavsdk import System
 lidar = -1
 drone = System()
 
-async def update_lidar(drone):
+async def update_lidar():
     global lidar
     async for distance_sensor in drone.telemetry.distance_sensor():
         lidar = distance_sensor.current_distance_m
