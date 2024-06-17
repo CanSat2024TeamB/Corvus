@@ -60,10 +60,10 @@ async def flight():
     await drone.action.land()  
 
 async def main():
+    await set_up()
     async with asyncio.TaskGroup() as task_group:
         lidar_task = task_group.create_task(update_lidar())
         flight_task = task_group.create_task(flight())
 
 if __name__ == "__main__":
-    await setup()
     asyncio.run(main())
