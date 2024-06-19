@@ -34,7 +34,7 @@ async def run():
     # Arm the drone
     print("Arming the drone...")
 
-    await drone.action.arm()
+    await drone.action.arm_force()
     # Wait for a few seconds before disarming
 
     
