@@ -8,7 +8,7 @@ class ConfigManager:
         return
 
     def load(self, path: str) -> None:
-        if not os.path.exists(path):
+        if not os.path.isfile(path):
             raise FileNotFoundError(f"{path} does not exist!")
         self.config_ini.read(path, encoding = "utf-8")
         return

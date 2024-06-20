@@ -11,5 +11,5 @@ class LiDARHandler:
         return
     
     async def invoke(self):
-        async for distance_sensor in drone.telemetry.distance_sensor():
+        async for distance_sensor in self.drone.telemetry.distance_sensor():
             update_altitude(distance_sensor.current_distance_m)
