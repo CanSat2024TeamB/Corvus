@@ -6,9 +6,11 @@ from flight import flight_controller
 
 class DroneController:
     pixhawk_address: str = "serial:///dev/ttyACM0:115200"
+    #pixhawk_address: str = "udp://:14540"
 
     def __init__(self):
         self.drone = System()
+        #self.drone = System(mavsdk_server_address='localhost', port=50051)
         self.lidar_handler = lidar_handler.LiDARHandler(self.drone)
         self.gps_handler = None
         self.compass_handler = None
