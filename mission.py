@@ -155,7 +155,6 @@ async def main():
         lidar_task = task_group.create_task(update_lidar())
         gps_task = task_group.create_task(Get_position())
         flight_task = task_group.create_task(flight())
-        print_task = print_mission_progress(drone)
 
 
 if __name__ == "__main__":
