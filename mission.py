@@ -4,7 +4,10 @@ from mavsdk.mission import (MissionItem, MissionPlan)
 
 lidar = -1
 drone = System()
-
+drone.Latitude_deg = 0.0
+drone.Longitude_deg = 0.0
+drone.Absolute_altitude_m = 0.0
+drone.Relative_altitude_m = 0.0
 
 async def set_up():
     global drone
