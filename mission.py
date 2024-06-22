@@ -68,8 +68,8 @@ async def flight():
     home_lat = drone.Latitude_deg
     home_lon = drone.Longitude_deg
 
-    target_lon=35.7149956
-    target_lat=139.7605576
+    target_lon=139.7605576
+    target_lat=35.7149956
     
 
     mission_items = []
