@@ -63,11 +63,11 @@ async def flight():
     running_tasks = [print_mission_progress_task]
     termination_task = asyncio.ensure_future(observe_is_in_air(drone, running_tasks))
 
-    
+    await Get_position()
     # Define home position
     home_lat = drone.Latitude_deg
     home_lon = drone.Longitude_deg
-
+    
     target_lon=139.7605576
     target_lat=35.7149956
     
