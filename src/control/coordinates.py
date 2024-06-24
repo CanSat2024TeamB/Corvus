@@ -8,7 +8,7 @@ class Coordinates(Vector3d):
         super().__init__(longitude, latitude, None)
     
     def __init__(self):
-        super().__init__
+        super().__init__()
 
     def longitude(self) -> float:
         return self.x()
@@ -16,10 +16,17 @@ class Coordinates(Vector3d):
     def latitude(self) -> float:
         return self.y()
     
-    def set_longitude(self, x: float) -> None:
-        self.set_x(x)
+    def altitude(self) -> float:
+        return self.z()
+    
+    def set_longitude(self, longitude: float) -> None:
+        self.set_x(longitude)
         return
     
-    def set_latitude(self, y: float) -> None:
-        self.set_y(y)
+    def set_latitude(self, latitude: float) -> None:
+        self.set_y(latitude)
+        return
+    
+    def set_altitude(self, altitude: float) -> None:
+        self.set_z(altitude)
         return
