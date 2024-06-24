@@ -25,12 +25,15 @@ class Attitude: #quaternionいる？
 
     def set_roll(self, roll: float):
         self.roll = roll
+        return
 
     def set_pitch(self, pitch: float):
         self.pitch = pitch
+        return
 
     def set_yaw(self, yaw: float):
         self.yaw = yaw
+        return
 
     def set_quaternion(self, qw: float, qx: float, qy: float, qz: float):
         self.qw = qw
