@@ -1,5 +1,6 @@
 import asyncio
 import mavsdk
+from control import Coordinates
 
 class GPSHandler:
     def __init__(self,drone):
