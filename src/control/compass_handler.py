@@ -1,19 +1,14 @@
 import asyncio
-import mavsdk
-
+from mavsdk import System
 
 class CompassHandler:
     def __init__(self, drone, Attitude):
         self.drone = drone
         self.attitude = Attitude()
 
-    async def get_attitude_angle(self) -> None:
-        """Get angle from sensors"""
-        async for angle in self.drone.telemetry.attitude_euler():
-            self.attitude.set_roll(angle.roll_deg)
-            self.attitude.set_pitch(angle.pitch_deg)
-            self.attitude.set_yaw(angle.yaw_deg)
-            print(self.attitude.get_attitude())
+    def get_attitude(self) -> dict:
+        """Get current attitude"""
+        return self.attitude.get_attitude()
 
     async def update_attitude(self) -> None:
         """Update the attitude with the latest sensor data"""
