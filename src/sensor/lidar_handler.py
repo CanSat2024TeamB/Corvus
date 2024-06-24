@@ -5,7 +5,7 @@ class LiDARHandler:
         self.drone = drone
         self.altitude: float = None
         asyncio.run(self.invoke_loop())
-    
+
     def update_altitude(self, altitude: float) -> None:
         self.altitude = altitude
         return
