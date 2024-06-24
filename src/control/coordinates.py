@@ -9,31 +9,31 @@ class Coordinates:
         self.y = 0
         self.z = 0
     
-    def x() -> float:
+    def x(self) -> float:
         return self.x
     
-    def y() -> float:
+    def y(self) -> float:
         return self.y
     
-    def z() -> float:
+    def z(self) -> float:
         return self.z
     
-    def get() -> dict[str, float]:
-        return { "x": self.x, "y": self.y, "z": self.z }
+    def get(self) -> list[float]:
+        return [self.x,self.y,self.z]
     
-    def set_x(x: float):
+    def set_x(self,x: float) -> None:
         self.x = x
         return
     
-    def set_y(y: float):
+    def set_y(self,y: float) -> None:
         self.y = y
         return
     
-    def set_z(z: float):
+    def set_z(self,z: float) -> None:
         self.z = z
         return
     
-    def set(x, y, z):
+    def set(self,x, y, z) -> None:
         self.x = x
         self.y = y
         self.z = z
