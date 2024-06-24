@@ -1,5 +1,5 @@
 import asyncio
-from mavsdk import System
+import mavsdk 
 from control import Attitude
 
 class CompassHandler:
