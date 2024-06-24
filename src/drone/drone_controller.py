@@ -1,8 +1,8 @@
 import asyncio
 from mavsdk import System
-from sensor import lidar_handler
-from control import position_manager
-from flight import flight_controller
+from sensor.lidar_handler import LiDARHandler
+from control.position_manager import PositionManager
+from flight.flight_controller import FlightController
 
 class DroneController:
     pixhawk_address: str = "serial:///dev/ttyACM0:115200"
@@ -11,14 +11,17 @@ class DroneController:
     def __init__(self):
         self.drone = System()
         #self.drone = System(mavsdk_server_address='localhost', port=50051)
-        self.lidar_handler = lidar_handler.LiDARHandler(self.drone)
+        self.lidar_handler = LiDARHandler(self.drone)
         self.gps_handler = None
         self.compass_handler = None
-        self.position_manager = position_manager.PositionManager(self.drone, self.gps_handler, self.compass_handler, self.lidar_handler)
-        self.flight_controller = flight_controller.FlightController(self)
+        self.position_manager = PositionManager(self.drone, self.gps_handler, self.compass_handler, self.lidar_handler)
+        self.flight_controller = FlightController(self.drone, self.position_manager)
 
     def drone(self):
         return self.drone
+    
+    def position_manager(self):
+        return self.position_manager
 
     async def set_up(self) -> None:
         await self.connect()
