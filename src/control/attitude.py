@@ -25,18 +25,22 @@ class Attitude:
 
     def set_roll(self, roll: float):
         self.roll = roll
+        return
 
     def set_pitch(self, pitch: float):
         self.pitch = pitch
+        return
 
     def set_yaw(self, yaw: float):
         self.yaw = yaw
+        return
 
     def set_quaternion(self, qw: float, qx: float, qy: float, qz: float):
         self.qw = qw
         self.qx = qx
         self.qy = qy
         self.qz = qz
+        return
 
 # # 使用例
 # att = Attitude()
