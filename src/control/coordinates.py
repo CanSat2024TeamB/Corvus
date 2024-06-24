@@ -1,3 +1,5 @@
+from control import Vector3d
+
 class Coordinates(Vector3d):
     def __init__(self, longitude: float, latitude: float, height: float):
         super(longitude, latitude, height)
