@@ -10,7 +10,7 @@ class GPSHandler:
         asyncio.run(self.invoke_loop())
 
 
-    async def update_coordinates(self,position) -> None:
+    def update_coordinates(self,position) -> None:
         self.coordinates.set_x(position.longitude_deg)
         self.coordinates.set_y(position.latitude_deg)
         return
@@ -21,7 +21,7 @@ class GPSHandler:
 
     #############################################################以下がオープン
 
-    async def gps_coordinates(self) -> Coordinates:
+    def gps_coordinates(self) -> Coordinates:
         return self.coordinates
     
     async def catch_gps(self)-> None:
