@@ -1,14 +1,16 @@
 import asyncio
+from mavsdk import System
 from mavsdk.mission import (MissionItem, MissionPlan)
+
+from control.position_manager import PositionManager
+from control.coordinates import Coordinates
 
 class FlightController:
     get_altitude_interval: float = 0.01
 
-    def __init__(self, drone_controller):
-        self.drone_controller: DroneController = drone_controller
-
-        self.drone: System = self.drone_controller.drone()
-        self.position_manager: PositionManager = self.drone.position_manager()
+    def __init__(self, drone: System, position_manager: PositionManager):
+        self.drone: System = drone
+        self.position_manager: position_manager
         
         self.is_in_air: bool = False
         asyncio.run(self.invoke_loop())
@@ -22,7 +24,7 @@ class FlightController:
             await asyncio.sleep(get_height_interval)
         return True
     
-    async def go_to(self, *target_coordinates: "*Coordinates") -> bool:
+    async def go_to(self, *target_coordinates: Coordinates) -> bool:
         #position = self.position_manager
         mission_items = []
         mission_items.append(MissionItem(position.latitude, position.longitude, 1, 10, True, float('nan'), float('nan'), MissionItem.CameraAction.NONE, float('nan'), float('nan'), float('nan'), float('nan'), float('nan'), MissionItem.VehicleAction.NONE))

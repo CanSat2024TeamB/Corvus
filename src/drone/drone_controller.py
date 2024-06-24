@@ -15,7 +15,7 @@ class DroneController:
         self.gps_handler = None
         self.compass_handler = None
         self.position_manager = PositionManager(self.drone, self.gps_handler, self.compass_handler, self.lidar_handler)
-        self.flight_controller = FlightController(self)
+        self.flight_controller = FlightController(self.drone, self.position_manager)
 
     def drone(self):
         return self.drone
