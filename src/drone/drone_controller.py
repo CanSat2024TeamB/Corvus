@@ -57,6 +57,7 @@ class DroneController:
         
         return True
     
-    async def invoke_sensor(self) -> None:
-        async with asyncio.TaskGroup() as task_group:
-            lidar_invoke = task_group.create_task(self.lidar_handler.invoke())
+#    async def invoke_sensor(self) -> None:
+#        async with asyncio.TaskGroup() as task_group:
+#            lidar_invoke = task_group.create_task(self.lidar_handler.invoke())
+# ^^^^^各クラスのコンストラクタに移譲^^^^^^

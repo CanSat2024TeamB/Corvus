@@ -2,6 +2,7 @@ class LiDARHandler:
     def __init__(self, drone):
         self.drone = drone
         self.altitude: float = 0
+        self.invoke()
     
     def altitude(self) -> float:
         return altitude
