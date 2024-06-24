@@ -1,6 +1,9 @@
 class Coordinates(Vector3d):
-    def __init__(self, x: float, y: float, z: float):
-        super(x, y, z)
+    def __init__(self, longitude: float, latitude: float, height: float):
+        super(longitude, latitude, height)
+    
+    def __init__(self, longitude: float, latitude: float):
+        super(longitude, latitude, None)
     
     def __init__(self):
         super()
