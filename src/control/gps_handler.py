@@ -5,15 +5,15 @@ from control import Coordinates
 class GPSHandler:
     def __init__(self,drone):
         self.drone = drone
-        self.coordinates = Coordinates(None,None,None)
+        self.coordinates = Coordinates()
         self.num_satellites: int = 0
         self.fix_type: str = ""
         asyncio.run(self.invoke_loop())
 
 
     def update_coordinates(self,position) -> None:
-        self.coordinates.set_x(position.longitude_deg)
-        self.coordinates.set_y(position.latitude_deg)
+        self.coordinates.set_longitude(position.longitude_deg)
+        self.coordinates.set_latitude(position.latitude_deg)
         return
 
     async def invoke_loop(self) -> None:

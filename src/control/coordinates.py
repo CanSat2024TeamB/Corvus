@@ -1,40 +1,23 @@
-class Coordinates:
-    def __init__(self, x: float, y: float, z: float):
-        self.x = x
-        self.y = y
-        self.z = z
+class Coordinates(Vector3d):
+    def __init__(self, longitude: float, latitude: float, height: float):
+        super(longitude, latitude, height)
+    
+    def __init__(self, longitude: float, latitude: float):
+        super(longitude, latitude, None)
     
     def __init__(self):
-        self.x = 0
-        self.y = 0
-        self.z = 0
+        super()
+
+    def longitude(self) -> float:
+        return self.x()
     
-    def x(self) -> float:
-        return self.x
+    def latitude(self) -> float:
+        return self.y()
     
-    def y(self) -> float:
-        return self.y
-    
-    def z(self) -> float:
-        return self.z
-    
-    def get(self) -> list[float]:
-        return [self.x,self.y,self.z]
-    
-    def set_x(self,x: float) -> None:
-        self.x = x
+    def set_longitude(self, x: float) -> None:
+        self.set_x(x)
         return
     
-    def set_y(self,y: float) -> None:
-        self.y = y
-        return
-    
-    def set_z(self,z: float) -> None:
-        self.z = z
-        return
-    
-    def set(self,x, y, z) -> None:
-        self.x = x
-        self.y = y
-        self.z = z
+    def set_latitude(self, y: float) -> None:
+        self.set_y(y)
         return
