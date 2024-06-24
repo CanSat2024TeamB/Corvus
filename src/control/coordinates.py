@@ -1,12 +1,14 @@
+from vector3d import Vector3d
+
 class Coordinates(Vector3d):
-    def __init__(self, longitude: float, latitude: float, height: float):
-        super(longitude, latitude, height)
+    def __init__(self, longitude: float, latitude: float, altitude: float):
+        super().__init__(longitude, latitude, altitude)
     
     def __init__(self, longitude: float, latitude: float):
-        super(longitude, latitude, None)
+        super().__init__(longitude, latitude, None)
     
     def __init__(self):
-        super()
+        super().__init__
 
     def longitude(self) -> float:
         return self.x()
