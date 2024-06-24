@@ -1,4 +1,4 @@
-from sensor import LightSensor
+from sensor.light_handler import LightSensor
 import time
 
 if __name__ == "__main__":
