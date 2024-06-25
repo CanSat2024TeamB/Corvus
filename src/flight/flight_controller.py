@@ -28,13 +28,10 @@ class FlightController:
         await asyncio.sleep(time)
         return True
     
-    async def go_to(self, *target_coordinates: Coordinates) -> bool:
-        position = self.position_manager.adjusted_coordinates()
-
+    async def go_to(self, speed, *target_coordinates: Coordinates) -> bool:
         mission_items = []
-        mission_items.append(MissionItem(position.latitude, position.longitude, 1, 10, True, float('nan'), float('nan'), MissionItem.CameraAction.NONE, float('nan'), float('nan'), float('nan'), float('nan'), float('nan'), MissionItem.VehicleAction.NONE))
         for coordinates in target_coordinates:
-            mission_items.append(MissionItem(coordinates.latitude, coordinates.longitude, 1, 10, True, float('nan'), float('nan'), MissionItem.CameraAction.NONE, float('nan'), float('nan'), float('nan'), float('nan'), float('nan'), MissionItem.VehicleAction.NONE))
+            mission_items.append(MissionItem(coordinates.latitude(), coordinates.longitude(), coordinates.altitude(), speed, True, float('nan'), float('nan'), MissionItem.CameraAction.NONE, float('nan'), float('nan'), float('nan'), float('nan'), float('nan'), MissionItem.VehicleAction.NONE))
         
         mission_plan = MissionPlan(mission_items)
 
@@ -46,11 +43,13 @@ class FlightController:
         return True
     
     async def execute_mission(self, mission_plan: MissionPlan) -> bool:
+        await self.drone.mission.set_return_to_launch_after_mission(False)
         await self.drone.mission.upload_mission(mission_plan)
-        async for health in self.drone.telemetry.health():
-            if health.is_global_posision_op and health.is_home_position_ok:
-                break
+        await self.drone.mission.start_mission()
         return True
+    
+    async def if_mission_finished(self) -> bool:
+        return await self.drone.mission.is_mission_finished()
     
     def update_is_in_air(self, is_in_air: bool) -> None:
         self.is_in_air = is_in_air

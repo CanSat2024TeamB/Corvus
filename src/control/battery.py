@@ -9,7 +9,6 @@ class Battery:
         self.remaining_percent: float = None
         
 
-
     def battery_info_update(self,info) -> None:
         self.voltage_v = info.voltage_v
         self.current_battery_a = info.current_battery_a

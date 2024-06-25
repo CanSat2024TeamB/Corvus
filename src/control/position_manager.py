@@ -20,7 +20,6 @@ class PositionManager:
     def raw_attitude(self) -> Attitude:
         return self.lidar_handler.attitude()
 
-
     def adjusted_altitude(self) -> float:
         lidar = self.lidar_handler.altitude()
         Pitch_deg = self.compass_handler.compass_attitude().get_pitch()

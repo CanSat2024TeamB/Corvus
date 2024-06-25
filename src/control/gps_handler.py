@@ -24,5 +24,11 @@ class GPSHandler:
     async def catch_gps(self)-> None:
         async for health in self.drone.telemetry.health():
             if health.is_global_position_ok and health.is_home_position_ok:
-                    break
+                    break 
+                
+    async def Get_gps_info(self) -> None:
+        async for gps_info in self.telemetry.gps_info():
+            self.num_satellites = gps_info.num_satellites
+            self.fix_type = gps_info.fix_type
+
         

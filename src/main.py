@@ -1,13 +1,15 @@
 import asyncio
+from pathlib import Path
 from config.config_manager import ConfigManager
 from drone.drone_controller import DroneController
 
 def main():
-    config_path: str = ""
-    config = ConfigManager("assets/config/config.ini")
+    config_path: str = Path(__file__).resolve().parent.parent.joinpath("assets/config/config.ini")
+    config = ConfigManager(config_path)
     drone = DroneController()
 
     asyncio.run(drone.set_up())
+    asyncio.run(drone.test_hovering())
     return
 
 if __name__ == "__main__":
