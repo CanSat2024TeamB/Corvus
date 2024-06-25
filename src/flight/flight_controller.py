@@ -24,6 +24,11 @@ class FlightController:
             await asyncio.sleep(get_height_interval)
         return True
     
+    async def hovering(self, time: float) -> bool:
+        await self.drone.action.hold()
+        await asyncio.sleep(time)
+        return True
+    
     async def go_to(self, *target_coordinates: Coordinates) -> bool:
         position = self.position_manager.adjusted_coordinates()
 
@@ -54,4 +59,4 @@ class FlightController:
     
     async def invoke_loop(self) -> None:
         async for is_in_air in self.drone.telemetry.in_air():
-            update_is_in_air(is_in_air)
+            self.update_is_in_air(is_in_air)
