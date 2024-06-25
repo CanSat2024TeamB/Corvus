@@ -33,7 +33,7 @@ class DroneController:
         await self.drone.connect(system_address = self.pixhawk_address)
 
         print("Waiting for drone to connect...")
-        async for state in drone.core.connection_state():
+        async for state in self.drone.core.connection_state():
             if state.is_connected:
                 print(f"Connected to drone!")
                 break
@@ -43,22 +43,29 @@ class DroneController:
     
     async def arm(self) -> bool:
         print("Waiting for drone to be armable...")
-        async for is_armable in drone.telemetry.health():
+        async for is_armable in self.drone.telemetry.health():
             if is_armable:
                 print("Drone is armable")
                 break
             await asyncio.sleep(0.11)
 
         print("Arming the drone...")
-        await drone.action.arm()
+        await self.drone.action.arm()
 
-        async for is_armed in drone.telemetry.armed():
+        async for is_armed in self.drone.telemetry.armed():
             if is_armed:
                 print("drone is armed")
                 break
             await asyncio.sleep(0.1)
         
         return True
+    
+    async def test_hovering(self):
+        await self.flight_controller.take_off()
+        await self.flight_controller.set_altitude(1.0)
+        await self.flight_controller.hovering(10)
+        await self.flight_controller.land()
+
     
 #    async def invoke_sensor(self) -> None:
 #        async with asyncio.TaskGroup() as task_group:
