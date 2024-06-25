@@ -1,3 +1,4 @@
+
 from control.attitude import Attitude
 from control.coordinates import Coordinates
 import numpy as np

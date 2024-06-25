@@ -10,7 +10,7 @@ class FlightController:
 
     def __init__(self, drone: System, position_manager: PositionManager):
         self.drone: System = drone
-        self.position_manager: position_manager
+        self.position_manager: PositionManager = position_manager
         
         self.is_in_air: bool = False
         asyncio.run(self.invoke_loop())
@@ -25,12 +25,15 @@ class FlightController:
         return True
     
     async def go_to(self, *target_coordinates: Coordinates) -> bool:
-        #position = self.position_manager
+        position = self.position_manager.adjusted_coordinates()
+
         mission_items = []
         mission_items.append(MissionItem(position.latitude, position.longitude, 1, 10, True, float('nan'), float('nan'), MissionItem.CameraAction.NONE, float('nan'), float('nan'), float('nan'), float('nan'), float('nan'), MissionItem.VehicleAction.NONE))
         for coordinates in target_coordinates:
             mission_items.append(MissionItem(coordinates.latitude, coordinates.longitude, 1, 10, True, float('nan'), float('nan'), MissionItem.CameraAction.NONE, float('nan'), float('nan'), float('nan'), float('nan'), float('nan'), MissionItem.VehicleAction.NONE))
+        
         mission_plan = MissionPlan(mission_items)
+
         await self.execute_mission(mission_plan)
         return True
 

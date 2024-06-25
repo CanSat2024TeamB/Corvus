@@ -20,6 +20,7 @@ class Attitude:
     def get_quaternion(self) -> dict[str,float]:
         return {"qw": self.qw, "qx": self.qx, "qy": self.qy, "qz": self.qz}
 
+
     def get_attitude(self) -> dict[str,float,dict]:
         return {"roll": self.roll, "pitch": self.pitch, "yaw": self.yaw, "quaternion": self.get_quaternion()}
 
