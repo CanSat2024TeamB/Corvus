@@ -20,8 +20,8 @@ class FlightController:
         return True
 
     async def set_altitude(self, altitude: float) -> bool:
-        while self.position_manager.adjusted_altitude() <= altitude:
-            await asyncio.sleep(get_height_interval)
+        while self.position_manager.altitude() <= altitude:
+            await asyncio.sleep(FlightController.get_altitude_interval)
         return True
     
     async def hovering(self, time: float) -> bool:

@@ -1,6 +1,6 @@
 import asyncio
 import mavsdk
-from control import Coordinates
+from control.coordinates import Coordinates  
 
 class GPSHandler:
     def __init__(self,drone):
@@ -25,7 +25,7 @@ class GPSHandler:
         return self.coordinates
     
     async def catch_gps(self)-> None:
-        async for health in self.telemetry.health():
+        async for health in self.drone.telemetry.health():
             if health.is_global_position_ok and health.is_home_position_ok:
                     break 
                 
