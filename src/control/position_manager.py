@@ -9,6 +9,7 @@ class PositionManager:
         self.gps_handler = GPS_handler
         self.compass_handler = Compass_handler
         self.lidar_handler = LiDARHandler
+
     
     def raw_altitude(self) -> float:
         return self.lidar_handler.altitude()

@@ -13,9 +13,8 @@ class FlightController:
         self.position_manager: PositionManager = position_manager
         
         self.is_in_air: bool = False
-        asyncio.run(self.invoke_loop())
-    
-    async def take_off(self) -> bool:
+        
+    async def takeoff(self) -> bool:
         await self.drone.action.takeoff()
         return True
 
