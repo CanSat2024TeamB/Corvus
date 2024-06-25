@@ -45,9 +45,7 @@ class FlightController:
     
     async def execute_mission(self, mission_plan: MissionPlan) -> bool:
         await self.drone.mission.upload_mission(mission_plan)
-        async for health in self.drone.telemetry.health():
-            if health.is_global_posision_op and health.is_home_position_ok:
-                break
+        await self.drone.mission.start_mission()
         return True
     
     def update_is_in_air(self, is_in_air: bool) -> None:

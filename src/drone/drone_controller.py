@@ -1,6 +1,8 @@
 import asyncio
 from mavsdk import System
 from sensor.lidar_handler import LiDARHandler
+from control.gps_handler import GPSHandler
+from control.compass_handler import CompassHandler
 from control.position_manager import PositionManager
 from flight.flight_controller import FlightController
 
@@ -12,8 +14,8 @@ class DroneController:
         self.drone = System()
         #self.drone = System(mavsdk_server_address='localhost', port=50051)
         self.lidar_handler = LiDARHandler(self.drone)
-        self.gps_handler = None
-        self.compass_handler = None
+        self.gps_handler = GPSHandler(self.drone)
+        self.compass_handler = CompassHandler(self.drone)
         self.position_manager = PositionManager(self.drone, self.gps_handler, self.compass_handler, self.lidar_handler)
         self.flight_controller = FlightController(self.drone, self.position_manager)
 
@@ -25,6 +27,8 @@ class DroneController:
 
     async def set_up(self) -> None:
         await self.connect()
+        print("Checking GPS Connection...")
+        await self.gps_handler.catch_gps()
         await self.arm()
         return
     
