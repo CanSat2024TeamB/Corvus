@@ -29,13 +29,10 @@ class FlightController:
         await asyncio.sleep(time)
         return True
     
-    async def go_to(self, *target_coordinates: Coordinates) -> bool:
-        position = self.position_manager.adjusted_coordinates()
-
+    async def go_to(self, speed, *target_coordinates: Coordinates) -> bool:
         mission_items = []
-        mission_items.append(MissionItem(position.latitude, position.longitude, 1, 10, True, float('nan'), float('nan'), MissionItem.CameraAction.NONE, float('nan'), float('nan'), float('nan'), float('nan'), float('nan'), MissionItem.VehicleAction.NONE))
         for coordinates in target_coordinates:
-            mission_items.append(MissionItem(coordinates.latitude, coordinates.longitude, 1, 10, True, float('nan'), float('nan'), MissionItem.CameraAction.NONE, float('nan'), float('nan'), float('nan'), float('nan'), float('nan'), MissionItem.VehicleAction.NONE))
+            mission_items.append(MissionItem(coordinates.latitude(), coordinates.longitude(), coordinates.altitude(), speed, True, float('nan'), float('nan'), MissionItem.CameraAction.NONE, float('nan'), float('nan'), float('nan'), float('nan'), float('nan'), MissionItem.VehicleAction.NONE))
         
         mission_plan = MissionPlan(mission_items)
 
