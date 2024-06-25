@@ -2,11 +2,9 @@ import spidev
 import time
 
 class LightSensor:
-    def __init__(self, spi_bus=0, spi_device=0):
-        self.spi_bus = spi_bus
-        self.spi_device = spi_device
+    def __init__(self):
         self.spi = spidev.SpiDev()
-        self.spi.open(spi_bus, spi_device)
+        self.spi.open(0, 0)
         self.spi.max_speed_hz = 1000000
 
     def read_light_value(self):
