@@ -4,7 +4,7 @@ from config.config_manager import ConfigManager
 from drone.drone_controller import DroneController
 
 def main():
-    config_path: str = Path(__file__).resolve().parent.parent + "/assets/config/config.ini"
+    config_path: str = Path(__file__).resolve().parent.parent.joinpath("assets/config/config.ini")
     config = ConfigManager(config_path)
     drone = DroneController()
 
