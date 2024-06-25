@@ -16,7 +16,7 @@ class FlightController:
         asyncio.run(self.invoke_loop())
     
     async def takeoff(self) -> bool:
-        await self.drone.action.takeoff
+        await self.drone.action.takeoff()
         return True
 
     async def set_altitude(self, altitude: float) -> bool:
@@ -54,4 +54,4 @@ class FlightController:
     
     async def invoke_loop(self) -> None:
         async for is_in_air in self.drone.telemetry.in_air():
-            update_is_in_air(is_in_air)
+            self.update_is_in_air(is_in_air)
