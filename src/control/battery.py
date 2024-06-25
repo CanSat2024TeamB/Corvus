@@ -7,20 +7,18 @@ class Battery:
         self.voltage_v: float = None
         self.current_battery_a: float = None
         self.remaining_percent: float = None
-        asyncio.run(self.invoke_loop())
+        
 
 
     def battery_info_update(self,info) -> None:
         self.voltage_v = info.voltage_v
         self.current_battery_a = info.current_battery_a
         self.remaining_percent = info.remaining_percent
-
+#################################################以下がオープン
     async def invoke_loop(self) -> None:
         async for info in self.telemetry.battery:
             self.update_info_update(info)
             await asyncio.sleep(10)
-
-#################################################以下がオープン
 
     def voltage_v(self) -> float:
         return self.voltage_v
