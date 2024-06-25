@@ -1,4 +1,4 @@
-class Attitude: #quaternionいる？
+class Attitude: 
     def __init__(self):
         self.roll: float = 0.0
         self.pitch: float = 0.0
@@ -20,7 +20,7 @@ class Attitude: #quaternionいる？
     def get_quaternion(self) -> dict[str,float]:
         return {"qw": self.qw, "qx": self.qx, "qy": self.qy, "qz": self.qz}
 
-    def get_attitude(self) -> dict[str,float]:
+    def get_attitude(self) -> dict[str,float,dict]:
         return {"roll": self.roll, "pitch": self.pitch, "yaw": self.yaw, "quaternion": self.get_quaternion()}
 
     def set_roll(self, roll: float):

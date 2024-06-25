@@ -1,12 +1,13 @@
-from control import Coordinates,Attitude
+from control.attitude import Attitude
+from control.coordinates import Coordinates
 import numpy as np
 
 class PositionManager:
     def __init__(self, drone, GPS_handler, Compass_handler, LiDARHandler):
         self.drone = drone
-        self.gps_handler = GPS_handler(drone)
-        self.compass_handler = Compass_handler(drone)
-        self.lidar_handler = LiDARHandler(drone)
+        self.gps_handler = GPS_handler
+        self.compass_handler = Compass_handler
+        self.lidar_handler = LiDARHandler
 
     
     def raw_altitude(self) -> float:

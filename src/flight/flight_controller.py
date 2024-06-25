@@ -16,12 +16,12 @@ class FlightController:
         asyncio.run(self.invoke_loop())
     
     async def takeoff(self) -> bool:
-        await self.drone.action.takeoff()
+        await self.drone.action.takeoff
         return True
 
     async def set_altitude(self, altitude: float) -> bool:
         while self.position_manager.altitude() <= altitude:
-            await asyncio.sleep(get_height_interval)
+            await asyncio.sleep(FlightController.get_altitude_interval)
         return True
     
     async def go_to(self, *target_coordinates: Coordinates) -> bool:
