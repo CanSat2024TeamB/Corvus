@@ -15,7 +15,7 @@ class FlightController:
         self.is_in_air: bool = False
         asyncio.run(self.invoke_loop())
     
-    async def takeoff(self) -> bool:
+    async def take_off(self) -> bool:
         await self.drone.action.takeoff()
         return True
 
@@ -44,9 +44,13 @@ class FlightController:
         return True
     
     async def execute_mission(self, mission_plan: MissionPlan) -> bool:
+        await self.drone.mission.set_return_to_launch_after_mission(False)
         await self.drone.mission.upload_mission(mission_plan)
         await self.drone.mission.start_mission()
         return True
+    
+    async def if_mission_finished(self) -> bool:
+        return await self.drone.mission.is_mission_finished()
     
     def update_is_in_air(self, is_in_air: bool) -> None:
         self.is_in_air = is_in_air

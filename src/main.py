@@ -8,6 +8,7 @@ def main():
     drone = DroneController()
 
     asyncio.run(drone.set_up())
+    asyncio.run(drone.test_hovering())
     return
 
 if __name__ == "__main__":

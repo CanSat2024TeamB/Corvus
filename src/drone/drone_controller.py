@@ -4,6 +4,7 @@ from sensor.lidar_handler import LiDARHandler
 from control.gps_handler import GPSHandler
 from control.compass_handler import CompassHandler
 from control.position_manager import PositionManager
+from control.coordinates import Coordinates
 from flight.flight_controller import FlightController
 
 class DroneController:
@@ -19,12 +20,6 @@ class DroneController:
         self.position_manager = PositionManager(self.drone, self.gps_handler, self.compass_handler, self.lidar_handler)
         self.flight_controller = FlightController(self.drone, self.position_manager)
 
-    def drone(self):
-        return self.drone
-    
-    def position_manager(self):
-        return self.position_manager
-
     async def set_up(self) -> None:
         await self.connect()
         print("Checking GPS Connection...")
@@ -32,6 +27,36 @@ class DroneController:
         await self.arm()
         return
     
+    async def test_hovering(self):
+        print("Taking off...")
+        await self.flight_controller.take_off()
+        print("Ascending to 1.0 m height...")
+        await self.flight_controller.set_altitude(1.0)
+        print("Hovering 10 sec...")
+        await self.flight_controller.hovering(10)
+        print("Landing...")
+        await self.flight_controller.land()
+
+    async def test_go_to(self):
+        print("Taking off...")
+        await self.flight_controller.take_off()
+        print("Ascending to 1.0 m height...")
+        await self.flight_controller.set_altitude(1.0)
+        target_coordinates = Coordinates(38, 138, 0)
+        print("Taking flight to the target position...")
+        await self.flight_controller.go_to(1.0, target_coordinates)
+        while True:
+            if self.flight_controller.if_mission_finished():
+                break
+        print("Landing...")
+        await self.flight_controller.land()
+
+    def drone(self):
+        return self.drone
+    
+    def position_manager(self):
+        return self.position_manager
+
     async def connect(self) -> bool:
         print("Connecting...")
         await self.drone.connect(system_address = self.pixhawk_address)
@@ -63,13 +88,6 @@ class DroneController:
             await asyncio.sleep(0.1)
         
         return True
-    
-    async def test_hovering(self):
-        await self.flight_controller.take_off()
-        await self.flight_controller.set_altitude(1.0)
-        await self.flight_controller.hovering(10)
-        await self.flight_controller.land()
-
     
 #    async def invoke_sensor(self) -> None:
 #        async with asyncio.TaskGroup() as task_group:
