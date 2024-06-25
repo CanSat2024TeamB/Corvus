@@ -1,6 +1,6 @@
 import asyncio
 import mavsdk 
-from control import Attitude
+from control.attitude import Attitude
 
 class CompassHandler:
     def __init__(self, drone):
