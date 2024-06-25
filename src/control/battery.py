@@ -13,6 +13,7 @@ class Battery:
         self.voltage_v = info.voltage_v
         self.current_battery_a = info.current_battery_a
         self.remaining_percent = info.remaining_percent
+        self.temperature_degc = info.temperature_degc
 #################################################以下がオープン
     async def invoke_loop(self) -> None:
         async for info in self.telemetry.battery:
@@ -27,3 +28,6 @@ class Battery:
     
     def remaining_percent(self) -> float:
         return self.remaining_percent
+    
+    def temperature_degc(self) -> float:
+        return self.temperature_degc
