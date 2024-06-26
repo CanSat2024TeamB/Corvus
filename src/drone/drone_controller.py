@@ -2,7 +2,7 @@ import asyncio
 from mavsdk import System
 from sensor.lidar_handler import LiDARHandler
 from control.coordinates import Coordinates
-from control.battery import Battery
+from control.battery import Battery_watch
 from control.gps_handler import GPSHandler
 from control.position_manager import PositionManager
 from control.compass_handler import CompassHandler
@@ -18,7 +18,7 @@ class DroneController:
         #self.drone = System(mavsdk_server_address='localhost', port=50051)
         self.lidar_handler = LiDARHandler(self.drone)
         self.gps_handler = GPSHandler(self.drone)
-        self.battery = Battery(self.drone)
+        self.battery_watch = Battery_watch(self.drone)
         self.compass_handler = CompassHandler(self.drone)
         self.position_manager = PositionManager(self.drone, self.gps_handler, self.compass_handler, self.lidar_handler)
         self.flight_controller = FlightController(self.drone, self.position_manager)
@@ -112,7 +112,7 @@ class DroneController:
         async with asyncio.TaskGroup() as task_group:
             lidar_invoke = task_group.create_task(self.lidar_handler.invoke_loop())
             #gps_invoke = task_group.create_task(self.gps_handler.invoke_loop())
-            battery_invoke = task_group.create_task(self.battery.invoke_loop())
+            battery_invoke = task_group.create_task(self.battery_watch.invoke_loop())
             compass_invoke = task_group.create_task(self.compass_handler.invoke_loop())
             in_air_invoke = task_group.create_task(self.flight_controller.invoke_loop())
             logger_invoke =task_group.create_task(self.logger_write())

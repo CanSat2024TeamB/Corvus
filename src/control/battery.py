@@ -1,7 +1,7 @@
 import mavsdk
 import asyncio
 
-class Battery:
+class Battery_watch:
     def __init__(self,drone):
         self.drone = drone
         self.voltage_v: float = None
