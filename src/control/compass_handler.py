@@ -15,9 +15,16 @@ class CompassHandler:
         self.attitude.set_quaternion(quaternion.w, quaternion.x, quaternion.y, quaternion.z)
         return
  #############################################################以下がオープン
+
     async def invoke_loop(self) -> None:
-        async for euler, quaternion in zip(self.drone.telemetry.attitude_euler(), self.drone.telemetry.attitude_quaternion()):
-            self.update_attitude(euler, quaternion)
+        attitude_euler = self.drone.telemetry.attitude_euler()
+        attitude_quaternion = self.drone.telemetry.attitude_quaternion()
+
+        while True:
+            euler = await attitude_euler.__anext__()
+            quaternion = await attitude_quaternion.__anext__()
+            await self.update_attitude(euler, quaternion)
+
 
     def compass_attitude(self) -> Attitude:
         return self.attitude
