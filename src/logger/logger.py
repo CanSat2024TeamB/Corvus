@@ -1,7 +1,7 @@
 import datetime
 
 class Logger:
-    default_path: str = f"../assets/log/log_{datetime.datetime.now().strftime('%Y-%m-%d_%H:%M:%S')}.txt"
+    default_path: str = f"../assets/config/log/log_{datetime.datetime.now().strftime('%Y-%m-%d_%H:%M:%S')}.txt"
     
     def __init__(self, path: str):
         self.path: str = path
