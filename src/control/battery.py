@@ -16,7 +16,7 @@ class Battery_watch:
         self.temperature_degc = info.temperature_degc
 #################################################以下がオープン
     async def invoke_loop(self) -> None:
-        async for info in self.drone.telemetry.Battery():
+        async for info in self.drone.telemetry.battery():
             self.battery_info_update(info)
             await asyncio.sleep(1)
 
