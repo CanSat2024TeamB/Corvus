@@ -15,7 +15,6 @@ class DroneController:
 
     def __init__(self):
         self.drone = System()
-        self.logger = Logger(self.drone)
         #self.drone = System(mavsdk_server_address='localhost', port=50051)
         self.lidar_handler = LiDARHandler(self.drone)
         self.gps_handler = GPSHandler(self.drone)
@@ -23,7 +22,7 @@ class DroneController:
         self.compass_handler = CompassHandler(self.drone)
         self.position_manager = PositionManager(self.drone, self.gps_handler, self.compass_handler, self.lidar_handler)
         self.flight_controller = FlightController(self.drone, self.position_manager)
-        self.logger = Logger(self.drone)
+        self.logger = Logger()
 
     def drone(self):
         return self.drone
