@@ -67,7 +67,7 @@ class DroneController:
         
         return True
     
-    async def logger(self):
+    async def logger_write(self):
         while True:
             await asyncio.sleep(1)
             message = str(self.position_manager.adjusted_altitude())
@@ -115,7 +115,7 @@ class DroneController:
             battery_invoke = task_group.create_task(self.battery.invoke_loop())
             compass_invoke = task_group.create_task(self.compass_handler.invoke_loop())
             in_air_invoke = task_group.create_task(self.flight_controller.invoke_loop())
-            logger_invoke =task_group.create_task(self.logger())
+            logger_invoke =task_group.create_task(self.logger_write())
             sequence_loop = task_group.create_task(sequence)
 
 # ^^^^^各クラスのコンストラクタに移譲^^^^^^
