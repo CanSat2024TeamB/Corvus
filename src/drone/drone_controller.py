@@ -7,6 +7,7 @@ from control.gps_handler import GPSHandler
 from control.position_manager import PositionManager
 from control.compass_handler import CompassHandler
 from flight.flight_controller import FlightController
+from logger.logger import Logger
 
 class DroneController:
     pixhawk_address: str = "serial:///dev/ttyACM0:115200"
@@ -14,6 +15,7 @@ class DroneController:
 
     def __init__(self):
         self.drone = System()
+        self.logger = Logger(self.drone)
         #self.drone = System(mavsdk_server_address='localhost', port=50051)
         self.lidar_handler = LiDARHandler(self.drone)
         self.gps_handler = GPSHandler(self.drone)
