@@ -86,12 +86,6 @@ class DroneController:
        # await self.flight_controller.disarm()
 
     async def sequence_test_mission(self,speed, *target_coordinates: Coordinates):
-        await self.flight_controller.takeoff()
-        print('taking off')
-        await self.flight_controller.set_altitude(1.0)
-        print('reached start hovering')
-        await self.flight_controller.hovering(10)
-        print('finish hovering start go to')
         await self.flight_controller.go_to(speed, *target_coordinates)
         print('mission started')
         while True:
