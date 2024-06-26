@@ -70,7 +70,9 @@ class DroneController:
     async def sequence_test_hovering(self):
         await self.flight_controller.take_off()
         await self.flight_controller.set_altitude(1.0)
+        print('start hovering')
         await self.flight_controller.hovering(10)
+        print('start landing')
         await self.flight_controller.land()
        # await self.flight_controller.disarm()
 
