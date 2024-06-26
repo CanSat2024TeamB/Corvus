@@ -5,9 +5,9 @@ class Vector3d:
         self.z = z
     
     def __init__(self):
-        self.x = None
-        self.y = None
-        self.z = None
+        self.x = 0.0
+        self.y = 0.0
+        self.z = 0.0
     
     def x(self) -> float:
         return self.x
