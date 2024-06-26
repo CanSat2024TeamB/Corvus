@@ -84,19 +84,27 @@ class DroneController:
        # await self.flight_controller.disarm()
 
     async def sequence_test_mission(self,speed, *target_coordinates: Coordinates):
-        await self.flight_controller.take_off()
+        await self.flight_controller.takeoff()
+        print('taking off')
         await self.flight_controller.set_altitude(1.0)
+        print('reached start hovering')
         await self.flight_controller.hovering(10)
+        print('finish hovering start go to')
         await self.flight_controller.go_to(speed, *target_coordinates)
+        print('mission started')
         while True:
-            await asyncio.sleep(1)
+            await asyncio.sleep(0.1)
             if self.flight_controller.if_mission_finished():
+                print('mission finished start hovering')
                 await self.flight_controller.hovering(10)
+                print(' hovering finished start landing')
                 await self.flight_controller.land()
-               # await self.flight_controller.disarm()
+                print('landed')
+                # await self.flight_controller.disarm()
+                break
 
     async def sequence_test_endurance(self,speed, *target_coordinates: Coordinates):
-        await self.flight_controller.take_off()
+        await self.flight_controller.takeoff()
         await self.flight_controller.set_altitude(1.0)
         await self.flight_controller.hovering(10)
         await self.flight_controller.go_to(speed, *target_coordinates)
