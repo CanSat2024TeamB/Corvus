@@ -72,7 +72,7 @@ class DroneController:
         await self.flight_controller.land()
         await self.flight_controller.disarm()
 
-    async def sequaence_test_mission(self,speed, *target_coordinates: Coordinates):
+    async def sequence_test_mission(self,speed, *target_coordinates: Coordinates):
         await self.flight_controller.take_off()
         await self.flight_controller.set_altitude(1.0)
         await self.flight_controller.hovering(10)
