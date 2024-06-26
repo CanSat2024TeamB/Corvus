@@ -19,7 +19,7 @@ class FlightController:
         return True
 
     async def set_altitude(self, altitude: float) -> bool:
-        while self.position_manager.altitude() <= altitude:
+        while self.position_manager.adjusted_altitude() <= altitude:
             await asyncio.sleep(FlightController.get_altitude_interval)
         return True
     

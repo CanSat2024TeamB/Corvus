@@ -113,7 +113,7 @@ class DroneController:
             lidar_invoke = task_group.create_task(self.lidar_handler.invoke_loop())
             #gps_invoke = task_group.create_task(self.gps_handler.invoke_loop())
             #battery_invoke = task_group.create_task(self.battery.invoke_loop())
-            #compass_invoke = task_group.create_task(self.compass_handler.invoke_loop())
+            compass_invoke = task_group.create_task(self.compass_handler.invoke_loop())
             #in_air_invoke = task_group.create_task(self.flight_controller.invoke_loop())
             #logger_invoke =task_group.create_task(self.logger_write())
             sequence_loop = task_group.create_task(sequence)
