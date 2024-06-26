@@ -27,7 +27,10 @@ class PositionManager:
         adjusted_altitude = lidar * np.cos(np.deg2rad(Pitch_deg)) * np.cos(np.deg2rad(Roll_deg))
         return adjusted_altitude
     
-    def adjusted_coordinates(self) -> Coordinates:
+    def adjusted_coordinates_lon(self) -> float:
         longitude = self.gps_handler.gps_coordinates().longitude()
+        return longitude
+    
+    def adjusted_coordinates_lat(self) -> float:
         latitude = self.gps_handler.gps_coordinates().latitude()
-        return Coordinates(longitude, latitude)
+        return latitude

@@ -70,8 +70,10 @@ class DroneController:
     async def logger_write(self):
         while True:
             await asyncio.sleep(1)
-            message = str(self.position_manager.adjusted_altitude())
-            self.logger.write(message)
+            message_1 = str(self.position_manager.adjusted_altitude())
+            message_2 = str(self.position_manager.adjusted_coordinates_lon())
+            message_3 = str(self.position_manager.adjusted_coordinates_lat())
+            self.logger.write(message_1,message_2,message_3)
     
     async def sequence_test_hovering(self):
         await self.flight_controller.takeoff()
@@ -123,7 +125,7 @@ class DroneController:
             battery_invoke = task_group.create_task(self.battery_watch.invoke_loop())
             compass_invoke = task_group.create_task(self.compass_handler.invoke_loop())
             in_air_invoke = task_group.create_task(self.flight_controller.invoke_loop())
-            logger_invoke =task_group.create_task(self.logger_write())
             sequence_loop = task_group.create_task(sequence)
+            logger_invoke =task_group.create_task(self.logger_write())
 
 # ^^^^^各クラスのコンストラクタに移譲^^^^^^
