@@ -90,7 +90,7 @@ class DroneController:
         print('mission started')
         while True:
             await asyncio.sleep(0.1)
-            if self.flight_controller.if_mission_finished():
+            if await self.flight_controller.if_mission_finished():
                 print('mission finished start hovering')
                 await self.flight_controller.hovering(10)
                 print(' hovering finished start landing')
