@@ -72,7 +72,7 @@ class DroneController:
         await self.flight_controller.set_altitude(1.0)
         await self.flight_controller.hovering(10)
         await self.flight_controller.land()
-        await self.flight_controller.disarm()
+       # await self.flight_controller.disarm()
 
     async def sequence_test_mission(self,speed, *target_coordinates: Coordinates):
         await self.flight_controller.take_off()
@@ -84,7 +84,7 @@ class DroneController:
             if self.flight_controller.if_mission_finished():
                 await self.flight_controller.hovering(10)
                 await self.flight_controller.land()
-                await self.flight_controller.disarm()
+               # await self.flight_controller.disarm()
 
     async def sequence_test_endurance(self,speed, *target_coordinates: Coordinates):
         await self.flight_controller.take_off()
@@ -96,7 +96,7 @@ class DroneController:
             if self.battery.remaining_percent()<35:
                 await self.flight_controller.hovering(10)
                 await self.flight_controller.land()
-                await self.flight_controller.disarm()
+              #  await self.flight_controller.disarm()
 
     
     async def invoke_sensor_and_sequence(self,sequence) -> None:
