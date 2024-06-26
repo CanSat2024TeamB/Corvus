@@ -42,6 +42,14 @@ class FlightController:
         await self.drone.action.land()
         return True
     
+    async def disarm(self) -> bool:
+        await self.drone.action.disarm()
+        return True
+    
+    async def kill(self) -> bool:
+        await self.drone.action.kill()
+        return True
+    
     async def execute_mission(self, mission_plan: MissionPlan) -> bool:
         await self.drone.mission.set_return_to_launch_after_mission(False)
         await self.drone.mission.upload_mission(mission_plan)

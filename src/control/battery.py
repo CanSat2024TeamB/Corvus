@@ -18,7 +18,7 @@ class Battery:
     async def invoke_loop(self) -> None:
         async for info in self.telemetry.battery:
             self.update_info_update(info)
-            await asyncio.sleep(10)
+            await asyncio.sleep(1)
 
     def voltage_v(self) -> float:
         return self.voltage_v

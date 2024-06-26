@@ -9,7 +9,7 @@ def main():
     drone = DroneController()
 
     asyncio.run(drone.set_up())
-    asyncio.run(drone.test_hovering())
+    asyncio.run(drone.invoke_sensor_and_sequence(drone.sequence_test_hovering()))
     return
 
 if __name__ == "__main__":
