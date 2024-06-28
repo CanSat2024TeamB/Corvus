@@ -26,7 +26,7 @@ class DroneController:
         self.logger = Logger()
         self.wirehandler = WireHandler()
 
-        self.para_pin_no = 1
+        self.para_pin_no = 7
 
         self.para_duration = 5
 
