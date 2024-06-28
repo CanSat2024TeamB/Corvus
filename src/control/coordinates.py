@@ -1,6 +1,5 @@
 from control.vector3d import Vector3d
 
-from control.vector3d import Vector3d
 
 class Coordinates(Vector3d):
     def __init__(self, longitude: float = 0.0, latitude: float = 0.0, altitude: float = 0.0):

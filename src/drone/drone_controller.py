@@ -8,6 +8,7 @@ from control.position_manager import PositionManager
 from control.compass_handler import CompassHandler
 from flight.flight_controller import FlightController
 from logger.logger import Logger
+from wire.wirehandler import WireHandler
 
 class DroneController:
     pixhawk_address: str = "serial:///dev/ttyACM0:115200"
@@ -23,6 +24,11 @@ class DroneController:
         self.position_manager = PositionManager(self.drone, self.gps_handler, self.compass_handler, self.lidar_handler)
         self.flight_controller = FlightController(self.drone, self.position_manager)
         self.logger = Logger()
+        self.wirehandler = WireHandler()
+
+        self.para_pin_no = 1
+
+        self.para_duration = 5
 
     def drone(self):
         return self.drone
@@ -74,6 +80,9 @@ class DroneController:
             message_2 = str(self.position_manager.adjusted_coordinates_lon())
             message_3 = str(self.position_manager.adjusted_coordinates_lat())
             self.logger.write(message_1,message_2,message_3)
+
+    def para_case_stand_nichrome(self):
+        self.wirehandler.nichrome_cut(self.para_pin_no, self.para_duration)
     
     async def sequence_test_hovering(self):
         await self.flight_controller.takeoff()
