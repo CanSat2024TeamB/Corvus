@@ -6,7 +6,7 @@ class WireHandler():
         GPIO.setmode(GPIO.BCM)
 
     def nichrome_cut(self, pin_no, duration):
-        GPIO.setup(pin_no, GPIO.OUT)  
+        #GPIO.setup(pin_no, GPIO.OUT)  
         GPIO.output(pin_no, GPIO.HIGH)  # ニクロム線に電流を流す（スイッチオン）
         time.sleep(duration)  # duration秒間継続
         GPIO.output(pin_no, GPIO.LOW)  # ニクロム線の電流を止める（スイッチオフ）
