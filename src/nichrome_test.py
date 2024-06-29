@@ -1,19 +1,14 @@
-#import asyncio
-#from drone.drone_controller import DroneController
+import asyncio
+from drone.drone_controller import DroneController
 import RPi.GPIO as GPIO
 
 def main():
-    #drone = DroneController()
-    GPIO.setmode(GPIO.BCM)
-    GPIO.setup(7,GPIO.OUT)
-    GPIO.output(7,GPIO.LOW)
-    print('set low')
+    drone = DroneController()
 
-
-    #asyncio.sleep(20)
-    #print('start')
-    #drone.para_case_stand_nichrome()
-    #print('done')
+    asyncio.sleep(20)
+    print('start')
+    drone.para_case_stand_nichrome()
+    print('done')
     GPIO.cleanup()
     print('cleanup done')
 
