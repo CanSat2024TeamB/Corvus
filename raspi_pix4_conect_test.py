@@ -1,11 +1,13 @@
 import asyncio
 from mavsdk import System
+import serial.tools.list_ports
 
 drone = System()
 
 async def set_up():
     global drone
-
+    ports = serial.tools.list_ports.comports()
+    print(ports)
     # Connect to the drone
     print("connecting now")
     await drone.connect(system_address="serial:///dev/ttyACM1:115200")
