@@ -7,7 +7,8 @@ drone = System()
 async def set_up():
     global drone
     ports = serial.tools.list_ports.comports()
-    print(ports)
+    for port in ports:
+            print(port.device)
     # Connect to the drone
     print("connecting now")
     await drone.connect(system_address="serial:///dev/ttyACM1:115200")
