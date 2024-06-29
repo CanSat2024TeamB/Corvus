@@ -5,8 +5,8 @@ import RPi.GPIO as GPIO
 def main():
     #drone = DroneController()
     #GPIO.setmode(GPIO.BCM)
-    GPIO.SETUP(7,GPIO.OUT)
-    GPIO.OUTPUT(7,GPIO.LOW)
+    GPIO.setup(7,GPIO.OUT)
+    GPIO.output(7,GPIO.LOW)
     print('set low')
 
 
