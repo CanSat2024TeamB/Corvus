@@ -14,8 +14,8 @@ def main():
     #print('start')
     #drone.para_case_stand_nichrome()
     #print('done')
-    #GPIO.cleanup()
-    #print('cleanup done')
+    GPIO.cleanup()
+    print('cleanup done')
 
 
 if __name__ == "__main__":
