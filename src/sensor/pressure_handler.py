@@ -10,7 +10,6 @@ class PressureHandler:
         self.sensor.set_pressure_oversample(bme680.OS_4X)
         self.sensor.set_temperature_oversample(bme680.OS_8X)
         self.sensor.set_filter(bme680.FILTER_SIZE_3)
-        self._initialize_sensor()
        
         self.interval = 1.0 
 
