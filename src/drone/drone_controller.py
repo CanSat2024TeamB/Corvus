@@ -26,10 +26,8 @@ class DroneController:
         self.logger = Logger()
        
 
-        
-    @classmethod
-    def drone(cls):
-        return cls().drone
+    def drone(self):
+        return self.drone
     
     def position_manager(self):
         return self.position_manager
