@@ -12,7 +12,7 @@ async def main():
     case = CaseHandler(drone)
     
     await dronecontroller.connect()
-    vel = await case.ac_vel.get_acceleration()
+    vel = await case.ac_vel.get_velocity()
     print(vel)
     print("done")
 
