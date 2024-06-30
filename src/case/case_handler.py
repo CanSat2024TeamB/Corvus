@@ -24,7 +24,7 @@ class CaseHandler():
         stable_count = 0
         for i in range(self.stable_judge_count):
             def_pre = self.pressure.dif_ave_pressure(interval_def_ave_pressure)
-            
+            print(def_pre)
             if abs(def_pre) <= self.stable_pre_val:
                 stable_count += 1
 
