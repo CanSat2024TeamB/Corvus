@@ -3,7 +3,7 @@ from sensor.acceleration_velocity import Acceleration_Velocity
 from wire.wirehandler import WireHandler
 import time
 
-class CaseHandler():
+class CaseHandler:
 
     def __init__(self,drone):
         self.drone = drone
@@ -40,9 +40,9 @@ class CaseHandler():
         stable_count = 0
         for i in range(self.stable_judge_count):
             def_vel = await self.ac_vel.dif_ave_velocity(interval_def_ave_velocity)
-            print(def_vel)  ##消す
+            print(def_vel)  ## 値の確認のための出力、必要ない場合はコメントアウトする
 
-            if abs(def_vel) <= self.stable_vel_val:
+            if np.all(np.abs(def_vel) <= self.stable_vel_val):
                 stable_count += 1
             else:
                 break

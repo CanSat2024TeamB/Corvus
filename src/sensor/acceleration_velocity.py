@@ -13,8 +13,8 @@ class Acceleration_Velocity:
         return np.array([accel.acceleration_frd.forward_m_s2, accel.acceleration_frd.right_m_s2, accel.acceleration_frd.down_m_s2])
 
     async def get_velocity(self):
-        accel = await self.drone.telemetry.odometry().velocity_body.__anext__()
-        return np.array([accel.forward_m_s2, accel.right_m_s2, accel.down_m_s2])
+        velocity = await self.drone.telemetry.odometry().__anext__()
+        return np.array([velocity.velocity_body.x_m_s,velocity.velocity_body.y_m_s,velocity.velocity_body.z_m_s])
 
     async def ave_velocity(self):
         velocity_lst = []
