@@ -12,8 +12,9 @@ async def main():
     case = CaseHandler(drone)
     
     await dronecontroller.connect()
-    vel = await case.ac_vel.get_velocity()
-    print(vel)
+    async for imu in drone.telemetry.imu():
+            a_x = imu.acceleration_frd.forward_m_s2
+    print(a_x)
     print("done")
 
 
