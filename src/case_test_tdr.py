@@ -9,7 +9,7 @@ async def main():
     #config_path: str = Path(__file__).resolve().parent.parent.joinpath("assets/config/config.ini")
     #config = ConfigManager(config_path)
     dronecontroller = DroneController()
-    drone = dronecontroller.drone()
+    drone = dronecontroller.get_drone_instance()
     case = CaseHandler(drone)
     countdown(20)
     while True:

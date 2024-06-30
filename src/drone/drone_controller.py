@@ -15,19 +15,19 @@ class DroneController:
     #pixhawk_address: str = "udp://:14540"
 
     def __init__(self):
-        self.drone = System()
+        self.drone_instance = System()
         #self.drone = System(mavsdk_server_address='localhost', port=50051)
-        self.lidar_handler = LiDARHandler(self.drone)
-        self.gps_handler = GPSHandler(self.drone)
-        self.battery_watch = Battery_watch(self.drone)
-        self.compass_handler = CompassHandler(self.drone)
-        self.position_manager = PositionManager(self.drone, self.gps_handler, self.compass_handler, self.lidar_handler)
-        self.flight_controller = FlightController(self.drone, self.position_manager)
+        self.lidar_handler = LiDARHandler(self.drone_instance)
+        self.gps_handler = GPSHandler(self.drone_instance)
+        self.battery_watch = Battery_watch(self.drone_instance)
+        self.compass_handler = CompassHandler(self.drone_instance)
+        self.position_manager = PositionManager(self.drone_instance, self.gps_handler, self.compass_handler, self.lidar_handler)
+        self.flight_controller = FlightController(self.drone_instance, self.position_manager)
         self.logger = Logger()
        
 
-    def drone(self):
-        return self.drone
+    def get_drone_instance(self):
+        return self.drone_instance
     
     def position_manager(self):
         return self.position_manager
