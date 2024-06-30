@@ -17,7 +17,7 @@ async def main():
             print(f"Pressure stability confirmed")
             await drone.connect()
             print(f"Velocity stability confirmation start")
-            if case.judge_velocity_stable(1):
+            if await case.judge_velocity_stable(1):
                 print(f"Velocity stability cinfirmed")
                 break
             else:

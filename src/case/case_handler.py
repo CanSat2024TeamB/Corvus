@@ -36,18 +36,17 @@ class CaseHandler():
         else:
             return False
         
-    def judge_velocity_stable(self,interval_def_ave_velocity):
+    async def judge_velocity_stable(self, interval_def_ave_velocity):
         stable_count = 0
         for i in range(self.stable_judge_count):
-            def_vel = self.ac_vel.dif_ave_velocity(interval_def_ave_velocity)
-            print(def_vel)####消す
-            
+            def_vel = await self.ac_vel.dif_ave_velocity(interval_def_ave_velocity)
+            print(def_vel)  ##消す
+
             if abs(def_vel) <= self.stable_vel_val:
                 stable_count += 1
-
             else:
-                break    
-        
+                break
+
         if stable_count == self.stable_judge_count:
             return True
         else:
