@@ -35,10 +35,10 @@ class DroneController:
     
     async def connect(self) -> bool:
         print("Connecting...")
-        await self.drone.connect(system_address = self.pixhawk_address)
+        await self.drone_instance.connect(system_address = self.pixhawk_address)
 
         print("Waiting for drone to connect...")
-        async for state in self.drone.core.connection_state():
+        async for state in self.drone_instance.core.connection_state():
             if state.is_connected:
                 print(f"Connected to drone!")
                 break
@@ -49,16 +49,16 @@ class DroneController:
     
     async def arm(self) -> bool:
         print("Waiting for drone to be armable...")
-        async for is_armable in self.drone.telemetry.health():
+        async for is_armable in self.drone_instance.telemetry.health():
             if is_armable:
                 print("Drone is armable")
                 break
             await asyncio.sleep(0.11)
 
         print("Arming the drone...")
-        await self.drone.action.arm()
+        await self.drone_instance.action.arm()
 
-        async for is_armed in self.drone.telemetry.armed():
+        async for is_armed in self.drone_instance.telemetry.armed():
             if is_armed:
                 print("drone is armed")
                 break
@@ -107,7 +107,7 @@ class DroneController:
         await self.flight_controller.go_to(speed, *target_coordinates)
         while True:
             await asyncio.sleep(1)
-            if self.battery.remaining_percent()<35:
+            if self.battery_watch.remaining_percent()<35:
                 await self.flight_controller.hovering(10)
                 await self.flight_controller.land()
               #  await self.flight_controller.disarm()
