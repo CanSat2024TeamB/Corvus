@@ -13,9 +13,8 @@ async def main():
     
     await drone_controller.connect()
     
-    async for imu in drone.telemetry.imu():
-        a_x = imu.acceleration_frd.forward_m_s2
-        print(f"Acceleration in x-axis: {a_x}")
+    a = await case.ac_vel.get_acceleration()
+    print(a)
     
     print("done")
 
