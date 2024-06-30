@@ -20,20 +20,21 @@ class PressureHandler:
             return self.sensor.data.temperature
         else:
             return None
-        time.sleep(self.interval)
+        
     
     def get_pressure(self):
         if self.sensor.get_sensor_data():
             return self.sensor.data.pressure
         else:
             return None
-        time.sleep(self.interval)
+        
         
     def ave_pressure(self):
         pressure_lst = []
         for i in range(5):
             pre = self.get_pressure()
             pressure_lst.append(pre)
+            time.sleep(self.interval)
 
             if i == 4:
                 ave_pre = sum(pressure_lst)/len(pressure_lst)

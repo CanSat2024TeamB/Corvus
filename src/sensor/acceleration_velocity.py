@@ -6,7 +6,8 @@ import time
 class Acceleration_Velocity():
     def __init__(self,drone):
         self.drone = drone
-        interval_def_ave_velocity = 1.0
+
+        self.interval = 1.0
 
     async def get_velocity(self):
         velocity = await self.drone.telemetry.velocitybody().__anext__()
@@ -21,6 +22,7 @@ class Acceleration_Velocity():
         for i in range(5):
             vel = self.get_velocity()
             velocity_lst.append(vel)
+            time.sleep(self.interval)
 
             if i == 4:
                 ave_vel = sum(velocity_lst)/len(velocity_lst)
