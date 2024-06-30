@@ -3,12 +3,13 @@ from sensor.acceleration_velocity import Acceleration_Velocity
 from wire.wirehandler import WireHandler
 import time
 
-class CaseHndler():
+class CaseHandler():
 
-    def __init__(self):
+    def __init__(self,drone):
+        self.drone = drone
         self.pressure = PressureHandler()
         self.wirehandler = WireHandler()
-        self.ac_vel = Acceleration_Velocity()
+        self.ac_vel = Acceleration_Velocity(self.drone)
         
         self.stable_pre_val = 0.01
         self.stable_vel_val = 0.1
