@@ -8,7 +8,8 @@ from case.case_handler import CaseHandler
 async def main():
     #config_path: str = Path(__file__).resolve().parent.parent.joinpath("assets/config/config.ini")
     #config = ConfigManager(config_path)
-    drone = DroneController.drone()
+    dronecontroller = DroneController()
+    drone = dronecontroller.drone()
     case = CaseHandler(drone)
     countdown(20)
     while True:
