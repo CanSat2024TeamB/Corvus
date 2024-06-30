@@ -9,8 +9,8 @@ class Acceleration_Velocity:
         self.interval = 1.0
 
     async def get_acceleration(self):
-        velocity = await self.drone.telemetry.imu().__anext__()
-        return np.array([velocity.acceleration_frd.x_m_s, velocity.acceleration_frd.y_m_s, velocity.acceleration_frd.z_m_s])
+        accel = await self.drone.telemetry.imu().__anext__()
+        return np.array([accel.acceleration_frd.forward_m_s2, accel.acceleration_frd.right_m_s2, accel.acceleration_frd.down_m_s2])
 
     async def get_velocity(self):
         accel = await self.drone.telemetry.odometry().velocity_body.__anext__()
