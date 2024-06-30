@@ -2,6 +2,7 @@ from sensor.pressure_handler import PressureHandler
 from sensor.acceleration_velocity import Acceleration_Velocity
 from wire.wirehandler import WireHandler
 import time
+import numpy as np
 
 class CaseHandler:
 
