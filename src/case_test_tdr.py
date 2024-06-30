@@ -11,18 +11,18 @@ async def main():
     dronecontroller = DroneController()
     drone = dronecontroller.get_drone_instance()
     case = CaseHandler(drone)
-    countdown(20)
+    #countdown(20)
     while True:
         print(f"Pressure stability confirmation start")
-        if case.judge_pressure_stable(1): #5秒の測定の平均値を1秒ごとに計算
-            print(f"Pressure stability confirmed")
-            await dronecontroller.connect()
-            print(f"Velocity stability confirmation start")
-            if await case.judge_velocity_stable(1):
-                print(f"Velocity stability cinfirmed")
-                break
-            else:
-                print(f"Velocity not stable.restart")
+        #if case.judge_pressure_stable(1): #5秒の測定の平均値を1秒ごとに計算
+            #print(f"Pressure stability confirmed")
+        await dronecontroller.connect()
+        print(f"Velocity stability confirmation start")
+        if await case.judge_velocity_stable(1):
+            print(f"Velocity stability cinfirmed")
+            break
+        else:
+            print(f"Velocity not stable.restart")
 
     countdown(10)
     print(f"nichrome cut start")
