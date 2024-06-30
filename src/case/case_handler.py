@@ -11,7 +11,7 @@ class CaseHandler():
         self.wirehandler = WireHandler()
         self.ac_vel = Acceleration_Velocity(self.drone)
         
-        self.stable_pre_val = 0.1
+        self.stable_pre_val = 1 ##1mで大体7hpaの差
         self.stable_vel_val = 0.1
 
         self.stable_judge_count = 5
@@ -24,7 +24,7 @@ class CaseHandler():
         stable_count = 0
         for i in range(self.stable_judge_count):
             def_pre = self.pressure.dif_ave_pressure(interval_def_ave_pressure)
-            print(def_pre)
+            print(def_pre)####消す
             if abs(def_pre) <= self.stable_pre_val:
                 stable_count += 1
 
@@ -40,6 +40,7 @@ class CaseHandler():
         stable_count = 0
         for i in range(self.stable_judge_count):
             def_vel = self.ac_vel.dif_ave_velocity(interval_def_ave_velocity)
+            print(def_vel)####消す
             
             if abs(def_vel) <= self.stable_vel_val:
                 stable_count += 1

@@ -33,7 +33,7 @@ class PressureHandler:
         pressure_lst = []
         for i in range(5):
             pre = self.get_pressure()
-            print(pre)
+            print(pre)#####消す
             pressure_lst.append(pre)
             time.sleep(self.interval)
 
