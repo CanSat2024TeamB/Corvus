@@ -1,5 +1,5 @@
 import bme680
-import asyncio
+import time
 
 class PressureHandler:
     def __init__(self):
@@ -11,34 +11,38 @@ class PressureHandler:
         self.sensor.set_temperature_oversample(bme680.OS_8X)
         self.sensor.set_filter(bme680.FILTER_SIZE_3)
         self._initialize_sensor()
+       
+        self.interval = 1.0 
 
-        self.pressure = 0.0
-        self.temperature = 0.0
-        
 
     
-    def store_temperature(self):
+    def get_temperature(self):
         if self.sensor.get_sensor_data():
-            self.temperature = self.sensor.data.temperature
+            return self.sensor.data.temperature
         else:
             return None
-    
-    def store_pressure(self):
-        if self.sensor.get_sensor_data():
-            self.pressure = self.sensor.data.pressure
-        else:
-            return None
-        
-    ########################################################以下オープンにする
-
-    async def invoke_loop(self):
-        while True:
-            self.get_pressure()
-            self.get_temperature()
-            asyncio.sleep(0.1)
-
-    def  get_temperature(self):
-        return self.temperature
+        time.sleep(self.interval)
     
     def get_pressure(self):
-        return self.pressure
+        if self.sensor.get_sensor_data():
+            return self.sensor.data.pressure
+        else:
+            return None
+        time.sleep(self.interval)
+        
+    def ave_pressure(self):
+        pressure_lst = []
+        for i in range(5):
+            pre = self.get_pressure()
+            pressure_lst.append(pre)
+
+            if i == 4:
+                ave_pre = sum(pressure_lst)/len(pressure_lst)
+
+        return ave_pre
+    
+    def dif_ave_pressure(self,interval_def_ave_pressure):
+        ave_pre_before = self.ave_pressure()
+        time.sleep(interval_def_ave_pressure)
+        ave_pre_after = self.ave_pressure()
+        return ave_pre_after - ave_pre_before
