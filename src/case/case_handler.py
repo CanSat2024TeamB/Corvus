@@ -11,7 +11,7 @@ class CaseHandler():
         self.wirehandler = WireHandler()
         self.ac_vel = Acceleration_Velocity(self.drone)
         
-        self.stable_pre_val = 0.01
+        self.stable_pre_val = 0.1
         self.stable_vel_val = 0.1
 
         self.stable_judge_count = 5
