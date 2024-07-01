@@ -31,7 +31,7 @@ class DroneController:
     def get_drone_instance(self):
         return self.drone_instance
     
-    def position_manager(self):
+    def get_position_manager_instance(self):
         return self.position_manager
 
     
