@@ -4,13 +4,11 @@ from drone.drone_controller import DroneController
 
 async def main():
     dronecontroller = DroneController()
-    drone = dronecontroller.get_drone_instance()
     
     await dronecontroller.connect()
-    battery = Battery_watch(drone)
-    await asyncio.create_task(battery.invoke_loop())
-    print(battery.voltage_v())
-    print(battery.remaining_percent())
-    print(battery.current_battery_a())
+    await asyncio.create_task(dronecontroller.battery_watch.invoke_loop())
+    print(dronecontroller.battery_watch.voltage_v())
+    print(dronecontroller.battery_watch.remaining_percent())
+    print(dronecontroller.battery_watch.current_battery_a())
 
 asyncio.run(main())

@@ -25,7 +25,7 @@ class DroneController:
         self.position_manager = PositionManager(self.drone_instance, self.gps_handler, self.compass_handler, self.lidar_handler)
         self.flight_controller = FlightController(self.drone_instance, self.position_manager)
         self.logger = Logger()
-        self.ac_vel = Acceleration_Velocity()
+        self.ac_vel = Acceleration_Velocity(self.drone_instance)
        
 
     def get_drone_instance(self):
