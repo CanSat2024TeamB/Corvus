@@ -4,9 +4,9 @@ import asyncio
 class Battery_watch:
     def __init__(self,drone):
         self.drone = drone
-        self.voltage_v: float = None
-        self.current_battery_a: float = None
-        self.remaining_percent: float = None
+        self.voltage_v: float = 0
+        self.current_battery_a: float = 0
+        self.remaining_percent: float = 0
         
 
     def battery_info_update(self,info) -> None:

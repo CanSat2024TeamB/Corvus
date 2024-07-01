@@ -9,6 +9,7 @@ async def main():
     
     # バッテリー監視タスクを開始
     battery_task = asyncio.create_task(dronecontroller.battery_watch.invoke_loop())
+    await asyncio.sleep(5)
     
     try:
         while True:
