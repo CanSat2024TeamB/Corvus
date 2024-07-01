@@ -1,5 +1,4 @@
 import asyncio
-from control.battery import BatteryWatch
 from drone.drone_controller import DroneController
 
 async def main():
