@@ -15,8 +15,7 @@ class Logger:
     def write(self, *msg: str) -> None:
         timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         with open(self.path, 'a', encoding="UTF-8") as f:
-            f.write(f"{timestamp} {msg[0]}\n")  # 送信時刻と最初のメッセージをスペースで区切って書き込む
-            f.writelines(map(lambda s: s + "\n", msg[1:]))
+            f.write(f"{timestamp} {' '.join(msg)}\n")
 
 
     def create_file(self, path: str) -> None:

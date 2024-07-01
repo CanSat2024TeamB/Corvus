@@ -8,6 +8,7 @@ from control.position_manager import PositionManager
 from control.compass_handler import CompassHandler
 from flight.flight_controller import FlightController
 from logger.logger import Logger
+from sensor.acceleration_velocity import Acceleration_Velocity
 
 
 class DroneController:
@@ -24,6 +25,7 @@ class DroneController:
         self.position_manager = PositionManager(self.drone_instance, self.gps_handler, self.compass_handler, self.lidar_handler)
         self.flight_controller = FlightController(self.drone_instance, self.position_manager)
         self.logger = Logger()
+        self.ac_vel = Acceleration_Velocity()
        
 
     def get_drone_instance(self):
@@ -72,7 +74,11 @@ class DroneController:
             message_1 = str(self.position_manager.adjusted_altitude())
             message_2 = str(self.position_manager.adjusted_coordinates_lon())
             message_3 = str(self.position_manager.adjusted_coordinates_lat())
-            self.logger.write(message_1,message_2,message_3)
+            message_4 = str(self.ac_vel.get_velocity())
+            message_5 = str(self.battery_watch.remaining_percent())
+            message_6 = str(self.battery_watch.voltage_v())
+            message_7 = str(self.battery_watch.temperature_degc())
+            self.logger.write(message_1,message_2,message_3,message_4,message_5,message_6,message_7)
 
     
     async def sequence_test_hovering(self):
