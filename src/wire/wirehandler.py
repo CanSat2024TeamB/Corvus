@@ -11,6 +11,7 @@ class WireHandler():
         time.sleep(duration)  # duration秒間継続
         GPIO.output(pin_no, GPIO.LOW)  # ニクロム線の電流を止める（スイッチオフ）
         time.sleep(0.5)
+        GPIO.cleanup()
 
     def cleanup(self):
         GPIO.cleanup()
