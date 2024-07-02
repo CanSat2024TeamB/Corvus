@@ -25,18 +25,12 @@ async def main():
     print(f"nichrome cut start")
     case.para_case_stand_nichrome()
     print(f"nichrome cut end")
-                
-        
 
 def countdown(seconds):
     while seconds > 0:
         print(f"{seconds}秒")
         time.sleep(1)
         seconds -= 1
-
-
-
-    
 
 if __name__ == "__main__":
     asyncio.run(main())
