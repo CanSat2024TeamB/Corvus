@@ -9,11 +9,11 @@ async def main():
     #config_path: str = Path(__file__).resolve().parent.parent.joinpath("assets/config/config.ini")
     #config = ConfigManager(config_path)
     
-    nichrome_pin_no = 
-    nichrome_pin_no = 
-    nichrome_pin_no = 
+    nichrome_pin_no = 19
+    nichrome_pin_no = 26
+    nichrome_pin_no = 23
 
-    
+
     dronecontroller = DroneController()
     drone = dronecontroller.get_drone_instance()
     case = CaseHandler(drone)
@@ -32,7 +32,7 @@ async def main():
 
     countdown(10)
     print(f"nichrome cut start")
-    case.para_case_stand_nichrome()
+    case.para_case_stand_nichrome(nichrome_pin_no)
     print(f"nichrome cut end")
                 
         
