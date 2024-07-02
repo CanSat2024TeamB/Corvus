@@ -12,7 +12,7 @@ class PositionManager:
 
     
     def raw_altitude(self) -> float:
-        return self.lidar_handler.altitude()
+        return self.lidar_handler.get_altitude()
     
     def raw_coordinates(self) -> Coordinates:
         return self.gps_handler.gps_coordinates()
@@ -21,13 +21,16 @@ class PositionManager:
         return self.lidar_handler.attitude()
 
     def adjusted_altitude(self) -> float:
-        lidar = self.lidar_handler.altitude()
+        lidar = self.lidar_handler.get_altitude()
         Pitch_deg = self.compass_handler.compass_attitude().get_pitch()
         Roll_deg = self.compass_handler.compass_attitude().get_roll()
         adjusted_altitude = lidar * np.cos(np.deg2rad(Pitch_deg)) * np.cos(np.deg2rad(Roll_deg))
         return adjusted_altitude
     
-    def adjusted_coordinates(self) -> Coordinates:
+    def adjusted_coordinates_lon(self) -> float:
         longitude = self.gps_handler.gps_coordinates().longitude()
+        return longitude
+    
+    def adjusted_coordinates_lat(self) -> float:
         latitude = self.gps_handler.gps_coordinates().latitude()
-        return Coordinates(longitude, latitude)
+        return latitude

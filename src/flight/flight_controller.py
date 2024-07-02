@@ -19,7 +19,7 @@ class FlightController:
         return True
 
     async def set_altitude(self, altitude: float) -> bool:
-        while self.position_manager.altitude() <= altitude:
+        while self.position_manager.adjusted_altitude() <= altitude:
             await asyncio.sleep(FlightController.get_altitude_interval)
         return True
     
@@ -32,7 +32,7 @@ class FlightController:
         mission_items = []
         for coordinates in target_coordinates:
             mission_items.append(MissionItem(coordinates.latitude(), coordinates.longitude(), coordinates.altitude(), speed, True, float('nan'), float('nan'), MissionItem.CameraAction.NONE, float('nan'), float('nan'), float('nan'), float('nan'), float('nan'), MissionItem.VehicleAction.NONE))
-        
+            #mission_items.append(MissionItem(coordinates.latitude(), coordinates.longitude(), coordinates.altitude(), speed, True, float('nan'), float('nan'), MissionItem.CameraAction.NONE, float('nan'), float('nan'), float('nan'), float('nan'), float('nan'), MissionItem.VehicleAction.NONE))
         mission_plan = MissionPlan(mission_items)
 
         await self.execute_mission(mission_plan)
@@ -40,6 +40,14 @@ class FlightController:
 
     async def land(self) -> bool:
         await self.drone.action.land()
+        return True
+    
+    async def disarm(self) -> bool:
+        await self.drone.action.disarm()
+        return True
+    
+    async def kill(self) -> bool:
+        await self.drone.action.kill()
         return True
     
     async def execute_mission(self, mission_plan: MissionPlan) -> bool:
