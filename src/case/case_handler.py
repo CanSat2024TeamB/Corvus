@@ -17,8 +17,8 @@ class CaseHandler:
 
         self.stable_judge_count = 5
 
-        self.para_pin_no = 7
-        self.para_duration = 5
+
+        self.nichrome_duration = 5
 
 
     def judge_pressure_stable(self,interval_def_ave_pressure):
@@ -53,7 +53,7 @@ class CaseHandler:
         else:
             return False
     
-    def para_case_stand_nichrome(self):
-        self.wirehandler.nichrome_cut(self.para_pin_no, self.para_duration)
+    def para_case_stand_nichrome(self,nichrome_pin_no):
+        self.wirehandler.nichrome_cut(nichrome_pin_no, self.nichrome_duration)
 
         
