@@ -8,7 +8,7 @@ class CaseHandler:
 
     def __init__(self,drone):
         self.drone = drone
-        self.pressure = PressureHandler()
+        #self.pressure = PressureHandler()
         self.wirehandler = WireHandler()
         self.ac_vel = Acceleration_Velocity(self.drone)
         

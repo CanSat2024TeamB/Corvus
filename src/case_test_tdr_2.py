@@ -6,6 +6,7 @@ from drone.drone_controller import DroneController
 from case.case_handler import CaseHandler
 
 async def main():
+    nichrome_pin_1 = 23
     #config_path: str = Path(__file__).resolve().parent.parent.joinpath("assets/config/config.ini")
     #config = ConfigManager(config_path)
     dronecontroller = DroneController()
@@ -23,7 +24,7 @@ async def main():
 
     countdown(10)
     print(f"nichrome cut start")
-    case.para_case_stand_nichrome()
+    case.para_case_stand_nichrome(nichrome_pin_1)
     print(f"nichrome cut end")
 
 def countdown(seconds):
