@@ -26,6 +26,8 @@ async def main():
     print(f"nichrome cut start")
     case.para_case_stand_nichrome(nichrome_pin_1)
     print(f"nichrome cut end")
+    countdown(10)
+    dronecontroller.arm()
 
 def countdown(seconds):
     while seconds > 0:
