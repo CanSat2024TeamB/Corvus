@@ -28,10 +28,10 @@ async def main():
     case.para_case_stand_nichrome(nichrome_pin_1)
     print(f"para and case nichrome cut end")
     countdown(10)
-    #print(f"arm nichrome cut start")
-    #case.para_case_stand_nichrome(nichrome_pin_2)
-    #print(f"arm nichrome cut end")
-    #countdown(10)
+    print(f"arm nichrome cut start")
+    case.para_case_stand_nichrome(nichrome_pin_2)
+    print(f"arm nichrome cut end")
+    countdown(10)
     #dronecontroller.arm()
 
 def countdown(seconds):
