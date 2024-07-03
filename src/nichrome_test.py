@@ -7,7 +7,7 @@ async def main():
     nichrome_pin_duration = 10
     wire = WireHandler()
 
-    await asyncio.sleep(20)
+    await asyncio.sleep(10)
     print('start')
     wire.nichrome_cut(nichrome_pin_no_1,nichrome_pin_duration)
     await asyncio.sleep(5)
