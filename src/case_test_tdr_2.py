@@ -27,7 +27,7 @@ async def main():
     print(f"para and case nichrome cut start")
     case.para_case_stand_nichrome(nichrome_pin_1)
     print(f"para and case nichrome cut end")
-    countdown(10)
+    countdown(30)
     print(f"arm nichrome cut start")
     case.para_case_stand_nichrome(nichrome_pin_2)
     print(f"arm nichrome cut end")
