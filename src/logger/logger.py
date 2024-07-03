@@ -6,7 +6,7 @@ class Logger:
 
     def __init__(self):
         self.path: str = Logger.default_path
-        print(default_path)
+        #print(default_path)
         self.create_file(self.path)
 
     def write(self, *msg: str) -> None:
