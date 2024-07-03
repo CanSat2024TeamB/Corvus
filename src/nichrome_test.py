@@ -2,7 +2,7 @@ from wire.wirehandler import WireHandler
 import asyncio
 
 async def main():
-    nichrome_pin_no = 23
+    nichrome_pin_no = 25
     nichrome_pin_duration = 5
     wire = WireHandler()
 
