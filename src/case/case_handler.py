@@ -56,4 +56,5 @@ class CaseHandler:
     def para_case_stand_nichrome(self,nichrome_pin_no):
         self.wirehandler.nichrome_cut(nichrome_pin_no, self.nichrome_duration)
 
-        
+    def nichrome_cleanup(self):
+        self.wirehandler.cleanup()    

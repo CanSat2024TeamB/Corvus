@@ -32,6 +32,7 @@ async def main():
     case.para_case_stand_nichrome(nichrome_pin_2)
     print(f"arm nichrome cut end")
     countdown(10)
+    case.nichrome_cleanup()
     #dronecontroller.arm()
 
 def countdown(seconds):
