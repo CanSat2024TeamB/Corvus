@@ -3,7 +3,7 @@ import asyncio
 
 async def main():
     nichrome_pin_no = 25
-    nichrome_pin_duration = 5
+    nichrome_pin_duration = 10
     wire = WireHandler()
 
     await asyncio.sleep(20)

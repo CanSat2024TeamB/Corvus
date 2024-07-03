@@ -18,7 +18,7 @@ class CaseHandler:
         self.stable_judge_count = 5
 
 
-        self.nichrome_duration = 5
+        self.nichrome_duration = 10
 
 
     def judge_pressure_stable(self,interval_def_ave_pressure):
