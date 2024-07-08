@@ -9,6 +9,7 @@ class Logger:
         print(self.path)
         self.create_file(self.path)
 
+
     def write(self, *msg: str) -> None:
         timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         with open(self.path, 'a', encoding="UTF-8") as f:

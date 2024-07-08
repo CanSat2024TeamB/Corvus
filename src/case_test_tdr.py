@@ -9,9 +9,11 @@ async def main():
     #config_path: str = Path(__file__).resolve().parent.parent.joinpath("assets/config/config.ini")
     #config = ConfigManager(config_path)
     
+
     nichrome_pin_no = 17
     nichrome_pin_no = 28
     nichrome_pin_no = 27
+
 
 
     dronecontroller = DroneController()

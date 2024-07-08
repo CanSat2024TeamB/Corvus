@@ -15,6 +15,7 @@ async def main():
     wire.nichrome_cut(nichrome_pin_no_2,nichrome_pin_duration)
     print('done')
     wire.cleanup()
+
     print('cleanup done')
 
 
