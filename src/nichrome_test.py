@@ -1,18 +1,21 @@
+from wire.wirehandler import WireHandler
 import asyncio
-from drone.drone_controller import DroneController
-import RPi.GPIO as GPIO
-from case.case_handler import CaseHandler
 
 async def main():
-    nichrome_pin_no = 23
+    nichrome_pin_no_1 = 23
+    nichrome_pin_no_2 = 25
+    nichrome_pin_duration = 10
+    wire = WireHandler()
 
-    dronecontroller = DroneController()
-    drone = dronecontroller.get_drone_instance()
-    case = CaseHandler(drone)
-    await asyncio.sleep(20)
+    await asyncio.sleep(10)
     print('start')
-    case.para_case_stand_nichrome(nichrome_pin_no)
+    wire.nichrome_cut(nichrome_pin_no_1,nichrome_pin_duration)
+    await asyncio.sleep(5)
+    print('start')
+    wire.nichrome_cut(nichrome_pin_no_2,nichrome_pin_duration)
     print('done')
+    wire.cleanup()
+
     print('cleanup done')
 
 

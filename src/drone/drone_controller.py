@@ -74,11 +74,13 @@ class DroneController:
             message_1 = str(self.position_manager.adjusted_altitude())
             message_2 = str(self.position_manager.adjusted_coordinates_lon())
             message_3 = str(self.position_manager.adjusted_coordinates_lat())
-            message_4 = str(self.ac_vel.get_velocity())
-            message_5 = str(self.battery_watch.remaining_percent())
-            message_6 = str(self.battery_watch.voltage_v())
-            message_7 = str(self.battery_watch.temperature_degc())
-            self.logger.write(message_1,message_2,message_3,message_4,message_5,message_6,message_7)
+
+            #message_4 = str(self.ac_vel.get_velocity())
+            #message_5 = str(self.battery_watch.remaining_percent())
+            #message_6 = str(self.battery_watch.voltage_v())
+            #message_7 = str(self.battery_watch.temperature_degc())
+            #self.logger.write(message_1,message_2,message_3,message_4,message_5,message_6,message_7)
+
 
     
     async def sequence_test_hovering(self):
@@ -123,11 +125,12 @@ class DroneController:
         async with asyncio.TaskGroup() as task_group:
             lidar_invoke = task_group.create_task(self.lidar_handler.invoke_loop())
             gps_invoke = task_group.create_task(self.gps_handler.invoke_loop())
-            battery_invoke = task_group.create_task(self.battery_watch.invoke_loop())
+
+            #battery_invoke = task_group.create_task(self.battery_watch.invoke_loop())
             compass_invoke = task_group.create_task(self.compass_handler.invoke_loop())
             in_air_invoke = task_group.create_task(self.flight_controller.invoke_loop())
             #sequence_loop = task_group.create_task(sequence)
-            logger_invoke =task_group.create_task(self.logger_write())
+            #logger_invoke =task_group.create_task(self.logger_write())
 
     async def start_sequence_task(self,sequence):
         # sequenceの非同期実行を開始
