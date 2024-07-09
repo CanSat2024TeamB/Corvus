@@ -11,29 +11,24 @@ import struct
 
 
 class Lora:
-    def __init__(self,drone):
+    def __init__(self, drone):
         self.drone = drone
-        # pin number
-        # reset
         self.rst = 18
-    
-        # 改行文字
         self.CRLF = "\r\n"
-        # massage received from PC on ground
         self.msg_received = "hello, world"
 
-        # serial
-        self.serial = serial.Serial("/dev/ttyS0", 19200, timeout=None)
+        try:
+            self.serial = serial.Serial("/dev/ttyS0", 19200, timeout=None)
+        except serial.SerialException as e:
+            print(f"Error opening serial port: {e}")
+            raise e
 
-        # power
         self.is_on = False
-        
         self.counter = 0
 
         GPIO.setmode(GPIO.BCM)
         GPIO.setwarnings(False)
         GPIO.setup(self.rst, GPIO.OUT)
-
 
     async def change_mode(self):
         """start lora"""
@@ -50,9 +45,8 @@ class Lora:
         """write lora
 
         Args:
-          massage (str): command or massage to send
+            message (str): command or message to send
         """
- 
         msg_send = str(message) + self.CRLF
         self.serial.write(msg_send.encode("ascii"))
         await asyncio.sleep(4)
@@ -66,5 +60,6 @@ class Lora:
             line = struct.unpack(fmt, data)
             self.msg_received = line[3].decode("ascii")
             await asyncio.sleep(1)
-        except struct.error:
+        except struct.error as e:
+            print(f"Error unpacking data: {e}")
             await asyncio.sleep(1)
