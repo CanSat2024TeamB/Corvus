@@ -13,7 +13,8 @@ import struct
 class Lora:
     def __init__(self, drone):
         self.drone = drone
-        self.rst = 18
+        self.rst = 15
+        self.md0 = 4
         self.CRLF = "\r\n"
         self.msg_received = "hello, world"
 
@@ -29,6 +30,8 @@ class Lora:
         GPIO.setmode(GPIO.BCM)
         GPIO.setwarnings(False)
         GPIO.setup(self.rst, GPIO.OUT)
+        GPIO.setup(self.md0, GPIO.OUT)
+
 
     async def change_mode(self):
         """start lora"""
