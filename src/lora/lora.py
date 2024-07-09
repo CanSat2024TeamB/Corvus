@@ -18,7 +18,7 @@ class Lora:
         self.msg_received = "hello, world"
 
         try:
-            self.serial = serial.Serial("/dev/ttyS0", 19200, timeout=None)
+            self.serial = serial.Serial("/dev/AMA0", 19200, timeout=None)
         except serial.SerialException as e:
             print(f"Error opening serial port: {e}")
             raise e
