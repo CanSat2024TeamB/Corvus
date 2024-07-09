@@ -2,7 +2,6 @@ import os
 import sys
 import RPi.GPIO as GPIO
 import serial
-import time
 import asyncio
 import struct
 
