@@ -54,6 +54,7 @@ class Lora:
 
     async def read(self) -> None:
         """clear header and read lora"""
+        print('read start')
         data = self.serial.readline()
         fmt = "4s4s4s" + str(len(data) - 14) + "sxx"  # rssi, rcvidが両方onの時のヘッダー除去
 
