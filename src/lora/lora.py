@@ -1,5 +1,5 @@
-import os
-import sys
+#import os
+#import sys
 import RPi.GPIO as GPIO
 import serial
 import asyncio
