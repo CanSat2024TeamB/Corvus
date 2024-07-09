@@ -6,6 +6,7 @@ async def main():
     dronecontroller = DroneController()
     drone = dronecontroller.get_drone_instance()
     Lora_ = Lora(drone)
+    await Lora_.change_mode()
     await Lora_.read()
     print(Lora_.msg_received)
 

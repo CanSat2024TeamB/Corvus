@@ -6,7 +6,7 @@ import asyncio
 import struct
 
 
-sys.path.append(os.getcwd())
+#sys.path.append(os.getcwd())
 
 
 
@@ -15,7 +15,7 @@ class Lora:
         self.drone = drone
         # pin number
         # reset
-        self.rst = 17
+        self.rst = 18
     
         # 改行文字
         self.CRLF = "\r\n"
@@ -23,7 +23,7 @@ class Lora:
         self.msg_received = "hello, world"
 
         # serial
-        self.serial = serial.Serial("/dev/ttyS0", 19200, timeout=1)
+        self.serial = serial.Serial("/dev/ttyS0", 19200, timeout=None)
 
         # power
         self.is_on = False
