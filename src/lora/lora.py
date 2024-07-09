@@ -49,6 +49,7 @@ class Lora:
         """
         msg_send = str(message) + self.CRLF
         self.serial.write(msg_send.encode("ascii"))
+        print('sent')
         await asyncio.sleep(4)
 
     async def read(self) -> None:
