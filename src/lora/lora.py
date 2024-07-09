@@ -13,7 +13,7 @@ import struct
 class Lora:
     def __init__(self, drone):
         self.drone = drone
-        self.rst = 5
+        self.rst = 
         self.md0 = 4
         self.CRLF = "\r\n"
         self.msg_received = "hello, world"
