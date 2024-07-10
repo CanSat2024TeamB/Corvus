@@ -79,7 +79,7 @@ class DroneController:
             #message_5 = str(self.battery_watch.remaining_percent())
             #message_6 = str(self.battery_watch.voltage_v())
             #message_7 = str(self.battery_watch.temperature_degc())
-            #self.logger.write(message_1,message_2,message_3,message_4,message_5,message_6,message_7)
+            self.logger.write(message_1,message_2,message_3,)
 
 
     
@@ -128,9 +128,8 @@ class DroneController:
 
             #battery_invoke = task_group.create_task(self.battery_watch.invoke_loop())
             compass_invoke = task_group.create_task(self.compass_handler.invoke_loop())
-            in_air_invoke = task_group.create_task(self.flight_controller.invoke_loop())
-            #sequence_loop = task_group.create_task(sequence)
-            #logger_invoke =task_group.create_task(self.logger_write())
+            #in_air_invoke = task_group.create_task(self.flight_controller.invoke_loop())
+            logger_invoke =task_group.create_task(self.logger_write())
 
     async def start_sequence_task(self,sequence):
         # sequenceの非同期実行を開始
