@@ -6,7 +6,7 @@ from control.position_manager import PositionManager
 from control.coordinates import Coordinates
 
 class FlightController:
-    get_altitude_interval: float = 0.01
+    get_altitude_interval: float = 0.1
 
     def __init__(self, drone: System, position_manager: PositionManager):
         self.drone: System = drone
