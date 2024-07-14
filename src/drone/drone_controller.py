@@ -84,9 +84,7 @@ class DroneController:
 
     
     async def sequence_test_hovering(self):
-        await self.flight_controller.takeoff()
-        print('taking off')
-        await self.flight_controller.set_altitude(3.0)
+        await self.flight_controller.takeoff(3)
         print('reached start hovering')
         await self.flight_controller.hovering(10)
         print('finish hovering start landing')
@@ -108,9 +106,8 @@ class DroneController:
                 # await self.flight_controller.disarm()
                 break
 
-    async def sequence_test_endurance(self,speed, *target_coordinates: Coordinates):
-        await self.flight_controller.takeoff()
-        await self.flight_controller.set_altitude(1.0)
+    async def sequence_test_endurance(self,speed, *target_coordinates: Coordinates): #要書き換え
+        await self.flight_controller.takeoff(3)
         await self.flight_controller.hovering(10)
         await self.flight_controller.go_to(speed, *target_coordinates)
         while True:
@@ -130,20 +127,18 @@ class DroneController:
             #in_air_invoke = task_group.create_task(self.flight_controller.invoke_loop())
             logger_invoke =task_group.create_task(self.logger_write())
 
-    async def invoke_sensor_and_sequence(self,sequence) -> None:
+    async def invoke_sensor(self,sequence) -> None:
         async with asyncio.TaskGroup() as task_group:
+            self.task_group = task_group  # TaskGroupの参照を保存
             lidar_invoke = task_group.create_task(self.lidar_handler.invoke_loop())
             gps_invoke = task_group.create_task(self.gps_handler.invoke_loop())
             #battery_invoke = task_group.create_task(self.battery_watch.invoke_loop())
             compass_invoke = task_group.create_task(self.compass_handler.invoke_loop())
             #in_air_invoke = task_group.create_task(self.flight_controller.invoke_loop())
             logger_invoke =task_group.create_task(self.logger_write())
-            sequence_invoke = task_group.create_task(sequence)
 
 
-    async def start_sequence_task(self,sequence):
-        # sequenceの非同期実行を開始
-        sequence_task = asyncio.create_task(sequence)
-        await sequence_task
-
+    async def add_sequence_task(self, coro):
+        if hasattr(self, 'task_group') and self.task_group:
+            self.task_group.create_task(coro)
 # ^^^^^各クラスのコンストラクタに移譲^^^^^^

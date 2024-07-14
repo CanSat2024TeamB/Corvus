@@ -10,9 +10,8 @@ async def main():
 
     await drone.connect()
     await drone.arm()
-    #await drone.invoke_sensor()
-    #await drone.start_sequence_task(drone.sequence_test_hovering())
-    await drone.invoke_sensor_and_sequence(drone.sequence_test_hovering())
+    await drone.invoke_sensor()
+    await drone.add_sequence_task(drone.sequence_test_hovering())
     
 
 if __name__ == "__main__":
