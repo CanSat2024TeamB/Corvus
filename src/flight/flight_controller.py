@@ -10,6 +10,9 @@ class FlightController:
     def __init__(self, drone: System, position_manager: PositionManager):
         self.drone: System = drone
         self.position_manager: PositionManager = position_manager
+        self.target_latitude = 0
+        self.target_longitude = 0
+        self.target_altitude = 0
         
         self.is_in_air: bool = False
         
@@ -35,9 +38,20 @@ class FlightController:
         await self.execute_mission(mission_plan)
         return True
     
-    async def go_to_location(self,speed,yaw_deg, target_coordinates:Coordinates):
+    async def go_to_location(self, speed, yaw_deg, target_coordinates: Coordinates):
         await self.drone.action.set_current_speed(speed)
-        await self.drone.goto_location(target_coordinates.latitude(),target_coordinates.longitude(),target_coordinates.altitude(),yaw_deg)
+        self.target_latitude = target_coordinates.latitude()
+        self.target_longitude = target_coordinates.longitude()
+        self.target_altitude = target_coordinates.altitude()
+        await self.drone.action.goto_location(self.target_latitude, self.target_longitude, self.target_altitude, yaw_deg)
+        
+        while not self.if_goto_location_finished(self.target_latitude, self.target_longitude, self.target_altitude):
+            await asyncio.sleep(0.01)
+
+    def if_goto_location_finished(self, target_latitude, target_longitude, target_altitude):
+        return abs(target_altitude - self.position_manager.adjusted_altitude()) <= 1.0 and \
+            abs(target_latitude - self.position_manager.adjusted_coordinates_lat()) <= 1.0e-5 and \
+            abs(target_longitude - self.position_manager.adjusted_coordinates_lon()) <= 1.0e-5
 
     async def land(self) -> bool:
         await self.drone.action.land()
@@ -59,6 +73,7 @@ class FlightController:
     
     async def if_mission_finished(self) -> bool:
         return await self.drone.mission.is_mission_finished()
+
     
     def update_is_in_air(self, is_in_air: bool) -> None:
         self.is_in_air = is_in_air
