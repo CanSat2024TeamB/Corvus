@@ -21,7 +21,7 @@ class CaseHandler:
 
 
 
-        self.nichrome_duration = 10
+        self.nichrome_duration = 5
 
 
 
