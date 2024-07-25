@@ -122,25 +122,16 @@ class DroneController:
     
     async def invoke_sensor(self) -> None:
         async with asyncio.TaskGroup() as task_group:
-            lidar_invoke = task_group.create_task(self.lidar_handler.invoke_loop())
-            gps_invoke = task_group.create_task(self.gps_handler.invoke_loop())
-            #battery_invoke = task_group.create_task(self.battery_watch.invoke_loop())
-            compass_invoke = task_group.create_task(self.compass_handler.invoke_loop())
-            #in_air_invoke = task_group.create_task(self.flight_controller.invoke_loop())
-            logger_invoke =task_group.create_task(self.logger_write())
-
-    async def invoke_sensor(self,sequence) -> None:
-        async with asyncio.TaskGroup() as task_group:
             self.task_group = task_group  # TaskGroupの参照を保存
-            lidar_invoke = task_group.create_task(self.lidar_handler.invoke_loop())
-            gps_invoke = task_group.create_task(self.gps_handler.invoke_loop())
-            #battery_invoke = task_group.create_task(self.battery_watch.invoke_loop())
-            compass_invoke = task_group.create_task(self.compass_handler.invoke_loop())
-            #in_air_invoke = task_group.create_task(self.flight_controller.invoke_loop())
-            logger_invoke =task_group.create_task(self.logger_write())
-
+            task_group.create_task(self.lidar_handler.invoke_loop())
+            task_group.create_task(self.gps_handler.invoke_loop())
+            # task_group.create_task(self.battery_watch.invoke_loop())
+            task_group.create_task(self.compass_handler.invoke_loop())
+            # task_group.create_task(self.flight_controller.invoke_loop())
+            task_group.create_task(self.logger_write())
 
     async def add_sequence_task(self, coro):
         if hasattr(self, 'task_group') and self.task_group:
             self.task_group.create_task(coro)
-# ^^^^^各クラスのコンストラクタに移譲^^^^^^
+        else:
+            print("No task group available to add the task.")

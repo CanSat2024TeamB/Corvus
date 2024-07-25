@@ -1,18 +1,19 @@
 import asyncio
-from pathlib import Path
-from config.config_manager import ConfigManager
 from drone.drone_controller import DroneController
 
 async def main():
-    #config_path: str = Path(__file__).resolve().parent.parent.joinpath("assets/config/config.ini")
-    #config = ConfigManager(config_path)
     drone = DroneController()
 
     await drone.connect()
     await drone.arm()
     await drone.invoke_sensor()
+
+    # 5秒待機してから新しいタスクを追加
+    await asyncio.sleep(5)
     await drone.add_sequence_task(drone.sequence_test_hovering())
-    
+
+    # メインループを続けるために、永続的に動作させる
+    await asyncio.Future()
 
 if __name__ == "__main__":
     asyncio.run(main())
