@@ -2,8 +2,8 @@ from wire.wirehandler import WireHandler
 import asyncio
 
 async def main():
-    nichrome_pin_no_1 = 23
-    #nichrome_pin_no_2 = 25
+    nichrome_pin_no_1 = 25
+    #nichrome_pin_no_2 = 23
     nichrome_pin_duration = 5
     wire = WireHandler()
 
@@ -15,7 +15,7 @@ async def main():
     #wire.nichrome_cut(nichrome_pin_no_2,nichrome_pin_duration)
     #print('done')
  
-
+    wire.cleanup()
     print('cleanup done')
 
 
