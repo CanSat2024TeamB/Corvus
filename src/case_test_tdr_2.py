@@ -15,15 +15,15 @@ async def main():
     dronecontroller = DroneController()
     drone = dronecontroller.get_drone_instance()
     case = CaseHandler(drone)
-    countdown(20)
-    await dronecontroller.connect()
-    while True:
-        print(f"Velocity stability confirmation start")
-        if await case.judge_velocity_stable(1):
-            print(f"Velocity stability cinfirmed")
-            break
-        else:
-            print(f"Velocity not stable.restart")
+    #countdown(20)
+    #await dronecontroller.connect()
+    #while True:
+        #print(f"Velocity stability confirmation start")
+        #if await case.judge_velocity_stable(1):
+            #print(f"Velocity stability cinfirmed")
+            #break
+        #else:
+            #print(f"Velocity not stable.restart")
 
     countdown(10)
 
