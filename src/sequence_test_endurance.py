@@ -28,7 +28,7 @@ async def main():
 
     await drone.arm()
     await drone.add_sequence_task(drone.sequence_test_endurance(*args))
-    await asyncio.Future()
+    #await asyncio.Future()
 
 
 if __name__ == "__main__":
