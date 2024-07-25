@@ -12,6 +12,7 @@ class CaseHandler:
         #self.pressure = PressureHandler()
 
         self.wirehandler = WireHandler()
+        self.pressure = PressureHandler()
         self.ac_vel = Acceleration_Velocity(self.drone)
         
         self.stable_pre_val = 1 ##1mで大体7hpaの差
