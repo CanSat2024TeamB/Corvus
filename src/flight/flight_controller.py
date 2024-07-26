@@ -17,7 +17,7 @@ class FlightController:
         self.is_in_air: bool = False
         
     async def takeoff(self, takeoff_altitude) -> bool:
-        await self.drone.action.set_takeoff_altitude(takeoff_altitude+3)
+        await self.drone.action.set_takeoff_altitude(takeoff_altitude+2)
         await self.drone.action.takeoff()
         while self.position_manager.adjusted_altitude() <= takeoff_altitude:
             await asyncio.sleep(0.1)
