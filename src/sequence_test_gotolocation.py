@@ -9,7 +9,7 @@ async def main():
     #config = ConfigManager(config_path)
     drone = DroneController()
     await drone.connect()
-    await drone.invoke_sensor()
+    asyncio.create_task(drone.invoke_sensor())
     await asyncio.sleep(1)
 
     speed = 1.0
