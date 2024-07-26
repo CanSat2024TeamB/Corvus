@@ -12,8 +12,10 @@ async def main():
     await asyncio.sleep(5)
     await drone.add_sequence_task(drone.sequence_test_hovering())
 
-    # メインループを続けるために、永続的に動作させる
-    await asyncio.Future()
+    try:
+        await asyncio.Future()
+    except asyncio.CancelledError:
+        print("Main loop cancelled")
 
 if __name__ == "__main__":
     asyncio.run(main())
