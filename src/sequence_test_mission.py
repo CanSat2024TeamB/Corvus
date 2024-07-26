@@ -17,7 +17,7 @@ async def main():
     first_lat = drone.get_position_manager_instance().adjusted_coordinates_lat()
     hov_alt = 1
     target_coordinates_1 = Coordinates(first_lon,first_lat,hov_alt)
-    target_coordinates_2 = Coordinates(139.760557,35.714995,0)
+    target_coordinates_2 = Coordinates(140.1080994,35.7701587,3)
 
 
     await drone.arm()
