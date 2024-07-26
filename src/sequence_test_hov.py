@@ -6,7 +6,7 @@ async def main():
 
     await drone.connect()
     await drone.arm()
-    await drone.invoke_sensor()
+    asyncio.create_task(drone.invoke_sensor())
 
     # 5秒待機してから新しいタスクを追加
     await asyncio.sleep(5)

@@ -141,6 +141,7 @@ class DroneController:
             task_group.create_task(self.compass_handler.invoke_loop())
             # task_group.create_task(self.flight_controller.invoke_loop())
             task_group.create_task(self.logger_write())
+            await asyncio.Future()  # 永続的に動作させる
 
     async def add_sequence_task(self, coro):
         if hasattr(self, 'task_group') and self.task_group:
