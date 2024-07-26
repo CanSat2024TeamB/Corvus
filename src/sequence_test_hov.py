@@ -5,15 +5,15 @@ async def main():
     drone = DroneController()
 
     await drone.connect()
-    #await drone.arm()
-    #await drone.invoke_sensor()
+    await drone.arm()
+    await drone.invoke_sensor()
 
     # 5秒待機してから新しいタスクを追加
     await asyncio.sleep(5)
-    #await drone.add_sequence_task(drone.sequence_test_hovering())
+    await drone.add_sequence_task(drone.sequence_test_hovering())
 
     # メインループを続けるために、永続的に動作させる
-    #await asyncio.Future()
+    await asyncio.Future()
 
 if __name__ == "__main__":
     asyncio.run(main())
