@@ -2,7 +2,7 @@ import asyncio
 import time
 from drone.drone_controller import DroneController
 from case.case_handler import CaseHandler
-import numpy
+import numpy as np
 from logger.logger import Logger
 
 
@@ -17,7 +17,7 @@ async def main():
     await drone_controller.connect()
     while True:
         a = await case.ac_vel.get_velocity()
-        logger_.write(str(abs(a)))
+        logger_.write(str(np.linalg.norm(a)))
         await asyncio.sleep(0.01)
 
 
