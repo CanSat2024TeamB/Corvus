@@ -17,7 +17,7 @@ class Lora:
         self.CRLF = "\r\n"
 
         try:
-            self.serial = serial.Serial("/dev/serial0", 19200, timeout=None)
+            self.serial = serial.Serial("/dev/ttyAMA", 9600, timeout=1)
         except serial.SerialException as e:
             print(f"Error opening serial port: {e}")
             raise e
@@ -30,7 +30,7 @@ class Lora:
         GPIO.setup(self.rst, GPIO.OUT)
 
 
-    async def change_mode(self):
+    async def lora_reset(self):
         """start lora"""
         GPIO.output(self.rst, GPIO.LOW)
         await asyncio.sleep(2)
@@ -41,12 +41,27 @@ class Lora:
 
         self.is_on = True
 
-    async def lora_write(self, message: str) -> None:
-        """write lora
+    async def lora_set_sync(self, sync_num):
+        self.serial_write(f'p2p set_sync {sync_num}')
 
-        Args:
-            message (str): command or message to send
-        """
+    async def lora_set_freq(self,freq_num):
+        self.serial_write(f'p2p set_freq {freq_num}')
+
+    async def lora_set_sf(self,sf_num):
+        self.serial_write(f'p2p set_sf {sf_num}')
+
+    async def lora_set_bw(self,bw_num):
+        self.serial_write(f'p2p set_bw {bw_num}')
+
+    async def lora_save(self):
+        self.serial_write(f'p2p save')
+
+    async def lora_write(self,message:str):
+        self.serial_write(f'p2p tx {message}')
+
+
+
+    async def serial_write(self, message: str) -> None:
         msg_send = str(message) + self.CRLF
         self.serial.write(msg_send.encode("ascii"))
         print('sent')
