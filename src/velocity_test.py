@@ -19,6 +19,7 @@ async def main():
         a = await case.ac_vel.get_velocity()
         logger_.write(str(np.linalg.norm(a)))
         await asyncio.sleep(0.01)
+        
 
 
 if __name__ == "__main__":
