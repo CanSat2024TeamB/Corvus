@@ -7,7 +7,8 @@ async def main():
     drone = dronecontroller.get_drone_instance()
     lora = Lora(drone)
     await lora.change_mode()
-    await lora.lora_write()
+    await lora.lora_write('hello')
+    lora.lora_end()
 
 if __name__ == '__main__':
     asyncio.run(main())

@@ -51,3 +51,6 @@ class Lora:
         self.serial.write(msg_send.encode("ascii"))
         print('sent')
         await asyncio.sleep(4)
+
+    def lora_end(self):
+        GPIO.cleanup()
