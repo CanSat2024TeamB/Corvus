@@ -13,10 +13,8 @@ import struct
 class Lora:
     def __init__(self, drone):
         self.drone = drone
-        self.rst = 10
-        self.md0 = 4
+        self.rst = 7
         self.CRLF = "\r\n"
-        self.msg_received = "hello, world"
 
         try:
             self.serial = serial.Serial("/dev/serial0", 19200, timeout=None)
@@ -30,7 +28,6 @@ class Lora:
         GPIO.setmode(GPIO.BCM)
         GPIO.setwarnings(False)
         GPIO.setup(self.rst, GPIO.OUT)
-        GPIO.setup(self.md0, GPIO.OUT)
 
 
     async def change_mode(self):
@@ -40,11 +37,11 @@ class Lora:
         GPIO.output(self.rst, GPIO.HIGH)
         await asyncio.sleep(2)
         print("lora power on")
-        await self.write("start")
+        await self.lora_write("start")
 
         self.is_on = True
 
-    async def write(self, message: str) -> None:
+    async def lora_write(self, message: str) -> None:
         """write lora
 
         Args:
@@ -54,17 +51,3 @@ class Lora:
         self.serial.write(msg_send.encode("ascii"))
         print('sent')
         await asyncio.sleep(4)
-
-    async def read(self) -> None:
-        """clear header and read lora"""
-        print('read start')
-        data = self.serial.readline()
-        fmt = "4s4s4s" + str(len(data) - 14) + "sxx"  # rssi, rcvidが両方onの時のヘッダー除去
-
-        try:
-            line = struct.unpack(fmt, data)
-            self.msg_received = line[3].decode("ascii")
-            await asyncio.sleep(1)
-        except struct.error as e:
-            print(f"Error unpacking data: {e}")
-            await asyncio.sleep(1)
