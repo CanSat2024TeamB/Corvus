@@ -2,6 +2,7 @@ import asyncio
 import time
 from drone.drone_controller import DroneController
 from case.case_handler import CaseHandler
+import numpy
 
 
 async def main():
@@ -14,7 +15,7 @@ async def main():
     await drone_controller.connect()
     while True:
         a = await case.ac_vel.get_velocity()
-        print(a)
+        print(numpy.abs(a))
         asyncio.sleep(0.01)
 
 
