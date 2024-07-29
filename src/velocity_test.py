@@ -18,7 +18,7 @@ async def main():
     while True:
         a = await case.ac_vel.get_velocity()
         logger_.write(str(abs(a)))
-        asyncio.sleep(0.01)
+        await asyncio.sleep(0.01)
 
 
 if __name__ == "__main__":
