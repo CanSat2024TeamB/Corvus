@@ -12,11 +12,11 @@ async def main():
     case = CaseHandler(drone)
     
     await drone_controller.connect()
-    
-    a = await case.ac_vel.get_acceleration()
-    print(a)
-    
-    print("done")
+    while True:
+        a = await case.ac_vel.get_velocity()
+        print(a)
+        asyncio.sleep(0.01)
+
 
 if __name__ == "__main__":
     asyncio.run(main())
