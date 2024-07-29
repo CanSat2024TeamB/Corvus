@@ -1,6 +1,6 @@
 from sensor.pressure_handler import PressureHandler
 from sensor.acceleration_velocity import Acceleration_Velocity
-from sensor.light_handler import LightHandler
+#from sensor.light_handler import LightSensor
 from wire.wirehandler import WireHandler
 import time
 import numpy as np
@@ -24,15 +24,15 @@ class CaseHandler:
         self.nichrome_duration = 5
         
         #収納判定用定数
-        self.CANUSELIGHT == True
-        self.light = LightHandler()
+        #self.CANUSELIGHT == True
+        #self.light = LightSensor()
         self.judge_storage_border_light = 300
         self.judge_storage_maxtime = 300 
         self.judge_storage_sleep_time = 0.5
         self.light_counter = 0 #counterを設定
 
         #放出判定用定数
-        self.CANUSEPRESSURE == True
+        #self.CANUSEPRESSURE == True
         self.judge_release_maxtime = 3600 #去年はARLISSでこの値を使った
         self.judge_release_lig_countmax = 12 
         self.judge_release_pre_countmax = 12
