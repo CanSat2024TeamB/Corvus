@@ -9,7 +9,7 @@ async def main():
 
     await lora.lora_reset()
     await lora.lora_set_sync(72)
-    await lora.lora_set_freq(922)
+    await lora.lora_set_freq(922000000)
     await lora.lora_set_sf(7)
     await lora.lora_set_bw(125)
     await lora.lora_save()
