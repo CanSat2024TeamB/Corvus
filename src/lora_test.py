@@ -12,7 +12,7 @@ async def main():
     await lora.lora_set_freq(915000000)
     await lora.lora_set_sf(7)
     await lora.lora_set_bw(125)
-    await lora.lora_save()
+    #await lora.lora_save()
     await lora.lora_write("Hello, LoRa!")
     lora.lora_end()
 
