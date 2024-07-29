@@ -3,12 +3,6 @@
 import RPi.GPIO as GPIO
 import serial
 import asyncio
-import struct
-
-
-#sys.path.append(os.getcwd())
-
-
 
 class Lora:
     def __init__(self, drone):
@@ -17,7 +11,7 @@ class Lora:
         self.CRLF = "\r\n"
 
         try:
-            self.serial = serial.Serial("/dev/ttyAMA", 9600, timeout=1)
+            self.serial = serial.Serial("/dev/ttyAMA0", 9600, timeout=1)
         except serial.SerialException as e:
             print(f"Error opening serial port: {e}")
             raise e
@@ -29,43 +23,41 @@ class Lora:
         GPIO.setwarnings(False)
         GPIO.setup(self.rst, GPIO.OUT)
 
-
     async def lora_reset(self):
-        """start lora"""
+        """Start Lora"""
         GPIO.output(self.rst, GPIO.LOW)
         await asyncio.sleep(2)
         GPIO.output(self.rst, GPIO.HIGH)
         await asyncio.sleep(2)
-        print("lora power on")
+        print("Lora power on")
         await self.lora_write("start")
-
         self.is_on = True
 
     async def lora_set_sync(self, sync_num):
-        self.serial_write(f'p2p set_sync {sync_num}')
+        await self.serial_write(f'p2p set_sync {sync_num}')
 
-    async def lora_set_freq(self,freq_num):
-        self.serial_write(f'p2p set_freq {freq_num}')
+    async def lora_set_freq(self, freq_num):
+        await self.serial_write(f'p2p set_freq {freq_num}')
 
-    async def lora_set_sf(self,sf_num):
-        self.serial_write(f'p2p set_sf {sf_num}')
+    async def lora_set_sf(self, sf_num):
+        await self.serial_write(f'p2p set_sf {sf_num}')
 
-    async def lora_set_bw(self,bw_num):
-        self.serial_write(f'p2p set_bw {bw_num}')
+    async def lora_set_bw(self, bw_num):
+        await self.serial_write(f'p2p set_bw {bw_num}')
 
     async def lora_save(self):
-        self.serial_write(f'p2p save')
+        await self.serial_write('p2p save')
 
-    async def lora_write(self,message:str):
-        self.serial_write(f'p2p tx {message}')
-
-
+    async def lora_write(self, message: str):
+        await self.serial_write(f'p2p tx {message}')
 
     async def serial_write(self, message: str) -> None:
         msg_send = str(message) + self.CRLF
         self.serial.write(msg_send.encode("ascii"))
-        print('sent')
+        print('Sent:', message)
         await asyncio.sleep(4)
 
     def lora_end(self):
-        GPIO.cleanup()
+        if self.is_on:
+            GPIO.cleanup()
+            self.is_on = False
