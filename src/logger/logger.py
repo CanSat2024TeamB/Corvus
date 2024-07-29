@@ -26,6 +26,3 @@ class Logger:
         with open(self.path, 'a', encoding="UTF-8") as f:
             f.write(f"{timestamp} {' '.join(msg)}\n")
 
-# 実行例
-logger = Logger()
-logger.write("This is a log message.")
