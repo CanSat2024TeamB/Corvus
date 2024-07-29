@@ -1,7 +1,9 @@
-import os
+from pathlib import Path
 import datetime
 
 class Logger:
+    default_path: str = Path(__file__).parent.parent.joinpath(f"assets/log/log_{datetime.datetime.now().strftime('%Y-%m-%d_%H:%M:%S')}.txt")
+
     def __init__(self):
         # 動的にログファイルのパスを生成
         self.path = os.path.join(
