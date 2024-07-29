@@ -1,5 +1,6 @@
 from pathlib import Path
 import datetime
+import os
 
 class Logger:
     default_path: str = Path(__file__).parent.parent.joinpath(f"assets/log/log_{datetime.datetime.now().strftime('%Y-%m-%d_%H:%M:%S')}.txt")

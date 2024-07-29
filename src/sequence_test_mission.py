@@ -18,7 +18,7 @@ async def main():
     hov_alt = 1
     target_coordinates_1 = Coordinates(first_lon,first_lat,hov_alt)
     target_coordinates_2 = Coordinates(140.1080994,35.7701587,3)
-
+    
 
     await drone.arm()
     await drone.add_sequence_task(drone.sequence_test_mission(speed,target_coordinates_1,target_coordinates_2))
