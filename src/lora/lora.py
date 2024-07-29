@@ -52,10 +52,13 @@ class Lora:
         await self.serial_write(f'p2p tx {message}')
 
     async def serial_write(self, message: str) -> None:
-        msg_send = str(message) + self.CRLF
+        msg_send = self.str_to_hex(message) + self.CRLF
         self.serial.write(msg_send.encode("ascii"))
         print('Sent:', message)
         await asyncio.sleep(4)
+
+    def str_to_hex(self, string: str) -> str:
+        return ' '.join(f'{ord(c):02X}' for c in string)
 
     def lora_end(self):
         if self.is_on:
