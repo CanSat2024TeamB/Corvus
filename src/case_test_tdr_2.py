@@ -15,15 +15,15 @@ async def main():
     dronecontroller = DroneController()
     drone = dronecontroller.get_drone_instance()
     case = CaseHandler(drone)
-    countdown(20)
-    await dronecontroller.connect()
-    while True:
-        print(f"Velocity stability confirmation start")
-        if await case.judge_velocity_stable(1):
-            print(f"Velocity stability cinfirmed")
-            break
-        else:
-            print(f"Velocity not stable.restart")
+    #countdown(20)
+    #await dronecontroller.connect()
+    #while True:
+        #print(f"Velocity stability confirmation start")
+        #if await case.judge_velocity_stable(1):
+            #print(f"Velocity stability cinfirmed")
+            #break
+        #else:
+            #print(f"Velocity not stable.restart")
 
     countdown(10)
 
@@ -31,13 +31,13 @@ async def main():
     case.para_case_stand_nichrome(nichrome_pin_1)
     print(f"1para and case nichrome cut end")
     countdown(10)
-    print(f"2para and case nichrome cut start")
+    print(f"1para and case nichrome cut start")
     case.para_case_stand_nichrome(nichrome_pin_1)
-    print(f"2para and case nichrome cut end")
+    print(f"1para and case nichrome cut end")
     countdown(30)
-    print(f"1arm nichrome cut start")
+    print(f"2arm nichrome cut start")
     case.para_case_stand_nichrome(nichrome_pin_2)
-    print(f"1arm nichrome cut end")
+    print(f"2arm nichrome cut end")
     countdown(10)
     print(f"2arm nichrome cut start")
     case.para_case_stand_nichrome(nichrome_pin_2)

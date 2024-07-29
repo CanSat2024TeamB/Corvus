@@ -24,6 +24,7 @@ class CompassHandler:
             euler = await attitude_euler.__anext__()
             quaternion = await attitude_quaternion.__anext__()
             await self.update_attitude(euler, quaternion)
+            await asyncio.sleep(0.05)
 
 
     def compass_attitude(self) -> Attitude:
