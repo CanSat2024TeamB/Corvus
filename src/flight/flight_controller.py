@@ -6,23 +6,23 @@ from control.position_manager import PositionManager
 from control.coordinates import Coordinates
 
 class FlightController:
-    get_altitude_interval: float = 0.01
 
     def __init__(self, drone: System, position_manager: PositionManager):
         self.drone: System = drone
         self.position_manager: PositionManager = position_manager
+        self.target_latitude = 0
+        self.target_longitude = 0
+        self.target_altitude = 0
         
         self.is_in_air: bool = False
         
-    async def takeoff(self) -> bool:
+    async def takeoff(self, takeoff_altitude) -> bool:
+        await self.drone.action.set_takeoff_altitude(takeoff_altitude+2)
         await self.drone.action.takeoff()
+        while self.position_manager.adjusted_altitude() <= takeoff_altitude:
+            await asyncio.sleep(0.1)
         return True
 
-    async def set_altitude(self, altitude: float) -> bool:
-        while self.position_manager.adjusted_altitude() <= altitude:
-            await asyncio.sleep(FlightController.get_altitude_interval)
-        return True
-    
     async def hovering(self, time: float) -> bool:
         await self.drone.action.hold()
         await asyncio.sleep(time)
@@ -37,6 +37,21 @@ class FlightController:
 
         await self.execute_mission(mission_plan)
         return True
+    
+    async def go_to_location(self, speed, yaw_deg, target_coordinates: Coordinates):
+        await self.drone.action.set_current_speed(speed)
+        self.target_latitude = target_coordinates.latitude()
+        self.target_longitude = target_coordinates.longitude()
+        self.target_altitude = target_coordinates.altitude()
+        await self.drone.action.goto_location(self.target_latitude, self.target_longitude, self.target_altitude, yaw_deg)
+        
+        while not self.if_goto_location_finished(self.target_latitude, self.target_longitude, self.target_altitude):
+            await asyncio.sleep(0.01)
+
+    def if_goto_location_finished(self, target_latitude, target_longitude, target_altitude):
+        return abs(target_altitude - self.position_manager.adjusted_altitude()) <= 1.0 and \
+            abs(target_latitude - self.position_manager.adjusted_coordinates_lat()) <= 1.0e-5 and \
+            abs(target_longitude - self.position_manager.adjusted_coordinates_lon()) <= 1.0e-5
 
     async def land(self) -> bool:
         await self.drone.action.land()
@@ -58,6 +73,7 @@ class FlightController:
     
     async def if_mission_finished(self) -> bool:
         return await self.drone.mission.is_mission_finished()
+
     
     def update_is_in_air(self, is_in_air: bool) -> None:
         self.is_in_air = is_in_air
@@ -66,3 +82,4 @@ class FlightController:
     async def invoke_loop(self) -> None:
         async for is_in_air in self.drone.telemetry.in_air():
             self.update_is_in_air(is_in_air)
+            await asyncio.sleep(1)

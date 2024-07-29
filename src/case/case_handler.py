@@ -12,6 +12,7 @@ class CaseHandler:
         #self.pressure = PressureHandler()
 
         self.wirehandler = WireHandler()
+        self.pressure = PressureHandler()
         self.ac_vel = Acceleration_Velocity(self.drone)
         
         self.stable_pre_val = 1 ##1mで大体7hpaの差
@@ -19,7 +20,8 @@ class CaseHandler:
 
         self.stable_judge_count = 5
 
-        self.nichrome_duration = 10
+
+        self.nichrome_duration = 5
         
         #収納判定用定数
         self.CANUSELIGHT == True
@@ -36,7 +38,7 @@ class CaseHandler:
         self.judge_release_pre_countmax = 12
         self.judge_release_border_light = 500
         self.judge_release_sleep_time = 0.5
-        
+
 
 
 

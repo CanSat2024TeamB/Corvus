@@ -10,9 +10,8 @@ async def main():
     #config = ConfigManager(config_path)
     
 
-    nichrome_pin_no = 17
-    nichrome_pin_no = 28
-    nichrome_pin_no = 27
+    
+    nichrome_pin_no = 23
 
 
 

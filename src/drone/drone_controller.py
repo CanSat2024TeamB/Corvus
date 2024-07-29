@@ -26,6 +26,8 @@ class DroneController:
         self.flight_controller = FlightController(self.drone_instance, self.position_manager)
         self.logger = Logger()
         self.ac_vel = Acceleration_Velocity(self.drone_instance)
+
+        self.task_group = None
        
 
     def get_drone_instance(self):
@@ -79,14 +81,12 @@ class DroneController:
             #message_5 = str(self.battery_watch.remaining_percent())
             #message_6 = str(self.battery_watch.voltage_v())
             #message_7 = str(self.battery_watch.temperature_degc())
-            #self.logger.write(message_1,message_2,message_3,message_4,message_5,message_6,message_7)
+            self.logger.write(message_1,message_2,message_3,)
 
 
     
     async def sequence_test_hovering(self):
-        await self.flight_controller.takeoff()
-        print('taking off')
-        await self.flight_controller.set_altitude(1.0)
+        await self.flight_controller.takeoff(1)
         print('reached start hovering')
         await self.flight_controller.hovering(10)
         print('finish hovering start landing')
@@ -108,9 +108,20 @@ class DroneController:
                 # await self.flight_controller.disarm()
                 break
 
-    async def sequence_test_endurance(self,speed, *target_coordinates: Coordinates):
-        await self.flight_controller.takeoff()
-        await self.flight_controller.set_altitude(1.0)
+    async def sequence_test_goto(self,speed, yaw_deg, target_coordinates: Coordinates):
+        await self.flight_controller.takeoff(3)
+        print('reached')
+        print('goto started')
+        await self.flight_controller.go_to_location(speed, yaw_deg, target_coordinates)
+        print('goto finished start hovering')
+        await self.flight_controller.hovering(10)
+        print(' hovering finished start landing')
+        await self.flight_controller.land()
+        print('landed')
+        # await self.flight_controller.disarm()
+
+    async def sequence_test_endurance(self,speed, *target_coordinates: Coordinates): #要書き換え
+        await self.flight_controller.takeoff(3)
         await self.flight_controller.hovering(10)
         await self.flight_controller.go_to(speed, *target_coordinates)
         while True:
@@ -123,18 +134,17 @@ class DroneController:
     
     async def invoke_sensor(self) -> None:
         async with asyncio.TaskGroup() as task_group:
-            lidar_invoke = task_group.create_task(self.lidar_handler.invoke_loop())
-            gps_invoke = task_group.create_task(self.gps_handler.invoke_loop())
+            self.task_group = task_group  # TaskGroupの参照を保存
+            task_group.create_task(self.lidar_handler.invoke_loop())
+            task_group.create_task(self.gps_handler.invoke_loop())
+            # task_group.create_task(self.battery_watch.invoke_loop())
+            task_group.create_task(self.compass_handler.invoke_loop())
+            # task_group.create_task(self.flight_controller.invoke_loop())
+            task_group.create_task(self.logger_write())
+            
 
-            #battery_invoke = task_group.create_task(self.battery_watch.invoke_loop())
-            compass_invoke = task_group.create_task(self.compass_handler.invoke_loop())
-            in_air_invoke = task_group.create_task(self.flight_controller.invoke_loop())
-            #sequence_loop = task_group.create_task(sequence)
-            #logger_invoke =task_group.create_task(self.logger_write())
-
-    async def start_sequence_task(self,sequence):
-        # sequenceの非同期実行を開始
-        sequence_task = asyncio.create_task(sequence)
-        await sequence_task
-
-# ^^^^^各クラスのコンストラクタに移譲^^^^^^
+    async def add_sequence_task(self, coro):
+        if hasattr(self, 'task_group') and self.task_group:
+            self.task_group.create_task(coro)
+        else:
+            print("No task group available to add the task.")
