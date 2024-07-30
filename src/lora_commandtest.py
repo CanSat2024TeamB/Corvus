@@ -3,10 +3,10 @@ import time
 
 def send_command(ser, command, wait_time=1):
     try:
-        ser.write((command + '\r').encode('utf-8'))  # コマンドの末尾にCRを追加
+        ser.write((command + '\r').encode('ascii'))  # コマンドの末尾にCRを追加
         ser.flush()
         time.sleep(wait_time)
-        response = ser.read_all().decode('utf-8')
+        response = ser.read_all().decode('ascii')
         return response
     except Exception as e:
         print(f"コマンド送信エラー: {e}")
@@ -25,9 +25,9 @@ def main():
         return
     
     # コマンドを送信し、応答を表示
-    command = '> mod get_ver'  # 実際のコマンドに置き換えてください
-    response = send_command(ser, command)
-    print(f"送信したコマンド: {command}")
+    command = 'mod get_ver'  # 実際のコマンドに置き換えてください
+    print(f"送信したコマンド: > {command}")
+    response = send_command(ser, f"> {command}")
     print(f"受信した応答: {response}")
 
     # 終了前にシリアルポートを閉じる
@@ -39,4 +39,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
