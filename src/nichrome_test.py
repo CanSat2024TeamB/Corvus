@@ -11,6 +11,7 @@ async def main():
     print('start')
     wire.nichrome_cut(nichrome_pin_no_1,nichrome_pin_duration)
     await asyncio.sleep(5)
+    wire.nichrome_cut(nichrome_pin_no_1,nichrome_pin_duration)
     #print('start')
     #wire.nichrome_cut(nichrome_pin_no_2,nichrome_pin_duration)
     #print('done')
