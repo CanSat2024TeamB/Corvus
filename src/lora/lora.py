@@ -32,18 +32,28 @@ class Lora:
 
     async def lora_set_sync(self, sync_num):
         await self.serial_write(f'p2p set_sync {sync_num}')
+        response = await self.serial_read()
+        print('Response:', response)
 
     async def lora_set_freq(self, freq_num):
         await self.serial_write(f'p2p set_freq {freq_num}')
+        response = await self.serial_read()
+        print('Response:', response)
 
     async def lora_set_sf(self, sf_num):
         await self.serial_write(f'p2p set_sf {sf_num}')
+        response = await self.serial_read()
+        print('Response:', response)
 
     async def lora_set_bw(self, bw_num):
         await self.serial_write(f'p2p set_bw {bw_num}')
+        response = await self.serial_read()
+        print('Response:', response)
 
     async def lora_save(self):
         await self.serial_write('p2p save')
+        response = await self.serial_read()
+        print('Response:', response)
 
     async def serial_write(self, message: str) -> None:
         cmd_send = f'> {message}' + self.CRLF
@@ -78,4 +88,3 @@ class Lora:
         if self.is_on:
             GPIO.cleanup()
             self.is_on = False
-
