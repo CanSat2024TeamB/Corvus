@@ -77,6 +77,7 @@ class Lora:
         start_time = asyncio.get_event_loop().time()
         while True:
             if self.serial.in_waiting > 0:
+                print('something')
                 chunk = self.serial.read(self.serial.in_waiting).decode('ascii')
                 response += chunk
                 if '>>' in chunk:
