@@ -13,7 +13,15 @@ def select_port(baudrate):
     if len(devices) == 0:
         # シリアル通信できるデバイスが見つからなかった場合
         print("エラー: ポートが見つかりませんでした")
-        return None
+        # 手動でポートを指定してみる
+        ser.port = '/dev/ttyS0'  # 必要に応じて適切なデバイス名に変更
+        try:
+            ser.open()
+            print(f"ポート {ser.port} を手動で開きました")
+            return ser
+        except Exception as e:
+            print(f"エラー：手動でポートを開けませんでした。{e}")
+            return None
     elif len(devices) == 1:
         print(f"一つだけポートがありました {devices[0]}")
         ser.port = devices[0]
@@ -28,11 +36,12 @@ def select_port(baudrate):
     try:
         ser.open()
         return ser
-    except:
-        print("エラー：ポートが開けませんでした。")
+    except Exception as e:
+        print(f"エラー：ポートが開けませんでした。{e}")
         return None
-    
+
 time.sleep(1)
-ser=select_port(9600)
+ser = select_port(9600)
 print(ser)
+
 
