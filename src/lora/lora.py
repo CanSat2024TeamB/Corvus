@@ -46,22 +46,22 @@ class Lora:
     async def lora_save(self):
         await self.serial_write('p2p save')
 
+    async def serial_write(self, message: str) -> None:
+        cmd_send = f'> {message}' + self.CRLF
+        self.serial.write(cmd_send.encode("ascii"))
+        print('Sent:', cmd_send)
+        await asyncio.sleep(1)  # Wait a moment before reading the response
+
     async def lora_write(self, message: str):
         await self.serial_write(f'p2p tx {message}')
         # Read and process two responses
         response1 = await self.serial_read()
         print('First response:', response1)
-        if response1 == 'Ok':
+        if 'Ok' in response1:
             response2 = await self.serial_read()
             print('Second response:', response2)
         else:
             print('Invalid data format.')
-
-    async def serial_write(self, message: str) -> None:
-        msg_send = message + self.CRLF
-        self.serial.write(msg_send.encode("ascii"))
-        print('Sent:', message)
-        await asyncio.sleep(1)  # Wait a moment before reading the response
 
     async def serial_read(self) -> str:
         response = ''
@@ -70,7 +70,7 @@ class Lora:
                 chunk = self.serial.read(self.serial.in_waiting).decode('ascii')
                 response += chunk
                 # Check for end of response
-                if '>>' in response:
+                if response.count('>>') >= 2:
                     break
             await asyncio.sleep(0.1)  # Short delay to ensure complete read
         return response.strip()
