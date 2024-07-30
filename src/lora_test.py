@@ -7,7 +7,6 @@ async def main():
     drone = dronecontroller.get_drone_instance()
     lora = Lora(drone)
 
-    await lora.lora_reset()
     await lora.lora_set_sync(72)
     await lora.lora_set_freq(922000000)
     await lora.lora_set_sf(7)

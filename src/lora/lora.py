@@ -28,7 +28,6 @@ class Lora:
         GPIO.output(self.rst, GPIO.HIGH)
         await asyncio.sleep(2)
         print("Lora power on")
-        await self.lora_write("start")
         self.is_on = True
 
     async def lora_set_sync(self, sync_num):
