@@ -10,7 +10,7 @@ class Lora:
         self.CRLF = "\r\n"
 
         try:
-            self.serial = serial.Serial("/dev/ttyAMA0", 19200, timeout=1)
+            self.serial = serial.Serial("/dev/ttyS0", 19200, timeout=1)
         except serial.SerialException as e:
             print(f"Error opening serial port: {e}")
             raise e
