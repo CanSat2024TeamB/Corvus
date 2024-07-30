@@ -23,25 +23,30 @@ def select_port(baudrate):
             print(f"エラー：手動でポートを開けませんでした。{e}")
             return None
     elif len(devices) == 1:
-        print(f"一つだけポートがありました {devices[0]}")
+        print(f"一つだけポートがありました: {devices[0]}")
         ser.port = devices[0]
     else:
         # 複数ポートの場合、選択
         for i in range(len(devices)):
             print(f"input {i:d} open {devices[i]}")
-        num = int(input("ポート番号を入力してください:" ))
+        num = int(input("ポート番号を入力してください: "))
         ser.port = devices[num]
     
     # 開いてみる
     try:
         ser.open()
+        print(f"ポート {ser.port} を開きました")
         return ser
     except Exception as e:
-        print(f"エラー：ポートが開けませんでした。{e}")
+        print(f"エラー：ポートを開けませんでした。{e}")
         return None
 
 time.sleep(1)
 ser = select_port(9600)
-print(ser)
+if ser:
+    print(f"シリアルポートの設定が完了しました: {ser}")
+else:
+    print("シリアルポートの設定に失敗しました")
+
 
 
