@@ -1,18 +1,22 @@
 import asyncio
 from mavsdk import System
 from mavsdk.mission import (MissionItem, MissionPlan)
+from pathlib import Path
 
 from control.position_manager import PositionManager
 from control.coordinates import Coordinates
+from sensor.camera_handler import CameraHandler
 
 class FlightController:
 
     def __init__(self, drone: System, position_manager: PositionManager):
         self.drone: System = drone
         self.position_manager: PositionManager = position_manager
+        self.camera_handler = CameraHandler(model_path=Path(__file__).parent.parent.parent.joinpath("assets/model/cone.pt"))
         self.target_latitude = 0
         self.target_longitude = 0
         self.target_altitude = 0
+        self.pos = [0,0]
         
         self.is_in_air: bool = False
         
@@ -28,6 +32,22 @@ class FlightController:
         await asyncio.sleep(time)
         return True
     
+    async def stop_here(self):
+        await self.drone.action.hold()
+    
+    async def land(self) -> bool:
+        await self.drone.action.land()
+        return True
+    
+    async def disarm(self) -> bool:
+        await self.drone.action.disarm()
+        return True
+    
+    async def kill(self) -> bool:
+        await self.drone.action.kill()
+        return True
+    
+    ############################################################################################
     async def go_to(self, speed, *target_coordinates: Coordinates) -> bool:
         mission_items = []
         for coordinates in target_coordinates:
@@ -38,6 +58,16 @@ class FlightController:
         await self.execute_mission(mission_plan)
         return True
     
+    async def execute_mission(self, mission_plan: MissionPlan) -> bool:
+        await self.drone.mission.set_return_to_launch_after_mission(False)
+        await self.drone.mission.upload_mission(mission_plan)
+        await self.drone.mission.start_mission()
+        return True
+    
+    async def if_mission_finished(self) -> bool:
+        return await self.drone.mission.is_mission_finished()
+
+    ###################################################################################################
     async def go_to_location(self, speed, yaw_deg, target_coordinates: Coordinates):
         await self.drone.action.set_current_speed(speed)
         self.target_latitude = target_coordinates.latitude()
@@ -53,26 +83,21 @@ class FlightController:
             abs(target_latitude - self.position_manager.adjusted_coordinates_lat()) <= 1.0e-5 and \
             abs(target_longitude - self.position_manager.adjusted_coordinates_lon()) <= 1.0e-5
 
-    async def land(self) -> bool:
-        await self.drone.action.land()
-        return True
+    #########################################################################################################
+
+    async def precise_land(self):
+        while True:
+            self.pos = self.camera_handler.capture_cone_position(0.5)
+            print(self.pos)
+            if self.pos == [None, None]:
+                await asyncio.sleep(1)
+            else:
+                await self.stop_here()
+                
+
+
+    #########################################################################################################
     
-    async def disarm(self) -> bool:
-        await self.drone.action.disarm()
-        return True
-    
-    async def kill(self) -> bool:
-        await self.drone.action.kill()
-        return True
-    
-    async def execute_mission(self, mission_plan: MissionPlan) -> bool:
-        await self.drone.mission.set_return_to_launch_after_mission(False)
-        await self.drone.mission.upload_mission(mission_plan)
-        await self.drone.mission.start_mission()
-        return True
-    
-    async def if_mission_finished(self) -> bool:
-        return await self.drone.mission.is_mission_finished()
 
     
     def update_is_in_air(self, is_in_air: bool) -> None:
