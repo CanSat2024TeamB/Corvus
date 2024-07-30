@@ -1,11 +1,11 @@
 import serial
 import time
 
-def send_and_receive(ser, data, wait_time=1):
+def send_and_receive(ser, data, wait_time=2):
     try:
         ser.write(data)
         ser.flush()
-        time.sleep(wait_time)
+        time.sleep(wait_time)  # 受信するための待機時間を長く設定
         response = ser.read_all()
         return response
     except Exception as e:
@@ -15,7 +15,7 @@ def send_and_receive(ser, data, wait_time=1):
 def main():
     try:
         # シリアルポートの設定
-        ser = serial.Serial(port='/dev/ttyS0', baudrate=115200, timeout=1)
+        ser = serial.Serial(port='/dev/ttyS0', baudrate=115200, timeout=2)
         if ser.is_open:
             print(f"シリアルポート {ser.port} を開きました")
         else:
@@ -40,6 +40,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
