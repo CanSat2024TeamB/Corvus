@@ -26,7 +26,7 @@ def main():
         return
 
     # データの送受信
-    data_to_send = b'Hello, World!'
+    data_to_send = b'Hello, World!\r\n'
     print(f"送信したデータ: {data_to_send}")
     response = send_and_receive(ser, data_to_send)
     print(f"受信したデータ: {response}")
