@@ -22,6 +22,8 @@ class Lora:
         """Start Lora"""
         GPIO.output(self.power, GPIO.HIGH)
         print('lora enable')
+        await asyncio.sleep(10)
+        print('awaited')
         try:
             self.serial = serial.Serial("/dev/ttyAMA0", 19200, timeout=1)
         except serial.SerialException as e:
