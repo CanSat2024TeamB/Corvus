@@ -5,7 +5,8 @@ import asyncio
 class Lora:
     def __init__(self, drone):
         self.drone = drone
-        self.rst = 7
+        self.rst = 4
+        self.power = 18
         self.CRLF = "\r\n"
 
         try:
@@ -20,9 +21,12 @@ class Lora:
         GPIO.setmode(GPIO.BCM)
         GPIO.setwarnings(False)
         GPIO.setup(self.rst, GPIO.OUT)
+        GPIO.setup(self.power, GPIO.OUT)
 
     async def lora_reset(self):
         """Start Lora"""
+        GPIO.output(self.power, GPIO.HIGH)
+        print('lora enable')
         GPIO.output(self.rst, GPIO.LOW)
         await asyncio.sleep(2)
         GPIO.output(self.rst, GPIO.HIGH)
