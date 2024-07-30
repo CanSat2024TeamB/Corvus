@@ -33,6 +33,6 @@ def select_port(baudrate):
         return None
     
 time.sleep(1)
-ser=select_port(19200)
+ser=select_port(9600)
 print(ser)
 
