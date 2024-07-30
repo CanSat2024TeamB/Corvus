@@ -83,7 +83,24 @@ class DroneController:
             #message_7 = str(self.battery_watch.temperature_degc())
             self.logger.write(message_1,message_2,message_3,)
 
+#############################################################################################
+    async def invoke_sensor(self) -> None:
+        async with asyncio.TaskGroup() as task_group:
+            self.task_group = task_group  # TaskGroupの参照を保存
+            task_group.create_task(self.lidar_handler.invoke_loop())
+            task_group.create_task(self.gps_handler.invoke_loop())
+            # task_group.create_task(self.battery_watch.invoke_loop())
+            task_group.create_task(self.compass_handler.invoke_loop())
+            # task_group.create_task(self.flight_controller.invoke_loop())
+            task_group.create_task(self.logger_write())
+            
 
+    async def add_sequence_task(self, coro):
+        if hasattr(self, 'task_group') and self.task_group:
+            self.task_group.create_task(coro)
+        else:
+            print("No task group available to add the task.")
+####################################################################################################
     
     async def sequence_test_hovering(self):
         await self.flight_controller.takeoff(1)
@@ -131,20 +148,4 @@ class DroneController:
                 await self.flight_controller.land()
               #  await self.flight_controller.disarm()
 
-    
-    async def invoke_sensor(self) -> None:
-        async with asyncio.TaskGroup() as task_group:
-            self.task_group = task_group  # TaskGroupの参照を保存
-            task_group.create_task(self.lidar_handler.invoke_loop())
-            task_group.create_task(self.gps_handler.invoke_loop())
-            # task_group.create_task(self.battery_watch.invoke_loop())
-            task_group.create_task(self.compass_handler.invoke_loop())
-            # task_group.create_task(self.flight_controller.invoke_loop())
-            task_group.create_task(self.logger_write())
-            
-
-    async def add_sequence_task(self, coro):
-        if hasattr(self, 'task_group') and self.task_group:
-            self.task_group.create_task(coro)
-        else:
-            print("No task group available to add the task.")
+###########################################################################################################    
