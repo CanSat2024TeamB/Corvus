@@ -10,7 +10,7 @@ class Lora:
         self.CRLF = "\r\n"
 
         try:
-            self.serial = serial.Serial("/dev/ttyS0", 19200, timeout=1)
+            self.serial = serial.Serial("/dev/ttyAMA0", 19200, timeout=1)
         except serial.SerialException as e:
             print(f"Error opening serial port: {e}")
             raise e
@@ -60,7 +60,7 @@ class Lora:
         print('Response:', response)
 
     async def serial_write(self, message: str) -> None:
-        cmd_send = f'{message}' + self.CRLF
+        cmd_send = f'> {message}' + self.CRLF
         self.serial.write(cmd_send.encode("ascii"))
         print('Sent:', cmd_send)
         await asyncio.sleep(1)  # Wait a moment before reading the response
