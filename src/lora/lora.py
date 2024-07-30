@@ -56,7 +56,7 @@ class Lora:
         print('Response:', response)
 
     async def serial_write(self, message: str) -> None:
-        cmd_send = f'> {message}' + self.CRLF
+        cmd_send = f'{message}' + self.CRLF
         self.serial.write(cmd_send.encode("ascii"))
         print('Sent:', cmd_send)
         await asyncio.sleep(1)  # Wait a moment before reading the response
