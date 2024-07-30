@@ -15,7 +15,7 @@ def send_and_receive(ser, data, wait_time=2):
 def main():
     try:
         # シリアルポートの設定
-        ser = serial.Serial(port='/dev/ttyS0', baudrate=115200, timeout=2)
+        ser = serial.Serial(port='/dev/ttyAMA0', baudrate=9600, timeout=2)
         if ser.is_open:
             print(f"シリアルポート {ser.port} を開きました")
         else:
