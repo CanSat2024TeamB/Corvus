@@ -6,7 +6,7 @@ class Lora:
     def __init__(self, drone):
         self.drone = drone
         self.rst = 4
-        self.power = 17
+        self.power = 18
         self.CRLF = "\r\n"
         self.serial = None
 
