@@ -11,8 +11,6 @@ class CaseHandler:
     def __init__(self,drone):
         self.drone = drone
 
-        self.CANUSELIGHT = True
-        self.CANUSEPRESSURE = True
         self.light = LightSensor()
         self.pressure = PressureHandler()
         self.wirehandler = WireHandler()
@@ -89,7 +87,7 @@ class CaseHandler:
         ##############################
         while (self.read_timer(time_sta) <= self.judge_storage_maxtime):#300秒間実行
 
-            if self.CANUSELIGHT == True:
+            if self.light.CANUSELIGHT == True:
                 if self.light_counter < self.judge_storage_countmax:
 
                     light_value = self.light.get_light_value()
@@ -104,6 +102,9 @@ class CaseHandler:
                         
                 else:#10回連続で暗い判定ができたら中であると判定
                     break
+            else:
+                self.logger.write("CAN NOT USE LIGHT")
+                break
             
             print(self.light_counter) #あとで消す
 
@@ -124,11 +125,11 @@ class CaseHandler:
         ##############################
         while (self.read_timer(time_sta) <= self.judge_release_maxtime):
             
-            if self.CANUSELIGHT == False:
+            if self.light.CANUSELIGHT == False:
                 self.light_counter = self.judge_release_lig_countmax
                 time.sleep(5)
 
-            if self.CANUSEPRESSURE == False:
+            if self.pressure.CANUSEPRESSURE == False:
                 self.pressure_counter = self.judge_release_pre_countmax
                 time.sleep(5)
 
@@ -176,9 +177,11 @@ class CaseHandler:
         while True:
             self.logger.write("Pressure stability confirmation start")
             print(f"Pressure stability confirmation start")
+
             while (self.read_timer(time_sta) <= self.judge_landing_maxtime):
-                if self.judge_pressure_stable(1): #5秒の測定の平均値を1秒ごとに計算
-                    break
+                if self.pressure.CANUSEPRESSURE == True:
+                    if self.judge_pressure_stable(1): #5秒の測定の平均値を1秒ごとに計算
+                        break
             
             self.logger.write("Pressure stability confirmed")
             print(f"Pressure stability confirmed")
