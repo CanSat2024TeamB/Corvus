@@ -3,7 +3,7 @@ import time
 
 def send_command(ser, command, wait_time=1):
     try:
-        ser.write(command.encode('utf-8'))
+        ser.write((command + '\r').encode('utf-8'))  # コマンドの末尾にCRを追加
         ser.flush()
         time.sleep(wait_time)
         response = ser.read_all().decode('utf-8')
@@ -25,7 +25,7 @@ def main():
         return
     
     # コマンドを送信し、応答を表示
-    command = 'YOUR_LORA_COMMAND_HERE'  # 実際のコマンドに置き換えてください
+    command = '> mod get_ver'  # 実際のコマンドに置き換えてください
     response = send_command(ser, command)
     print(f"送信したコマンド: {command}")
     print(f"受信した応答: {response}")
@@ -39,3 +39,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
