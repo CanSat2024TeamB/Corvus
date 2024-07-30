@@ -5,7 +5,7 @@ from pathlib import Path
 
 from control.position_manager import PositionManager
 from control.coordinates import Coordinates
-from sensor.camera_handler import CameraHandler
+#from sensor.camera_handler import CameraHandler
 
 class FlightController:
 
