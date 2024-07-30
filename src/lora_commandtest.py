@@ -30,6 +30,16 @@ def main():
     response = send_command(ser, f"> {command}")
     print(f"受信した応答: {response}")
 
+
+    # 通信確立
+    ser = serial.Serial('/dev/ttyS0', '9600', timeout=0.1)
+    print('new rate')
+    # データ送受信
+    ser.write('Hello, World!')
+    print(repr(ser.readline()))
+    ser.close()
+
+
     # 終了前にシリアルポートを閉じる
     try:
         ser.close()
