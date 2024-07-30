@@ -72,15 +72,18 @@ class Lora:
         else:
             print('Invalid data format.')
 
-    async def serial_read(self) -> str:
+    async def serial_read(self, timeout: float = 5.0) -> str:
         response = ''
+        start_time = asyncio.get_event_loop().time()
         while True:
             if self.serial.in_waiting > 0:
                 chunk = self.serial.read(self.serial.in_waiting).decode('ascii')
                 response += chunk
-                # Check for end of response
-                if response.count('>>') >= 2:
+                if '>>' in chunk:
                     break
+            if asyncio.get_event_loop().time() - start_time > timeout:
+                print('Read timeout')
+                break
             await asyncio.sleep(0.1)  # Short delay to ensure complete read
         return response.strip()
 
