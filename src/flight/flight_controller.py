@@ -81,7 +81,7 @@ class FlightController:
     def if_goto_location_finished(self, target_latitude, target_longitude, target_altitude):
         return abs(target_altitude - self.position_manager.adjusted_altitude()) <= 1.0 and \
             abs(target_latitude - self.position_manager.adjusted_coordinates_lat()) <= 1.0e-5 and \
-            abs(target_longitude - self.position_manager.adjusted_coordinates_lon()) <= 1.0e-5
+            abs(target_longitude - self.position_manager.adjusted_coordinates_lon()) <= 1.0e-5 ## アメリカ違う
 
     #########################################################################################################
 

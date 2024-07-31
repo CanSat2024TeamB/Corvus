@@ -13,7 +13,7 @@ async def main():
     await asyncio.sleep(1)
 
     speed = 1.0
-    target_coordinates = Coordinates(139.760557,35.714995,0)
+    target_coordinates = Coordinates(140.1080417,35.7702389,3)
     yaw_degree = 0.0
 
 

@@ -17,7 +17,7 @@ class GPSHandler:
     async def invoke_loop(self) -> None:
         async for position in self.drone.telemetry.position():
             self.update_coordinates(position)
-            await asyncio.sleep(0.1)
+            await asyncio.sleep(0.05)
 
     def gps_coordinates(self) -> Coordinates:
         return self.coordinates
