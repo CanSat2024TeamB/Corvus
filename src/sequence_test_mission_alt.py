@@ -15,13 +15,13 @@ async def main():
     speed = 1.0
     first_lon = drone.get_position_manager_instance().adjusted_coordinates_lon()
     first_lat = drone.get_position_manager_instance().adjusted_coordinates_lat()
-    hov_alt = 3
+    hov_alt = 2
     target_coordinates_1 = Coordinates(first_lon,first_lat,hov_alt)
-    target_coordinates_2 = Coordinates(140.1080417,35.7702389,3)
+    target_coordinates_2 = Coordinates(140.1080994,35.7701587,3)
     
 
     await drone.arm()
-    await drone.add_sequence_task(drone.sequence_test_mission(speed,target_coordinates_1,target_coordinates_2))
+    await drone.add_sequence_task(drone.sequence_test_mission(speed,target_coordinates_1))
     #await asyncio.Future()
 
 if __name__ == "__main__":
