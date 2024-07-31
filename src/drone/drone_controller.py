@@ -39,12 +39,15 @@ class DroneController:
     
     async def connect(self) -> bool:
         print("Connecting...")
+        self.logger.write('Connecting...')
         await self.drone_instance.connect(system_address = self.pixhawk_address)
 
         print("Waiting for drone to connect...")
+        self.logger.write("Waiting for drone to connect...")
         async for state in self.drone_instance.core.connection_state():
             if state.is_connected:
                 print(f"Connected to drone!")
+                self.logger.write("Connected to drone!")
                 break
             await asyncio.sleep(0.1)
 
@@ -53,18 +56,22 @@ class DroneController:
     
     async def arm(self) -> bool:
         print("Waiting for drone to be armable...")
+        self.logger.write("Waiting for drone to be armable...")
         async for is_armable in self.drone_instance.telemetry.health():
             if is_armable:
                 print("Drone is armable")
+                self.logger.write("Drone is armable")
                 break
             await asyncio.sleep(0.11)
 
         print("Arming the drone...")
+        self.logger.write("Arming the drone...")
         await self.drone_instance.action.arm()
 
         async for is_armed in self.drone_instance.telemetry.armed():
             if is_armed:
                 print("drone is armed")
+                self.logger.write("drone is armed")
                 break
             await asyncio.sleep(0.1)
         
@@ -98,6 +105,8 @@ class DroneController:
     async def add_sequence_task(self, coro):
         if hasattr(self, 'task_group') and self.task_group:
             self.task_group.create_task(coro)
+            print('added task')
+            self.logger.write('added task')
         else:
             print("No task group available to add the task.")
 ####################################################################################################
@@ -105,8 +114,10 @@ class DroneController:
     async def sequence_test_hovering(self):
         await self.flight_controller.takeoff(1)
         print('reached start hovering')
+        self.logger.write('reached start hovering')
         await self.flight_controller.hovering(10)
         print('finish hovering start landing')
+        self.logger.write('finish hovering start landing')
         await self.flight_controller.land()
        # await self.flight_controller.disarm()
 
