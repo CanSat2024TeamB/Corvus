@@ -22,7 +22,10 @@ async def main():
 
     await drone.arm()
     await drone.add_sequence_task(drone.sequence_test_mission(speed,target_coordinates_1))
-    #await asyncio.Future()
+    try:
+        await asyncio.Future()
+    except asyncio.CancelledError:
+        print("Main loop cancelled")
 
 if __name__ == "__main__":
     asyncio.run(main())
