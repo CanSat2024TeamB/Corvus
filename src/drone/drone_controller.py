@@ -124,15 +124,19 @@ class DroneController:
     async def sequence_test_mission(self,speed, *target_coordinates: Coordinates):
         await self.flight_controller.go_to(speed, *target_coordinates)
         print('mission started')
+        self.logger.write('mission started')
         while True:
             await asyncio.sleep(0.1)
             mission_completed = await self.flight_controller.if_mission_finished()
             if mission_completed:
                 print('mission finished start hovering')
-                await self.flight_controller.hovering(10)
+                self.logger.write('mission finished start hovering')
+                await self.flight_controller.hovering(5)
                 print(' hovering finished start landing')
+                self.logger.write('hovering finished start landing')
                 await self.flight_controller.land()
                 print('landed')
+                self.logger.write('landed')
                 # await self.flight_controller.disarm()
                 break
 
