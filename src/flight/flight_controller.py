@@ -57,10 +57,15 @@ class FlightController:
             #mission_items.append(MissionItem(coordinates.latitude(), coordinates.longitude(), coordinates.altitude(), speed, True, float('nan'), float('nan'), MissionItem.CameraAction.NONE, float('nan'), float('nan'), float('nan'), float('nan'), float('nan'), MissionItem.VehicleAction.NONE))
         mission_plan = MissionPlan(mission_items)
         print('mission plan made')
-        await self.execute_mission(mission_plan)
+        print('do not return setting')
+        await self.drone.mission.set_return_to_launch_after_mission(False)
+        print('do not return start upload')
+        await self.drone.mission.upload_mission(mission_plan)
+        print('mission plan uploaded start mission')
+        await self.drone.mission.start_mission()
         return True
     
-    async def execute_mission(self, mission_plan: MissionPlan) -> bool:
+    #async def execute_mission(self, mission_plan: MissionPlan) -> bool:
         print('do not return setting')
         await self.drone.mission.set_return_to_launch_after_mission(False)
         print('do not return start upload')
