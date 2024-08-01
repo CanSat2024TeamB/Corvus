@@ -50,16 +50,18 @@ class FlightController:
     ############################################################################################
     async def go_to(self, speed, *target_coordinates: Coordinates) -> bool:
         mission_items = []
+        await self.drone.mission.clear_mission()
+        print('mission cleared')
         for coordinates in target_coordinates:
             mission_items.append(MissionItem(coordinates.latitude(), coordinates.longitude(), coordinates.altitude(), speed, True, float('nan'), float('nan'), MissionItem.CameraAction.NONE, float('nan'), float('nan'), float('nan'), float('nan'), float('nan'), MissionItem.VehicleAction.NONE))
             #mission_items.append(MissionItem(coordinates.latitude(), coordinates.longitude(), coordinates.altitude(), speed, True, float('nan'), float('nan'), MissionItem.CameraAction.NONE, float('nan'), float('nan'), float('nan'), float('nan'), float('nan'), MissionItem.VehicleAction.NONE))
         mission_plan = MissionPlan(mission_items)
         print('mission plan made')
-
         await self.execute_mission(mission_plan)
         return True
     
     async def execute_mission(self, mission_plan: MissionPlan) -> bool:
+        print('do not return setting')
         await self.drone.mission.set_return_to_launch_after_mission(False)
         print('do not return start upload')
         await self.drone.mission.upload_mission(mission_plan)
