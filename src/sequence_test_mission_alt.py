@@ -9,6 +9,7 @@ async def main():
     #config = ConfigManager(config_path)
     drone = DroneController()
     await drone.connect()
+    await drone.arm()
     asyncio.create_task(drone.invoke_sensor())
     await asyncio.sleep(1)
 
@@ -20,7 +21,6 @@ async def main():
     target_coordinates_2 = Coordinates(140.1080994,35.7701587,3)
     
 
-    await drone.arm()
     await drone.add_sequence_task(drone.sequence_test_mission(speed,target_coordinates_1))
     try:
         await asyncio.Future()

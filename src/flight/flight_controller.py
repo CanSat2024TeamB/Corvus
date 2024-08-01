@@ -82,7 +82,9 @@ class FlightController:
         self.target_latitude = target_coordinates.latitude()
         self.target_longitude = target_coordinates.longitude()
         self.target_altitude = target_coordinates.altitude()
+        print('target got')
         await self.drone.action.goto_location(self.target_latitude, self.target_longitude, self.target_altitude, yaw_deg)
+        print('goto started')
         await self.drone.action.set_current_speed(speed)
         
         while not self.if_goto_location_finished(self.target_latitude, self.target_longitude, self.target_altitude):
