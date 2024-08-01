@@ -79,11 +79,11 @@ class FlightController:
 
     ###################################################################################################
     async def go_to_location(self, speed, yaw_deg, target_coordinates: Coordinates):
-        await self.drone.action.set_current_speed(speed)
         self.target_latitude = target_coordinates.latitude()
         self.target_longitude = target_coordinates.longitude()
         self.target_altitude = target_coordinates.altitude()
         await self.drone.action.goto_location(self.target_latitude, self.target_longitude, self.target_altitude, yaw_deg)
+        await self.drone.action.set_current_speed(speed)
         
         while not self.if_goto_location_finished(self.target_latitude, self.target_longitude, self.target_altitude):
             await asyncio.sleep(0.01)
