@@ -61,7 +61,24 @@ class FlightController:
         await self.drone.mission.set_return_to_launch_after_mission(False)
         print('do not return start upload')
         await self.drone.mission.upload_mission(mission_plan)
-        print('mission plan uploaded start mission')
+        print('mission plan uploading.move to hold mode')
+        await self.stop_here() #####先輩のをみるとholdに入れてる
+        await asyncio.sleep(20) #####アップロードにかかる時間？
+        print("Waiting for drone to be armable...")
+        async for is_armable in self.drone.telemetry.health():
+            if is_armable:
+                print("Drone is armable")
+                break
+            await asyncio.sleep(0.11)
+
+        print("Arming the drone...")
+        await self.drone.action.arm()
+
+        async for is_armed in self.drone.telemetry.armed():
+            if is_armed:
+                print("drone is armed")
+                break
+            await asyncio.sleep(0.1)
         await self.drone.mission.start_mission()
         return True
     
