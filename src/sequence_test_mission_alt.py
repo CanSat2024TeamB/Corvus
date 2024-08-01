@@ -16,7 +16,7 @@ async def main():
     speed = 1.0
     first_lon = drone.get_position_manager_instance().adjusted_coordinates_lon()
     first_lat = drone.get_position_manager_instance().adjusted_coordinates_lat()
-    hov_alt = 1
+    hov_alt = 1.5
     target_coordinates_1 = Coordinates(first_lon,first_lat,hov_alt)
     target_coordinates_2 = Coordinates(140.1080994,35.7701587,3)
     
