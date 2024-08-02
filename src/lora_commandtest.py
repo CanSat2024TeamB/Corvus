@@ -6,7 +6,7 @@ def send_and_receive(ser, data, wait_time=2):
         ser.write(data)
         ser.flush()
         time.sleep(wait_time)  # 受信するための待機時間を長く設定
-        response = ser.read_all()
+        response = ser.readline()
         return response
     except Exception as e:
         print(f"通信エラー: {e}")
