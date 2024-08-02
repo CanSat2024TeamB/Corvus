@@ -6,7 +6,7 @@ async def main():
     dronecontroller = DroneController()
     drone = dronecontroller.get_drone_instance()
     logger = dronecontroller.get_logger_instance()
-    case = CaseHandler(drone)
+    case = CaseHandler(drone,logger)
 
     global status 
     status = "outside"
