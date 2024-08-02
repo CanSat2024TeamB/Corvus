@@ -4,9 +4,7 @@ from case.case_handler import CaseHandler
 
 async def main():
     dronecontroller = DroneController()
-    drone = dronecontroller.get_drone_instance()
-    logger = dronecontroller.get_logger_instance()
-    case = CaseHandler(drone,logger)
+    case = CaseHandler(dronecontroller)
 
     global status 
     status = "outside"

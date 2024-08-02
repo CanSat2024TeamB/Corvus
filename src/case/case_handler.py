@@ -2,14 +2,14 @@ from sensor.pressure_handler import PressureHandler
 from sensor.acceleration_velocity import Acceleration_Velocity
 from sensor.light_handler import LightSensor
 from wire.wirehandler import WireHandler
-from drone.drone_controller import DroneController
 import time
 import numpy as np
 
 class CaseHandler:
-    def __init__(self,drone,logger):
-        self.drone = drone
-        self.logger = logger
+    def __init__(self,dronecontroller):
+        self.dronecontroller = dronecontroller
+        self.drone = dronecontroller.get_drone_instance()
+        self.logger = dronecontroller.get_logger_instance()
 
         self.light = LightSensor()
         self.pressure = PressureHandler()
@@ -185,7 +185,7 @@ class CaseHandler:
             self.logger.write("Pressure stability confirmed")
             print(f"Pressure stability confirmed")
 
-            await self.drone.connect()
+            await self.dronecontroller.connect()
             self.logger.write("Velocity stability confirmation start")
             print(f"Velocity stability confirmation start")
             if await self.judge_velocity_stable(1):
