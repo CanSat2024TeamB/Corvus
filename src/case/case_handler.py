@@ -3,7 +3,6 @@ from sensor.acceleration_velocity import Acceleration_Velocity
 from sensor.light_handler import LightSensor
 from wire.wirehandler import WireHandler
 from drone.drone_controller import DroneController
-from logger.logger import Logger
 import time
 import numpy as np
 
