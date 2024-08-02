@@ -34,3 +34,7 @@ class PositionManager:
     def adjusted_coordinates_lat(self) -> float:
         latitude = self.gps_handler.gps_coordinates().latitude()
         return latitude
+    
+    def adjusted_coordinates_AMSL(self) -> float:
+        AMSL = self.gps_handler.gps_coordinates().altitude()
+        return AMSL
