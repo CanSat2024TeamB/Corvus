@@ -25,19 +25,20 @@ class CaseHandler:
         
         #収納判定用定数
         self.judge_storage_border_light = 300
-        self.judge_storage_maxtime = 300 
+        self.judge_storage_countmax = 10
+        self.judge_storage_maxtime = 60 #300にする 
         self.judge_storage_sleep_time = 0.5
         self.light_counter = 0 #counterを設定
 
         #放出判定用定数
-        self.judge_release_maxtime = 3600 #去年はARLISSでこの値を使った
+        self.judge_release_maxtime = 120 #去年はARLISSで3600を使った
         self.judge_release_lig_countmax = 12 
         self.judge_release_pre_countmax = 12
         self.judge_release_border_light = 500
         self.judge_release_sleep_time = 0.5
         
         #着地判定用定数
-        self.judge_landing_maxtime = 1200
+        self.judge_landing_maxtime = 120 #去年は1200
 
 
 
@@ -81,7 +82,7 @@ class CaseHandler:
     
     def judge_storage(self):
         ##############################
-        #self.phase = "Outside"
+        self.phase = "Outside"
         self.light_counter = 0 #counterを設定
         time_sta = time.perf_counter()
         ##############################
@@ -96,7 +97,7 @@ class CaseHandler:
                         self.light_counter +=1
                         
                     else:
-                        self.light_counter = 0#一回でも300以下であるならば外にいる判定
+                        self.light_counter = 0#一回でも300以上であるならば外にいる判定
                         self.logger.write("Still Outside")
                         print("Still Outside") #あとで消す
                         
