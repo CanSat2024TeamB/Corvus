@@ -16,7 +16,7 @@ class CaseHandler:
         self.wirehandler = WireHandler()
         self.ac_vel = Acceleration_Velocity(self.drone)
         self.dronecontroller = DroneController()
-        self.logger = Logger()
+        self.logger = self.drone.logger
         
         self.stable_pre_val = 1 ##1mで大体7hpaの差
         self.stable_vel_val = 0.1
