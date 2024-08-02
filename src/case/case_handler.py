@@ -1,7 +1,9 @@
 from sensor.pressure_handler import PressureHandler
 from sensor.acceleration_velocity import Acceleration_Velocity
-#from sensor.light_handler import LightSensor
+from sensor.light_handler import LightSensor
 from wire.wirehandler import WireHandler
+from drone.drone_controller import DroneController
+from logger.logger import Logger
 import time
 import numpy as np
 
@@ -9,36 +11,33 @@ class CaseHandler:
     def __init__(self,drone):
         self.drone = drone
 
-        #self.pressure = PressureHandler()
-
-        self.wirehandler = WireHandler()
+        self.light = LightSensor()
         self.pressure = PressureHandler()
+        self.wirehandler = WireHandler()
         self.ac_vel = Acceleration_Velocity(self.drone)
+        self.dronecontroller = DroneController()
+        self.logger = Logger()
         
         self.stable_pre_val = 1 ##1mで大体7hpaの差
         self.stable_vel_val = 0.1
-
         self.stable_judge_count = 5
-
-
-        self.nichrome_duration = 5
+        self.nichrome_duration = 10
         
         #収納判定用定数
-        #self.CANUSELIGHT == True
-        #self.light = LightSensor()
         self.judge_storage_border_light = 300
         self.judge_storage_maxtime = 300 
         self.judge_storage_sleep_time = 0.5
         self.light_counter = 0 #counterを設定
 
         #放出判定用定数
-        #self.CANUSEPRESSURE == True
         self.judge_release_maxtime = 3600 #去年はARLISSでこの値を使った
         self.judge_release_lig_countmax = 12 
         self.judge_release_pre_countmax = 12
         self.judge_release_border_light = 500
         self.judge_release_sleep_time = 0.5
-
+        
+        #着地判定用定数
+        self.judge_landing_maxtime = 1200
 
 
 
@@ -73,6 +72,7 @@ class CaseHandler:
             return True
         else:
             return False
+        
     def read_timer(self,time_sta): #時間計測用の関数
         time_end = time.perf_counter()# 時間計測終了
         self.tim = time_end - time_sta
@@ -87,7 +87,7 @@ class CaseHandler:
         ##############################
         while (self.read_timer(time_sta) <= self.judge_storage_maxtime):#300秒間実行
 
-            if self.CANUSELIGHT == True:
+            if self.light.CANUSELIGHT == True:
                 if self.light_counter < self.judge_storage_countmax:
 
                     light_value = self.light.get_light_value()
@@ -97,16 +97,21 @@ class CaseHandler:
                         
                     else:
                         self.light_counter = 0#一回でも300以下であるならば外にいる判定
+                        self.logger.write("Still Outside")
                         print("Still Outside") #あとで消す
                         
                 else:#10回連続で暗い判定ができたら中であると判定
                     break
+            else:
+                self.logger.write("CAN NOT USE LIGHT")
+                break
             
-            print(self.light_counter)
+            print(self.light_counter) #あとで消す
 
             time.sleep(self.judge_storage_sleep_time)
 
         print("Storage Succeeded")
+        self.logger.write("Storage Succeeded")
         self.phase = "Storage"
         self.message = "Storage"
         self.STORAGE = True
@@ -120,11 +125,11 @@ class CaseHandler:
         ##############################
         while (self.read_timer(time_sta) <= self.judge_release_maxtime):
             
-            if self.CANUSELIGHT == False:
+            if self.light.CANUSELIGHT == False:
                 self.light_counter = self.judge_release_lig_countmax
                 time.sleep(5)
 
-            if self.CANUSEPRESSURE == False:
+            if self.pressure.CANUSEPRESSURE == False:
                 self.pressure_counter = self.judge_release_pre_countmax
                 time.sleep(5)
 
@@ -136,6 +141,7 @@ class CaseHandler:
                 else:#10回たまらないうちに暗い判定が出たらリセット
                 
                     self.light_counter = 0
+                    self.logger.write("Light still low")
                     print("Light still low")
 
 
@@ -148,6 +154,7 @@ class CaseHandler:
             
                 else:#10連続で変化を観測できなかったらリセット
                     self.pressure_counter = 0
+                    self.logger.write("Disp pressure too stable or minus")
                     print("Disp pressure too stable or minus")
             
             if (self.light_counter >= self.judge_release_lig_countmax) and (self.pressure_counter >= self.judge_release_pre_countmax):
@@ -157,10 +164,44 @@ class CaseHandler:
 
             time.sleep(self.judge_release_sleep_time)
 
+        self.logger.write("Release Succeeded")
         print("Release Succeeded")
         self.phase = "Released"
         self.message = "Released"
     
+
+    async def judge_landing(self):
+        ##############################
+        time_sta = time.perf_counter()
+        ##############################
+        while True:
+            self.logger.write("Pressure stability confirmation start")
+            print(f"Pressure stability confirmation start")
+
+            while (self.read_timer(time_sta) <= self.judge_landing_maxtime):
+                if self.pressure.CANUSEPRESSURE == True:
+                    if self.judge_pressure_stable(1): #5秒の測定の平均値を1秒ごとに計算
+                        break
+            
+            self.logger.write("Pressure stability confirmed")
+            print(f"Pressure stability confirmed")
+
+            await self.dronecontroller.connect()
+            self.logger.write("Velocity stability confirmation start")
+            print(f"Velocity stability confirmation start")
+            if await self.judge_velocity_stable(1):
+                self.logger.write("Velocity stability cinfirmed")
+                print(f"Velocity stability cinfirmed")
+                break
+            else:
+                self.logger.write("Velocity not stable.restart")
+                print(f"Velocity not stable.restart")
+        
+        self.logger.write("Landing Succeeded")
+        print("Landing Succeeded")
+        self.phase = "Land"
+        self.message = "Land"
+
 
     def para_case_stand_nichrome(self,nichrome_pin_no):
         self.wirehandler.nichrome_cut(nichrome_pin_no, self.nichrome_duration)
