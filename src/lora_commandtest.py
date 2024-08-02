@@ -26,10 +26,12 @@ def main():
         return
 
     # データの送受信
-    data_to_send = b'Hello, World!\r\n'
-    print(f"送信したデータ: {data_to_send}")
-    response = send_and_receive(ser, data_to_send)
-    print(f"受信したデータ: {response}")
+    for i in range(10):
+        data_to_send = b'Hello, World!\r\n'
+        print(f"送信したデータ: {data_to_send}")
+        response = send_and_receive(ser, data_to_send)
+        print(f"受信したデータ: {response}")
+        time.sleep(2)
 
     # シリアルポートを閉じる
     try:
