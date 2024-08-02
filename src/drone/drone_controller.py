@@ -41,15 +41,20 @@ class DroneController:
         print("Connecting...")
         self.logger.write('Connecting...')
         await self.drone_instance.connect(system_address = self.pixhawk_address)
-
         print("Waiting for drone to connect...")
         self.logger.write("Waiting for drone to connect...")
+
         async for state in self.drone_instance.core.connection_state():
             if state.is_connected:
                 print(f"Connected to drone!")
                 self.logger.write("Connected to drone!")
                 break
             await asyncio.sleep(0.1)
+
+        async for health in self.drone_instance.telemetry.health():
+                if health.is_global_position_ok and health.is_home_position_ok:
+                    self.logger.write("Global position estimate OK")
+                    break
 
         return True
     
