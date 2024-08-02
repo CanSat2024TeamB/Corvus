@@ -31,7 +31,7 @@ class CaseHandler:
         self.light_counter = 0 #counterを設定
 
         #放出判定用定数
-        self.judge_release_maxtime = 120 #去年はARLISSで3600を使った
+        self.judge_release_maxtime = 10 #去年はARLISSで3600を使った
         self.judge_release_lig_countmax = 12 
         self.judge_release_pre_countmax = 12
         self.judge_release_border_light = 500

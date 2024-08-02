@@ -21,7 +21,7 @@ async def main():
         case.judge_release()
         status = "release"
     if status == "release":
-        case.judge_landing()
+        await case.judge_landing()
         status = "land"
 
 
