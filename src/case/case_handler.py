@@ -134,7 +134,7 @@ class CaseHandler:
                 self.pressure_counter = self.judge_release_pre_countmax
                 time.sleep(5)
 
-            if (self.light_counter < self.judge_release_lig_countmax) and self.CANUSELIGHT == True:
+            if (self.light_counter < self.judge_release_lig_countmax) and self.light.CANUSELIGHT == True:
                 light_value = self.light.get_light_value()
                 if light_value > self.judge_release_border_light:#明るい判定が出たらcounterに+1
                     self.light_counter +=1
@@ -146,7 +146,7 @@ class CaseHandler:
                     print("Light still low")
 
 
-            if (self.pressure_counter < self.judge_release_pre_countmax) and self.CANUSEPRESSURE == True:
+            if (self.pressure_counter < self.judge_release_pre_countmax) and self.pressure.CANUSEPRESSURE == True:
                 Judge = self.judge_pressure_stable(10) #何秒とる？？
 
                 if Judge == False:#pressureが変化していたら
