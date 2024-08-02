@@ -6,16 +6,16 @@ def send_and_receive(ser, data, wait_time=2):
         ser.write(data)
         ser.flush()
         time.sleep(wait_time)  # 受信するための待機時間を長く設定
-        response = ser.readline()
+        response = ser.readline().decode('utf-8').strip()
         return response
     except Exception as e:
         print(f"通信エラー: {e}")
-        return b""
+        return ""
 
 def main():
     try:
         # シリアルポートの設定
-        ser = serial.Serial(port='/dev/ttyAMA0', baudrate=9600, timeout=2)
+        ser = serial.Serial(port='/dev/ttyAMA0', baudrate=9600, timeout=5)  # タイムアウトを長めに設定
         if ser.is_open:
             print(f"シリアルポート {ser.port} を開きました")
         else:
@@ -42,6 +42,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
