@@ -25,7 +25,7 @@ class Lora:
         await asyncio.sleep(10)
         print('awaited')
         try:
-            self.serial = serial.Serial("/dev/ttyS0", 19200, timeout=1)
+            self.serial = serial.Serial("/dev/ttyAMA0", 9600, timeout=1)
         except serial.SerialException as e:
             print(f"Error opening serial port: {e}")
             raise e
@@ -84,7 +84,7 @@ class Lora:
         while True:
             if self.serial.in_waiting > 0:
                 print('something')
-                chunk = self.serial.read(self.serial.in_waiting).decode('ascii')
+                chunk = self.serial.readline(self.serial.in_waiting).decode('ascii')
                 response += chunk
                 if '>>' in chunk:
                     break
