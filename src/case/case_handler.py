@@ -7,15 +7,14 @@ import time
 import numpy as np
 
 class CaseHandler:
-    def __init__(self,drone):
+    def __init__(self,drone,logger):
         self.drone = drone
+        self.logger = logger
 
         self.light = LightSensor()
         self.pressure = PressureHandler()
         self.wirehandler = WireHandler()
         self.ac_vel = Acceleration_Velocity(self.drone)
-        self.dronecontroller = DroneController()
-        self.logger = self.dronecontroller.get_logger_instance()
         
         self.stable_pre_val = 1 ##1mで大体7hpaの差
         self.stable_vel_val = 0.1
@@ -31,8 +30,8 @@ class CaseHandler:
 
         #放出判定用定数
         self.judge_release_maxtime = 10 #去年はARLISSで3600を使った
-        self.judge_release_lig_countmax = 12 
-        self.judge_release_pre_countmax = 12
+        self.judge_release_lig_countmax = 5
+        self.judge_release_pre_countmax = 5
         self.judge_release_border_light = 500
         self.judge_release_sleep_time = 0.5
         
@@ -146,7 +145,7 @@ class CaseHandler:
 
 
             if (self.pressure_counter < self.judge_release_pre_countmax) and self.pressure.CANUSEPRESSURE == True:
-                Judge = self.judge_pressure_stable(10) #何秒とる？？
+                Judge = self.judge_pressure_stable(1) #何秒とる？？
 
                 if Judge == False:#pressureが変化していたら
                     self.pressure_counter +=1
@@ -186,7 +185,7 @@ class CaseHandler:
             self.logger.write("Pressure stability confirmed")
             print(f"Pressure stability confirmed")
 
-            await self.dronecontroller.connect()
+            await self.drone.connect()
             self.logger.write("Velocity stability confirmation start")
             print(f"Velocity stability confirmation start")
             if await self.judge_velocity_stable(1):
