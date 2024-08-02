@@ -19,7 +19,7 @@ async def main():
 
     await drone.arm()
     await drone.add_sequence_task(drone.sequence_test_goto(speed,yaw_degree,target_coordinates))
-    #await asyncio.Future()
+    await asyncio.Future()
 
 if __name__ == "__main__":
     asyncio.run(main())
