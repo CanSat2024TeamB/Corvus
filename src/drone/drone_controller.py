@@ -36,7 +36,9 @@ class DroneController:
     def get_position_manager_instance(self):
         return self.position_manager
 
-    
+    def get_logger_instance(self):
+        return self.logger
+
     async def connect(self) -> bool:
         print("Connecting...")
         self.logger.write('Connecting...')
