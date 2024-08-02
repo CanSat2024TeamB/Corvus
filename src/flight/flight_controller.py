@@ -82,15 +82,6 @@ class FlightController:
         await self.drone.mission.start_mission()
         return True
     
-    #async def execute_mission(self, mission_plan: MissionPlan) -> bool:
-        print('do not return setting')
-        await self.drone.mission.set_return_to_launch_after_mission(False)
-        print('do not return start upload')
-        await self.drone.mission.upload_mission(mission_plan)
-        print('mission plan uploaded start mission')
-        await self.drone.mission.start_mission()
-        return True
-    
     async def if_mission_finished(self) -> bool:
         return await self.drone.mission.is_mission_finished()
 
@@ -99,8 +90,10 @@ class FlightController:
         self.target_latitude = target_coordinates.latitude()
         self.target_longitude = target_coordinates.longitude()
         self.target_altitude = target_coordinates.altitude()
+        AMSL = self.position_manager.adjusted_coordinates_AMSL()
+        
         print('target got')
-        await self.drone.action.goto_location(self.target_latitude, self.target_longitude, self.target_altitude, yaw_deg)
+        await self.drone.action.goto_location(self.target_latitude, self.target_longitude, AMSL+self.target_altitude, yaw_deg)
         print('goto started')
         await self.drone.action.set_current_speed(speed)
         

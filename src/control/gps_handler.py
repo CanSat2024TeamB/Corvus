@@ -8,9 +8,13 @@ class GPSHandler:
         self.drone = drone
         self.coordinates = Coordinates()
 
+    def get_AMSL(self):
+        self.coordinates.
+
     def update_coordinates(self,position) -> None:
         self.coordinates.set_longitude(position.longitude_deg)
         self.coordinates.set_latitude(position.latitude_deg)
+        self.coordinates.set_altitude(position.altitude)
         return
 #############################################################以下がオープン
 
