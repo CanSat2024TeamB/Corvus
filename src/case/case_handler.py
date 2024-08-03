@@ -2,21 +2,19 @@ from sensor.pressure_handler import PressureHandler
 from sensor.acceleration_velocity import Acceleration_Velocity
 from sensor.light_handler import LightSensor
 from wire.wirehandler import WireHandler
-from drone.drone_controller import DroneController
-from logger.logger import Logger
 import time
 import numpy as np
 
 class CaseHandler:
-    def __init__(self,drone):
-        self.drone = drone
+    def __init__(self,dronecontroller):
+        self.dronecontroller = dronecontroller
+        self.drone = dronecontroller.get_drone_instance()
+        self.logger = dronecontroller.get_logger_instance()
 
         self.light = LightSensor()
         self.pressure = PressureHandler()
         self.wirehandler = WireHandler()
         self.ac_vel = Acceleration_Velocity(self.drone)
-        self.dronecontroller = DroneController()
-        self.logger = Logger()
         
         self.stable_pre_val = 1 ##1mで大体7hpaの差
         self.stable_vel_val = 0.1
@@ -25,19 +23,20 @@ class CaseHandler:
         
         #収納判定用定数
         self.judge_storage_border_light = 300
-        self.judge_storage_maxtime = 300 
+        self.judge_storage_countmax = 10
+        self.judge_storage_maxtime = 60 #300にする 
         self.judge_storage_sleep_time = 0.5
         self.light_counter = 0 #counterを設定
 
         #放出判定用定数
-        self.judge_release_maxtime = 3600 #去年はARLISSでこの値を使った
-        self.judge_release_lig_countmax = 12 
-        self.judge_release_pre_countmax = 12
+        self.judge_release_maxtime = 10 #去年はARLISSで3600を使った
+        self.judge_release_lig_countmax = 5
+        self.judge_release_pre_countmax = 5
         self.judge_release_border_light = 500
         self.judge_release_sleep_time = 0.5
         
         #着地判定用定数
-        self.judge_landing_maxtime = 1200
+        self.judge_landing_maxtime = 120 #去年は1200
 
 
 
@@ -81,7 +80,7 @@ class CaseHandler:
     
     def judge_storage(self):
         ##############################
-        #self.phase = "Outside"
+        self.phase = "Outside"
         self.light_counter = 0 #counterを設定
         time_sta = time.perf_counter()
         ##############################
@@ -96,7 +95,7 @@ class CaseHandler:
                         self.light_counter +=1
                         
                     else:
-                        self.light_counter = 0#一回でも300以下であるならば外にいる判定
+                        self.light_counter = 0#一回でも300以上であるならば外にいる判定
                         self.logger.write("Still Outside")
                         print("Still Outside") #あとで消す
                         
@@ -133,7 +132,7 @@ class CaseHandler:
                 self.pressure_counter = self.judge_release_pre_countmax
                 time.sleep(5)
 
-            if (self.light_counter < self.judge_release_lig_countmax) and self.CANUSELIGHT == True:
+            if (self.light_counter < self.judge_release_lig_countmax) and self.light.CANUSELIGHT == True:
                 light_value = self.light.get_light_value()
                 if light_value > self.judge_release_border_light:#明るい判定が出たらcounterに+1
                     self.light_counter +=1
@@ -145,8 +144,8 @@ class CaseHandler:
                     print("Light still low")
 
 
-            if (self.pressure_counter < self.judge_release_pre_countmax) and self.CANUSEPRESSURE == True:
-                Judge = self.judge_pressure_stable(10) #何秒とる？？
+            if (self.pressure_counter < self.judge_release_pre_countmax) and self.pressure.CANUSEPRESSURE == True:
+                Judge = self.judge_pressure_stable(1) #何秒とる？？
 
                 if Judge == False:#pressureが変化していたら
                     self.pressure_counter +=1

@@ -1,5 +1,4 @@
 import spidev
-import time
 
 class LightSensor:
     def __init__(self):

@@ -13,6 +13,7 @@ class PressureHandler:
        
         self.error_count = 0
         self.interval = 1.0 
+        self.CANUSEPRESSURE = True
 
 
     
