@@ -33,13 +33,13 @@ class ConeDetector:
         self.set_model(model_path)
 
     def set_model(self, path: str):
-        self.model = YOLO(path)
+        self.model = YOLO(path, tast = "detect")
     
     def get_cone_bouding_box(self, image, conf = 0.5) -> list[int, int, int, int]:
         cone_box = None
         max_conf = 0
 
-        result = self.model(image, conf = conf, verbose = False)
+        result = self.model.predict(image, conf = conf, verbose = False)
         boxes = result[0].boxes
         for i in range(len(boxes.cls)):
             cls = boxes.cls[i]
