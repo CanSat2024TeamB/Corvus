@@ -152,10 +152,12 @@ class FlightController:
             for yaw_angle in range(0, 360, 30):
                 await self.go_to_location(yaw_angle)
                 await asyncio.sleep(3)
+                await self.stop_here()
                 self.detected_pos = self.camera_handler.capture_cone_position(0.5)
                 print(self.pos)
         
-        
+        self.
+
                 
 
 
