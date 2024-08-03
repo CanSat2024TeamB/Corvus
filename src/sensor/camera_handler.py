@@ -1,5 +1,6 @@
 from pathlib import Path
 from picamera2 import Picamera2
+from ultralytics import YOLO
 import cv2
 import ncnn
 import numpy as np
@@ -39,8 +40,9 @@ class ConeDetector:
         self.set_model(str(model_path))
 
     def set_model(self, path: str):
-        self.model_param = str(Path(path).joinpath("model.ncnn.param"))
-        self.model_bin = str(Path(path).joinpath("model.ncnn.bin"))
+        self.model = YOLO(path, task = "detect")
+        # self.model_param = str(Path(path).joinpath("model.ncnn.param"))
+        # self.model_bin = str(Path(path).joinpath("model.ncnn.bin"))
     
     def nms(self, bounding_boxes):
         bounding_boxes.sort(key = lambda x: (x[4], x[5]))
@@ -105,17 +107,31 @@ class ConeDetector:
         cone_box = None
         max_conf = 0
 
-        result_list = self.predict(image, conf)
-        for result in result_list:
-            box = result[:4]
-            cls = result[4]
-            conf = result[5]
-            
-            if cls != ConeDetector.CLS_CONE or conf < max_conf:
+        result = self.model.predict(image, conf = conf, verbose = False)
+        boxes = result[0].boxes
+        for i in range(len(boxes.cls)):
+            cls = boxes.cls[i]
+            conf = boxes.conf[i]
+            name = result[0].names[int(cls)]
+
+            if name != "cone" or conf < max_conf:
                 continue
 
-            cone_box = box
+            box = boxes.xyxy[i]
+            cone_box = [int(box[0]), int(box[1]), int(box[2]), int(box[3])]
             max_conf = conf
+
+        # result_list = self.predict(image, conf)
+        # for result in result_list:
+        #     box = result[:4]
+        #     cls = result[4]
+        #     conf = result[5]
+            
+        #     if cls != ConeDetector.CLS_CONE or conf < max_conf:
+        #         continue
+
+        #     cone_box = box
+        #     max_conf = conf
         
         return cone_box
     
