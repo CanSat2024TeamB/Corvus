@@ -52,7 +52,8 @@ class DroneController:
                 self.logger.write("Connected to drone!")
                 break
             await asyncio.sleep(0.1)
-
+            
+    async def gps_ok(self):
         async for health in self.drone_instance.telemetry.health():
                 if health.is_global_position_ok and health.is_home_position_ok:
                     self.logger.write("Global position estimate OK")
