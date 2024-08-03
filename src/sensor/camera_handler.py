@@ -33,7 +33,7 @@ class ConeDetector:
         self.set_model(model_path)
 
     def set_model(self, path: str):
-        self.model = YOLO(path, tast = "detect")
+        self.model = YOLO(path, task = "detect")
     
     def get_cone_bouding_box(self, image, conf = 0.5) -> list[int, int, int, int]:
         cone_box = None
