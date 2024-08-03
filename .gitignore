@@ -1,5 +1,7 @@
 corvus_image.pyd
 venv/
+run.command
+PX4-Autopilot/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
