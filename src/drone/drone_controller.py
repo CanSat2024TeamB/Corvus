@@ -147,13 +147,13 @@ class DroneController:
                 # await self.flight_controller.disarm()
                 break
 
-    async def sequence_test_goto(self,speed, yaw_deg, target_coordinates: Coordinates):
+    async def sequence_test_goto(self,speed, target_coordinates: Coordinates):
         await self.flight_controller.takeoff(3)
         print('reached')
         self.logger.write('reached')
         print('goto started')
         self.logger.write('goto started')
-        await self.flight_controller.go_to_location(speed, yaw_deg, target_coordinates)
+        await self.flight_controller.go_to_location(speed, target_coordinates)
         print('goto finished start hovering')
         self.logger.write('goto finished start hovering')
         await self.flight_controller.hovering(5)

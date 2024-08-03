@@ -18,7 +18,8 @@ class FlightController:
         self.target_longitude = 0
         self.target_altitude = 0
         self.ASML = 0
-        self.detected_pos = [0,0]
+        self.yaw_deg = 0
+        self.detected_pos = [None,None]
         
         self.detected_flag = False
         self.is_in_air: bool = False
@@ -89,14 +90,15 @@ class FlightController:
         return await self.drone.mission.is_mission_finished()
 
     ###################################################################################################
-    async def go_to_location(self, speed, yaw_deg, target_coordinates: Coordinates):
+    async def go_to_location(self, speed, target_coordinates: Coordinates):
         self.target_latitude = target_coordinates.latitude()
         self.target_longitude = target_coordinates.longitude()
         self.target_altitude = target_coordinates.altitude()
         self.AMSL = self.position_manager.adjusted_coordinates_AMSL()
+        self.yaw_deg = self.calculate_yaw_angle(self.target_latitude,self.target_altitude)
         
         print('target got')
-        await self.drone.action.goto_location(self.target_latitude, self.target_longitude, self.AMSL+self.target_altitude, yaw_deg)
+        await self.drone.action.goto_location(self.target_latitude, self.target_longitude, self.AMSL+self.target_altitude, self.yaw_deg)
         print('goto started')
         await self.drone.action.set_current_speed(speed)
         
@@ -122,17 +124,38 @@ class FlightController:
         return orient_yaw_deg ##-180~180
     #########################################################################################################
 
-    async def precise_land(self):
-        while True:
-            await asyncio.sleep(1)
-            self.detected_pos = self.camera_handler.capture_cone_position(0.5)
-            print(self.pos)
-            if self.pos == [None, None]:
-                await asyncio.sleep(1)
-            else:
-                await self.stop_here()
-                self.detected_flag = True
+    async def rotate_yaw(self, yaw):
+        await self.drone.action.set_current_speed(0.1)
+        self.target_latitude = self.position_manager.adjusted_coordinates_lat()
+        self.target_longitude = self.position_manager.adjusted_coordinates_lon()
+        self.target_altitude = self.position_manager.adjusted_altitude()
+        self.AMSL = self.position_manager.adjusted_coordinates_AMSL()
+        self.yaw_deg = yaw
+        
+        print('rotate')
+        await self.drone.action.goto_location(self.target_latitude, self.target_longitude, self.AMSL+self.target_altitude, self.yaw_deg)
 
+    async def decend(self,descend_m):
+        await self.drone.action.set_current_speed(0.1)
+        self.target_latitude = self.position_manager.adjusted_coordinates_lat()
+        self.target_longitude = self.position_manager.adjusted_coordinates_lon()
+        self.target_altitude = self.position_manager.adjusted_altitude()
+        self.AMSL = self.position_manager.adjusted_coordinates_AMSL()
+
+        print('descend')
+        await self.drone.action.goto_location(self.target_latitude, self.target_longitude, self.AMSL+self.target_altitude-descend_m, self.yaw_deg)
+
+
+
+    async def precise_land(self):
+        while self.detected_pos == [None,None]:
+            for yaw_angle in range(0, 360, 30):
+                await self.go_to_location(yaw_angle)
+                await asyncio.sleep(3)
+                self.detected_pos = self.camera_handler.capture_cone_position(0.5)
+                print(self.pos)
+        
+        
                 
 
 
