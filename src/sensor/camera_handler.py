@@ -41,7 +41,7 @@ class ConeDetector:
         self.model_param = str(Path(path).joinpath("model.ncnn.param"))
         self.model_bin = str(Path(path).joinpath("model.ncnn.bin"))
     
-    def nms(bounding_boxes):
+    def nms(self, bounding_boxes):
         bounding_boxes.sort(key = lambda x: (x[4], x[5]))
         result = []
 
