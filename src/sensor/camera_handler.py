@@ -3,6 +3,7 @@ from picamera2 import Picamera2
 import cv2
 import ncnn
 import numpy as np
+import time
 
 class CameraHandler:
     def __init__(self):
@@ -125,9 +126,18 @@ class ConeDetector:
             return [normalized_x, normalized_y]
         
     def capture_cone_position(self, conf = 0.1):
+        cam_start = time.perf_counter()
         image = self.camera_handler.capture()
+        cam_end = time.perf_counter()
+
         if not image is None:
-            return self.get_cone_position(image, conf)
+            det_start = time.perf_counter()
+            result = self.get_cone_position(image, conf)
+            det_end = time.perf_counter()
+
+            print(f"camera: {(cam_end - cam_start) * 1000} ms")
+            print(f"detection: {(det_end - det_start) * 1000} ms")
+            return result
         else:
             return [None, None]
             
