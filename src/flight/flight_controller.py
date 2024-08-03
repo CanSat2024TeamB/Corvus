@@ -6,14 +6,15 @@ import math
 
 from control.position_manager import PositionManager
 from control.coordinates import Coordinates
-#from sensor.camera_handler import CameraHandler
+from sensor.camera_handler import CameraHandler, ConeDetector
 
 class FlightController:
 
     def __init__(self, drone: System, position_manager: PositionManager):
         self.drone: System = drone
         self.position_manager: PositionManager = position_manager
-        #self.camera_handler = CameraHandler(model_path=Path(__file__).parent.parent.parent.joinpath("assets/model/cone.pt"))
+        self.camera_handler = CameraHandler()
+        self.cone_detector = ConeDetector(self.camera_handler)
         self.target_latitude = 0
         self.target_longitude = 0
         self.target_altitude = 0
@@ -153,10 +154,10 @@ class FlightController:
                 await self.go_to_location(yaw_angle)
                 await asyncio.sleep(3)
                 await self.stop_here()
-                self.detected_pos = self.camera_handler.capture_cone_position(0.5)
+                self.detected_pos = self.cone_detector.capture_cone_position()
                 print(self.pos)
         
-        self.
+    
 
                 
 
