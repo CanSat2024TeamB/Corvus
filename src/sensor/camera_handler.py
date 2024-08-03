@@ -1,10 +1,9 @@
 from pathlib import Path
 from picamera2 import Picamera2
-from ultralytics import YOLO
 import cv2
 import ncnn
 import numpy as np
-import time
+#import time
 
 class CameraHandler:
     def __init__(self):
@@ -40,9 +39,8 @@ class ConeDetector:
         self.set_model(str(model_path))
 
     def set_model(self, path: str):
-        self.model = YOLO(path, task = "detect")
-        # self.model_param = str(Path(path).joinpath("model.ncnn.param"))
-        # self.model_bin = str(Path(path).joinpath("model.ncnn.bin"))
+        self.model_param = str(Path(path).joinpath("model.ncnn.param"))
+        self.model_bin = str(Path(path).joinpath("model.ncnn.bin"))
     
     def nms(self, bounding_boxes):
         bounding_boxes.sort(key = lambda x: (x[4], x[5]))
@@ -81,12 +79,9 @@ class ConeDetector:
 
         mat_in = ncnn.Mat.from_pixels_resize(image, ncnn.Mat.PixelType.PIXEL_BGR2RGB, image_width, image_height, ConeDetector.IMGSZ, ConeDetector.IMGSZ)
         mat_in.substract_mean_normalize([], [1 / 255, 1 / 255, 1 / 255])
-        
-        pre_start = time.perf_counter()
+
         extractor.input("in0", mat_in)
         ret, mat_out = extractor.extract("out0")
-        pre_end = time.perf_counter()
-        print(f"ncnn: {(pre_end - pre_start) * 1000} ms")
         out = np.array(mat_out)
 
         output_list = out.T
@@ -107,31 +102,17 @@ class ConeDetector:
         cone_box = None
         max_conf = 0
 
-        result = self.model.predict(image, conf = conf, verbose = False)
-        boxes = result[0].boxes
-        for i in range(len(boxes.cls)):
-            cls = boxes.cls[i]
-            conf = boxes.conf[i]
-            name = result[0].names[int(cls)]
-
-            if name != "cone" or conf < max_conf:
+        result_list = self.predict(image, conf)
+        for result in result_list:
+            box = result[:4]
+            cls = result[4]
+            conf = result[5]
+            
+            if cls != ConeDetector.CLS_CONE or conf < max_conf:
                 continue
 
-            box = boxes.xyxy[i]
-            cone_box = [int(box[0]), int(box[1]), int(box[2]), int(box[3])]
+            cone_box = box
             max_conf = conf
-
-        # result_list = self.predict(image, conf)
-        # for result in result_list:
-        #     box = result[:4]
-        #     cls = result[4]
-        #     conf = result[5]
-            
-        #     if cls != ConeDetector.CLS_CONE or conf < max_conf:
-        #         continue
-
-        #     cone_box = box
-        #     max_conf = conf
         
         return cone_box
     
@@ -148,10 +129,10 @@ class ConeDetector:
         image = self.camera_handler.capture()
 
         if not image is None:
-            det_start = time.perf_counter()
+            #det_start = time.perf_counter()
             result = self.get_cone_position(image, conf)
-            det_end = time.perf_counter()
-            print(f"detection: {(det_end - det_start) * 1000} ms")
+            #det_end = time.perf_counter()
+            #print(f"detection: {(det_end - det_start) * 1000} ms")
             return result
         else:
             return [None, None]
@@ -163,20 +144,18 @@ class ConeDetector:
 #     os = cone_detector.capture_cone_position()
 #     print(pos)
 
-def test1():
-    camera_handler = CameraHandler()
-    cone_detector = ConeDetector(camera_handler, Path(__file__).parent.parent.parent.joinpath("assets/model/cone_ncnn_model"))
-    image = camera_handler.capture()
-    box = cone_detector.get_cone_bouding_box(image, 0.5)
-    if not box is None:
-        cv2.rectangle(image, (box[0], box[1]), (box[2], box[3]), (255, 0, 0))
-    cv2.imwrite("detect.png", image)
+# def test1():
+#     camera_handler = CameraHandler()
+#     cone_detector = ConeDetector(camera_handler, Path(__file__).parent.parent.parent.joinpath("assets/model/cone_ncnn_model"))
+#     image = camera_handler.capture()
+#     box = cone_detector.get_cone_bouding_box(image, 0.5)
+#     if not box is None:
+#         cv2.rectangle(image, (box[0], box[1]), (box[2], box[3]), (255, 0, 0))
+#     cv2.imwrite("detect.png", image)
 
-def test2():
-    camera_handler = CameraHandler()
-    cone_detector = ConeDetector(camera_handler, Path(__file__).parent.parent.parent.joinpath("assets/model/cone_ncnn_model"))
-    while True:
-        pos = cone_detector.capture_cone_position()
-        print(pos)
-
-test1()
+# def test2():
+#     camera_handler = CameraHandler()
+#     cone_detector = ConeDetector(camera_handler, Path(__file__).parent.parent.parent.joinpath("assets/model/cone_ncnn_model"))
+#     while True:
+#         pos = cone_detector.capture_cone_position()
+#         print(pos)
