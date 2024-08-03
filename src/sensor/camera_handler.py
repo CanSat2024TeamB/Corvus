@@ -79,7 +79,7 @@ class ConeDetector:
 #     print(pos)
 
 def test1():
-    camera_handler = CameraHandler(model_path=Path(__file__).parent.parent.parent.joinpath("assets/model/cone.pt"))
+    camera_handler = CameraHandler()
     cone_detector = ConeDetector(camera_handler, Path(__file__).parent.parent.parent.joinpath("assets/model/cone.pt"))
     image = camera_handler.capture()
     box = cone_detector.get_cone_bouding_box(image, 0.5)
