@@ -28,7 +28,7 @@ class CameraHandler:
         cv2.imwrite(path, image)
 
 class ConeDetector:
-    def __init__(self, camera_handler, model_path: str = Path(__file__).parent.parent.joinpath("assets/model/cone.pt")):
+    def __init__(self, camera_handler, model_path: str = Path(__file__).parent.parent.joinpath("assets/model/cone_ncnn_model")):
         self.camera_handler = camera_handler
         self.set_model(model_path)
 
@@ -39,7 +39,7 @@ class ConeDetector:
         cone_box = None
         max_conf = 0
 
-        result = self.model.predict(image, conf = conf, verbose = False)
+        result = self.model(image, conf = conf, verbose = False)
         boxes = result[0].boxes
         for i in range(len(boxes.cls)):
             cls = boxes.cls[i]
@@ -80,16 +80,18 @@ class ConeDetector:
 
 def test1():
     camera_handler = CameraHandler()
-    cone_detector = ConeDetector(camera_handler, Path(__file__).parent.parent.parent.joinpath("assets/model/cone.pt"))
+    cone_detector = ConeDetector(camera_handler, Path(__file__).parent.parent.parent.joinpath("assets/model/cone_ncnn_model"))
     image = camera_handler.capture()
     box = cone_detector.get_cone_bouding_box(image, 0.5)
     if not box is None:
-        cv2.rectangle(image, (box[0], box[1]), (box[2], box[4]), (255, 0, 0))
-    cv2.imwrite("~/detect.png", image)
+        cv2.rectangle(image, (box[0], box[1]), (box[2], box[3]), (255, 0, 0))
+    cv2.imwrite("detect.png", image)
 
 def test2():
     camera_handler = CameraHandler()
-    cone_detector = ConeDetector(camera_handler, Path(__file__).parent.parent.parent.joinpath("assets/model/cone.pt"))
+    cone_detector = ConeDetector(camera_handler, Path(__file__).parent.parent.parent.joinpath("assets/model/cone_ncnn_model"))
     while True:
         pos = cone_detector.capture_cone_position()
         print(pos)
+
+test1()
