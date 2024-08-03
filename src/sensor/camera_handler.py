@@ -2,6 +2,8 @@ from pathlib import Path
 from ultralytics import YOLO
 from picamera2 import Picamera2
 import cv2
+import ncnn
+import numpy as np
 
 class CameraHandler:
     def __init__(self):
@@ -28,31 +30,90 @@ class CameraHandler:
         cv2.imwrite(path, image)
 
 class ConeDetector:
+    IMGSZ = 640
+    IOU_THRESHOLD = 0.3
+    CLS_CONE = 4
+
     def __init__(self, camera_handler, model_path: str = Path(__file__).parent.parent.joinpath("assets/model/cone_ncnn_model")):
         self.camera_handler = camera_handler
         self.set_model(model_path)
 
     def set_model(self, path: str):
-        self.model = YOLO(path, task = "detect")
+        self.model_param = Path(path).joinpath("model.ncnn.param")
+        self.model_bin = Path(path).joinpath("model.ncnn.bin")
+    
+    def nms(bounding_boxes):
+        bounding_boxes.sort(key = lambda x: (x[4], x[5]))
+        result = []
+
+        while len(bounding_boxes) > 0:
+            base = bounding_boxes.pop(-1)
+            result.append(base)
+
+            base_size = (base[2] - base[0]) * (base[3] - base[1])
+            i = len(bounding_boxes) - 1
+
+            while i >= 0:
+                target = bounding_boxes[i]
+                if target[4] != base[4]:
+                    break
+
+                target_size = (target[2] - target[0]) * (target[3] - target[1])
+                overlap_size = max(0, min(base[2], target[2]) - max(base[0], target[0])) * max(0, min(base[3], target[3]) - max(base[1], target[1]))
+                iou = overlap_size / (base_size + target_size - overlap_size)
+                if iou > ConeDetector.IOU_THRESHOLD:
+                    del bounding_boxes[i]
+                i -= 1
+                
+        return result
+
+    def predict(self, image, conf = 0.1):
+        net = ncnn.Net()
+        net.load_param(self.model_param)
+        net.load_model(self.model_bin)
+
+        extractor = net.create_extractor()
+
+        image_height = image.shape[0]
+        image_width = image.shape[1]
+
+        mat_in = ncnn.Mat.from_pixels_resize(image, ncnn.Mat.PixelType.PIXEL_BGR2RGB, image_width, image_height, ConeDetector.IMGSZ, ConeDetector.IMGSZ)
+        mat_in.substract_mean_normalize([], [1 / 255, 1 / 255, 1 / 255])
+
+        extractor.input("in0", mat_in)
+        ret, mat_out = extractor.extract("out0")
+        out = np.array(mat_out)
+
+        output_list = out.T
+        result = []
+        for output_data in output_list:
+            x1 = int((output_data[0] - output_data[2] / 2) * image_width / ConeDetector.IMGSZ)
+            y1 = int((output_data[1] - output_data[3] / 2) * image_height / ConeDetector.IMGSZ)
+            x2 = int((output_data[0] + output_data[2] / 2) * image_width / ConeDetector.IMGSZ)
+            y2  =int((output_data[1] + output_data[3] / 2) * image_height / ConeDetector.IMGSZ)
+
+            cls = np.argmax(output_data[4:])
+            if output_data[4 + cls] > conf:
+                result.append([x1, y1, x2, y2, cls, output_data[4 + cls]])
+
+        return self.nms(result)
     
     def get_cone_bouding_box(self, image, conf = 0.5) -> list[int, int, int, int]:
         cone_box = None
         max_conf = 0
 
-        result = self.model.predict(image, conf = conf, verbose = False)
-        boxes = result[0].boxes
-        for i in range(len(boxes.cls)):
-            cls = boxes.cls[i]
-            conf = boxes.conf[i]
-            name = result[0].names[int(cls)]
-
-            if name != "cone" or conf < max_conf:
+        result_list = self.predict(image, conf)
+        for result in result_list:
+            box = result[:4]
+            cls = result[4]
+            conf = result[5]
+            
+            if cls != ConeDetector.CLS_CONE or conf < max_conf:
                 continue
 
-            box = boxes.xyxy[i]
-            cone_box = [int(box[0]), int(box[1]), int(box[2]), int(box[3])]
+            cone_box = box
             max_conf = conf
-
+        
         return cone_box
     
     def get_cone_position(self, image, conf = 0.5):
