@@ -6,7 +6,7 @@ def send_and_receive(ser, data, wait_time=2):
         ser.write(data)
         ser.flush()
         time.sleep(wait_time)  # 受信するための待機時間を長く設定
-        response = ser.readline().decode('utf-8').strip()
+        response = ser.read_until(b'\n\r').decode('utf-8').strip()
         return response
     except Exception as e:
         print(f"通信エラー: {e}")
@@ -27,7 +27,7 @@ def main():
 
     # データの送受信
     for i in range(10):
-        data_to_send = b'Hello, World!\r\n'
+        data_to_send = b'Hello, World!\n\r'
         print(f"送信したデータ: {data_to_send}")
         response = send_and_receive(ser, data_to_send)
         print(f"受信したデータ: {response}")
@@ -42,9 +42,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-
-
-
-
-
