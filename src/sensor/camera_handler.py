@@ -79,9 +79,12 @@ class ConeDetector:
 
         mat_in = ncnn.Mat.from_pixels_resize(image, ncnn.Mat.PixelType.PIXEL_BGR2RGB, image_width, image_height, ConeDetector.IMGSZ, ConeDetector.IMGSZ)
         mat_in.substract_mean_normalize([], [1 / 255, 1 / 255, 1 / 255])
-
+        
+        pre_start = time.perf_counter()
         extractor.input("in0", mat_in)
         ret, mat_out = extractor.extract("out0")
+        pre_end = time.perf_counter()
+        print(f"ncnn: {(pre_end - pre_start) * 1000} ms")
         out = np.array(mat_out)
 
         output_list = out.T
@@ -126,16 +129,12 @@ class ConeDetector:
             return [normalized_x, normalized_y]
         
     def capture_cone_position(self, conf = 0.1):
-        cam_start = time.perf_counter()
         image = self.camera_handler.capture()
-        cam_end = time.perf_counter()
 
         if not image is None:
             det_start = time.perf_counter()
             result = self.get_cone_position(image, conf)
             det_end = time.perf_counter()
-
-            print(f"camera: {(cam_end - cam_start) * 1000} ms")
             print(f"detection: {(det_end - det_start) * 1000} ms")
             return result
         else:
