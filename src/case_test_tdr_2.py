@@ -7,7 +7,7 @@ from case.case_handler import CaseHandler
 
 async def main():
 
-    nichrome_pin_1 = 23
+    nichrome_pin_1 = 7
     nichrome_pin_2 = 25
 
     #config_path: str = Path(__file__).resolve().parent.parent.joinpath("assets/config/config.ini")
