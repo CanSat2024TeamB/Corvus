@@ -1,5 +1,4 @@
 from pathlib import Path
-from ultralytics import YOLO
 from picamera2 import Picamera2
 import cv2
 import ncnn
@@ -36,11 +35,11 @@ class ConeDetector:
 
     def __init__(self, camera_handler, model_path: str = Path(__file__).parent.parent.joinpath("assets/model/cone_ncnn_model")):
         self.camera_handler = camera_handler
-        self.set_model(model_path)
+        self.set_model(str(model_path))
 
     def set_model(self, path: str):
-        self.model_param = Path(path).joinpath("model.ncnn.param")
-        self.model_bin = Path(path).joinpath("model.ncnn.bin")
+        self.model_param = str(Path(path).joinpath("model.ncnn.param"))
+        self.model_bin = str(Path(path).joinpath("model.ncnn.bin"))
     
     def nms(bounding_boxes):
         bounding_boxes.sort(key = lambda x: (x[4], x[5]))
