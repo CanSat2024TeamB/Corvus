@@ -1,0 +1,20 @@
+description: Ultralytics cone model trained on D:/source/Visual Studio Code/repos/curvus/cascade-training/raw_dataset/positive/traffic-cone.v3i.yolov8/data.yaml
+author: Ultralytics
+date: '2024-08-03T11:08:23.877700'
+version: 8.2.65
+license: AGPL-3.0 License (https://ultralytics.com/license)
+docs: https://docs.ultralytics.com
+stride: 32
+task: detect
+batch: 1
+imgsz:
+- 640
+- 640
+names:
+  0: Drum
+  1: Tube
+  2: bicycle
+  3: car
+  4: cone
+  5: person
+  6: van
