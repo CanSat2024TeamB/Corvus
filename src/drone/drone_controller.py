@@ -126,7 +126,6 @@ class DroneController:
         print('finish hovering start landing')
         self.logger.write('finish hovering start landing')
         await self.flight_controller.land()
-       # await self.flight_controller.disarm()
 
     async def sequence_test_mission(self,speed, *target_coordinates: Coordinates):
         await self.flight_controller.go_to(speed, *target_coordinates)
@@ -142,9 +141,6 @@ class DroneController:
                 print(' hovering finished start landing')
                 self.logger.write('hovering finished start landing')
                 await self.flight_controller.land()
-                print('landed')
-                self.logger.write('landed')
-                # await self.flight_controller.disarm()
                 break
 
     async def sequence_test_goto(self,speed, target_coordinates: Coordinates):
@@ -160,9 +156,6 @@ class DroneController:
         print('hovering finished start landing')
         self.logger.write('hovering finished start landing')
         await self.flight_controller.land()
-        print('landed')
-        self.logger.write('landed')
-        # await self.flight_controller.disarm()
 
     async def sequence_test_endurance(self,speed, *target_coordinates: Coordinates): #要書き換え
         await self.flight_controller.takeoff(3)
@@ -171,8 +164,6 @@ class DroneController:
         while True:
             await asyncio.sleep(1)
             if self.battery_watch.remaining_percent()<35:
-                await self.flight_controller.hovering(10)
                 await self.flight_controller.land()
-              #  await self.flight_controller.disarm()
 
 ###########################################################################################################    

@@ -6,15 +6,15 @@ import math
 
 from control.position_manager import PositionManager
 from control.coordinates import Coordinates
-from sensor.camera_handler import CameraHandler, ConeDetector
+#from sensor.camera_handler import CameraHandler, ConeDetector
 
 class FlightController:
 
     def __init__(self, drone: System, position_manager: PositionManager):
         self.drone: System = drone
         self.position_manager: PositionManager = position_manager
-        self.camera_handler = CameraHandler()
-        self.cone_detector = ConeDetector(self.camera_handler)
+        #self.camera_handler = CameraHandler()
+        #self.cone_detector = ConeDetector(self.camera_handler)
         self.target_latitude = 0
         self.target_longitude = 0
         self.target_altitude = 0
@@ -163,7 +163,14 @@ class FlightController:
 
 
     #########################################################################################################
-    
+
+    async def fly_orbit(self, radius, velocity, yaw, latitude, longitude, altitude):
+        await self.drone.action.do_orbit(radius_m=radius,
+                                   velocity_ms=velocity,
+                                   yaw_behavior=yaw,
+                                   latitude_deg=latitude,
+                                   longitude_deg=longitude,
+                                   absolute_altitude_m=altitude)
 
     
     def update_is_in_air(self, is_in_air: bool) -> None:
