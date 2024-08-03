@@ -4,24 +4,19 @@ from picamera2 import Picamera2
 import cv2
 
 class CameraHandler:
-    def __init__(self, model_path: str = Path(__file__).parent.parent.joinpath("assets/model/cone.pt")):
+    def __init__(self):
         self.camera = Picamera2()
         self.camera.start()
 
         camera_config = self.camera.create_preview_configuration()
         self.width = camera_config["main"]["size"][0]
         self.height = camera_config["main"]["size"][1]
-
-        self.set_model(model_path)
     
     def get_width(self):
         return self.width
     
     def get_height(self):
         return self.height
-    
-    def set_model(self, path: str):
-        self.model = YOLO(path)
         
     def capture(self):
         frame = self.camera.capture_array()
@@ -33,8 +28,12 @@ class CameraHandler:
         cv2.imwrite(path, image)
 
 class ConeDetector:
-    def __init__(self, camera_handler):
+    def __init__(self, camera_handler, model_path: str = Path(__file__).parent.parent.joinpath("assets/model/cone.pt")):
         self.camera_handler = camera_handler
+        self.set_model(model_path)
+
+    def set_model(self, path: str):
+        self.model = YOLO(path)
     
     def get_cone_bouding_box(self, image, conf = 0.5) -> list[int, int, int, int]:
         cone_box = None
@@ -73,15 +72,15 @@ class ConeDetector:
             return [None, None]
             
 # 使い方
-# camera_handler = CameraHandler(model_path=Path(__file__).parent.parent.parent.joinpath("assets/model/cone.pt"))
-# cone_detector = ConeDetector(camera_handler)
+# camera_handler = CameraHandler()
+# cone_detector = ConeDetector(camera_handler, Path(__file__).parent.parent.parent.joinpath("assets/model/cone.pt"))
 # while True:
 #     os = cone_detector.capture_cone_position()
 #     print(pos)
 
 def test1():
     camera_handler = CameraHandler(model_path=Path(__file__).parent.parent.parent.joinpath("assets/model/cone.pt"))
-    cone_detector = ConeDetector(camera_handler)
+    cone_detector = ConeDetector(camera_handler, Path(__file__).parent.parent.parent.joinpath("assets/model/cone.pt"))
     image = camera_handler.capture()
     box = cone_detector.get_cone_bouding_box(image, 0.5)
     if not box is None:
@@ -89,8 +88,8 @@ def test1():
     cv2.imwrite("~/detect.png", image)
 
 def test2():
-    camera_handler = CameraHandler(model_path=Path(__file__).parent.parent.parent.joinpath("assets/model/cone.pt"))
-    cone_detector = ConeDetector(camera_handler)
+    camera_handler = CameraHandler()
+    cone_detector = ConeDetector(camera_handler, Path(__file__).parent.parent.parent.joinpath("assets/model/cone.pt"))
     while True:
         pos = cone_detector.capture_cone_position()
         print(pos)
