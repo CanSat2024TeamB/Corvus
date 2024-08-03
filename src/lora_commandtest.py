@@ -3,7 +3,7 @@ import time
 
 def send_and_receive(ser, data, wait_time=2):
     try:
-        ser.write(data)  # データをASCIIエンコードして送信
+        ser.write(data.encode('ascii'))  # データをASCIIエンコードして送信
         ser.flush()
         time.sleep(wait_time)  # 受信するための待機時間を長く設定
         response = ser.read_until(b'\n\r').decode('ascii').strip()  # データをASCIIデコードして受信
