@@ -2,21 +2,22 @@ import asyncio
 
 class SimpleTaskManager:
     def __init__(self):
-        self.task_group = None
+        self.tasks = []
 
     async def invoke_initial_tasks(self):
-        async with asyncio.TaskGroup() as task_group:
-            self.task_group = task_group  # TaskGroupの参照を保存
-            task_group.create_task(self.print_message("Task 1: hello"))
-            task_group.create_task(self.print_message("Task 2: world"))
-            # TaskGroup が閉じるまで待機
-            await asyncio.Future()  # 永続的に動作させる
+        # 最初のタスクを `asyncio.gather` で実行
+        self.tasks = [
+            asyncio.create_task(self.print_message("Task 1: hello")),
+            asyncio.create_task(self.print_message("Task 2: world")),
+        ]
+
+        # タスクの終了を待機
+        await asyncio.gather(*self.tasks)
 
     async def add_sequence_task(self, coro):
-        if hasattr(self, 'task_group') and self.task_group:
-            self.task_group.create_task(coro)
-        else:
-            print("No task group available to add the task.")
+        # 新しいタスクを追加
+        new_task = asyncio.create_task(coro)
+        self.tasks.append(new_task)
 
     async def print_message(self, message):
         while True:
@@ -26,7 +27,7 @@ class SimpleTaskManager:
 async def main():
     manager = SimpleTaskManager()
     # Invoke initial tasks
-    asyncio.create_task(manager.invoke_initial_tasks())
+    await manager.invoke_initial_tasks()
 
     # Wait a bit before adding the new task
     await asyncio.sleep(5)
