@@ -28,6 +28,10 @@ async def main():
     
     # 任務を追加する
     await  drone.add_sequence_task(drone.sequence_test_mission(speed, target_coordinates_1))
+    try:
+        await asyncio.Future()
+    except asyncio.CancelledError:
+        print("Main loop cancelled")
 
 if __name__ == "__main__":
     asyncio.run(main())
