@@ -14,7 +14,7 @@ async def main():
     #await drone.arm()
     await asyncio.sleep(5)
 
-    num = 1
+    num = 2
     speed = 2
     first_lon = drone.position_manager.adjusted_coordinates_lon()
     first_lat = drone.position_manager.adjusted_coordinates_lat()
