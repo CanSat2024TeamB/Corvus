@@ -20,8 +20,8 @@ async def main():
     #first_lat = drone.position_manager.adjusted_coordinates_lat()
     hov_alt = 3
     takeoff_coordinates_1 = Coordinates(140.1081125,35.7700173,hov_alt)
-    target_coordinates_1 = Coordinates(140.1080039,35.7704584,0)
-    target_coordinates_2 = Coordinates(140.1081125,35.7700173,0)
+    target_coordinates_1 = Coordinates(140.1080039,35.7704584,hov_alt)
+    target_coordinates_2 = Coordinates(140.1081125,35.7700173,hov_alt)
     args = [speed] + [takeoff_coordinates_1] + [target for pair in zip([target_coordinates_1] * num, [target_coordinates_2] * num) for target in pair]+[target_coordinates_1]
 
 
