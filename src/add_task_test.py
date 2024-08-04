@@ -5,14 +5,15 @@ class SimpleTaskManager:
         self.tasks = []
 
     async def invoke_initial_tasks(self):
-        # 最初のタスクを `asyncio.gather` で実行
-        self.tasks = [
+        # 最初のタスクを作成し、self.tasks に追加
+        self.tasks.extend([
             asyncio.create_task(self.print_message("Task 1: hello")),
             asyncio.create_task(self.print_message("Task 2: world")),
-        ]
+        ])
 
-        # タスクの終了を待機
-        await asyncio.gather(*self.tasks)
+        # すべてのタスクが実行され続けるようにする
+        # (ここでは無限に続けるため、他の方法で終了する可能性もあります)
+        await asyncio.sleep(float('inf'))
 
     async def add_sequence_task(self, coro):
         # 新しいタスクを追加
@@ -27,7 +28,7 @@ class SimpleTaskManager:
 async def main():
     manager = SimpleTaskManager()
     # Invoke initial tasks
-    await manager.invoke_initial_tasks()
+    asyncio.create_task(manager.invoke_initial_tasks())
 
     # Wait a bit before adding the new task
     await asyncio.sleep(5)
