@@ -15,10 +15,10 @@ async def main():
     await drone.connect()
     
     # センサーを起動
-    await drone.invoke_sensor()
+    asyncio.create_task(drone.invoke_sensor())
 
     # 少し待機して位置情報を取得
-    await asyncio.sleep(1)
+    await asyncio.sleep(5)
     
     speed = 1.0
     first_lon = drone.position_manager.adjusted_coordinates_lon()
@@ -27,16 +27,7 @@ async def main():
     target_coordinates_1 = Coordinates(first_lon, first_lat, hov_alt)
     
     # 任務を追加する
-    task = drone.sequence_test_mission(speed, target_coordinates_1)
-    
-    # 全てのタスクを待機する
-    try:
-        await asyncio.gather(
-            task,
-            # 他に待機する必要があるタスクがあればここに追加
-        )
-    except asyncio.CancelledError:
-        print("Main loop cancelled")
+    await  drone.add_sequence_task(drone.sequence_test_mission(speed, target_coordinates_1))
 
 if __name__ == "__main__":
     asyncio.run(main())

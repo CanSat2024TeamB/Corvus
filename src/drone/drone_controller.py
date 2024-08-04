@@ -100,31 +100,27 @@ class DroneController:
 
 #############################################################################################
     async def invoke_sensor(self) -> None:
-        tasks = [
-            self.lidar_handler.invoke_loop(),
-            self.gps_handler.invoke_loop(),
-            # self.battery_watch.invoke_loop(),  # バッテリーハンドラのコルーチンが必要なら追加
-            self.compass_handler.invoke_loop(),
-            # self.flight_controller.invoke_loop(),  # フライトコントローラのコルーチンが必要なら追加
-            self.logger_write()
-        ]
-    
-    # 全てのタスクが完了するのを待つ
-        await asyncio.gather(*tasks)
+        # すべてのタスクをリストに追加
+        self.tasks.extend([
+            asyncio.create_task(self.lidar_handler.invoke_loop()),
+            asyncio.create_task(self.gps_handler.invoke_loop()),
+            # asyncio.create_task(self.battery_watch.invoke_loop()),  # バッテリーハンドラのコルーチンが必要なら追加
+            asyncio.create_task(self.compass_handler.invoke_loop()),
+            # asyncio.create_task(self.flight_controller.invoke_loop()),  # フライトコントローラのコルーチンが必要なら追加
+            asyncio.create_task(self.logger_write())
+        ])
+
+        # 全てのタスクが完了するのを待つ
+        await asyncio.sleep(float('inf'))
 
     async def add_sequence_task(self, coro):
         if not hasattr(self, 'tasks'):
             self.tasks = []
 
-        self.tasks.append(coro)
+        # 新しいタスクを追加
+        new_task = asyncio.create_task(coro)
+        self.tasks.append(new_task)
         print('added task')
-
-        # ログの書き込みはコルーチンとして扱う
-        await self.logger.write('added task')
-
-        # 全てのタスクが完了するのを待つ
-        if self.tasks:
-            await asyncio.gather(*self.tasks)
         
 ####################################################################################################
     
