@@ -11,7 +11,7 @@ async def main():
     await drone.connect()
     asyncio.create_task(drone.invoke_sensor())
     #await drone.arm()
-    await asyncio.sleep(1)
+    await asyncio.sleep(5)
 
     speed = 1.0
     first_lon = drone.position_manager.adjusted_coordinates_lon()

@@ -12,7 +12,7 @@ async def main():
     await drone.connect()
     asyncio.create_task(drone.invoke_sensor())
     #await drone.arm()
-    await asyncio.sleep(1)
+    await asyncio.sleep(5)
 
     num = 500
     speed = 6.111
