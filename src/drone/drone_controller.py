@@ -125,7 +125,7 @@ class DroneController:
         # self.tasks.append(asyncio.create_task(self.battery_watch.invoke_loop()))
         self.tasks.append(asyncio.create_task(self.compass_handler.invoke_loop()))
         # self.tasks.append(asyncio.create_task(self.flight_controller.invoke_loop()))
-        self.tasks.append(asyncio.create_task(self.logger_write()))
+        #self.tasks.append(asyncio.create_task(self.logger_write()))
         
         # すべてのタスクが完了するのを待つ
         await asyncio.gather(*self.tasks)
