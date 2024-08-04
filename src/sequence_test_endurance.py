@@ -14,13 +14,13 @@ async def main():
     #await drone.arm()
     await asyncio.sleep(5)
 
-    num = 500
-    speed = 6.111
+    num = 25
+    speed = 2
     first_lon = drone.position_manager.adjusted_coordinates_lon()
     first_lat = drone.position_manager.adjusted_coordinates_lat()
-    hov_alt = 1
-    target_coordinates_1 = Coordinates(first_lon,first_lat,hov_alt)
-    target_coordinates_2 = Coordinates(140.1080994,35.7701587,hov_alt)
+    hov_alt = 3
+    target_coordinates_1 = Coordinates(140.1081125,35.7700173,hov_alt)
+    target_coordinates_2 = Coordinates(140.1080039,35.7704584,hov_alt)
     args = [speed] + [target for pair in zip([target_coordinates_1] * num, [target_coordinates_2] * num) for target in pair]
 
 
