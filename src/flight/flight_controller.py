@@ -68,7 +68,7 @@ class FlightController:
         await self.drone.mission.upload_mission(mission_plan)
         print('mission plan uploading.move to hold mode')
         await self.stop_here() #####先輩のをみるとholdに入れてる
-        await asyncio.sleep(20) #####アップロードにかかる時間？
+        await asyncio.sleep(10) #####アップロードにかかる時間？
         print("Waiting for drone to be armable...")
         async for is_armable in self.drone.telemetry.health():
             if is_armable:
