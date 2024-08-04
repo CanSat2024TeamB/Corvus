@@ -24,8 +24,7 @@ async def main():
     args = [speed] + [target for pair in zip([target_coordinates_1] * num, [target_coordinates_2] * num) for target in pair]
 
 
-    await drone.arm()
-    await drone.add_sequence_task(drone.sequence_test_endurance(*args))
+    await drone.add_sequence_task(drone.sequence_test_mission(*args))
     try:
         await asyncio.Future()
     except asyncio.CancelledError:
