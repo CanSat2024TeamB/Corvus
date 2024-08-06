@@ -96,15 +96,23 @@ class FlightController:
         self.target_longitude = target_coordinates.longitude()
         self.target_altitude = target_coordinates.altitude()
         self.AMSL = self.position_manager.adjusted_coordinates_AMSL()
-        self.yaw_deg = self.calculate_yaw_angle(self.target_latitude,self.target_altitude)
         
         print('target got')
-        await self.drone.action.goto_location(self.target_latitude, self.target_longitude, self.AMSL+self.target_altitude, self.yaw_deg)
+        await self.drone.action.goto_location(self.target_latitude, self.target_longitude, self.AMSL+self.target_altitude, 0)
         print('goto started')
         await self.drone.action.set_current_speed(speed)
         
         while not self.if_goto_location_finished(self.target_latitude, self.target_longitude, self.target_altitude):
-            await asyncio.sleep(1)
+            await asyncio.sleep(3)
+            current_alt = self.position_manager.adjusted_altitude()
+            if current_alt < 1.5:
+                await self.go_to_location(Coordinates(self.target_longitude,
+                                                    self.target_latitude,
+                                                    self.target_altitude + 2))
+            elif current_alt > 10:
+                await self.go_to_location(Coordinates(self.target_longitude,
+                                                    self.target_latitude,
+                                                    self.target_altitude - 4))
         return
 
     def if_goto_location_finished(self, target_latitude, target_longitude, target_altitude):
@@ -112,17 +120,6 @@ class FlightController:
             abs(target_latitude - self.position_manager.adjusted_coordinates_lat()) <= 1.0e-5 and \
             abs(target_longitude - self.position_manager.adjusted_coordinates_lon()) <= 1.0e-5 ## アメリカ違う
     
-    def calculate_yaw_angle(self,target_latitude, target_longitude):
-        current_lat = self.position_manager.adjusted_coordinates_lat()
-        current_lon = self.position_manager.adjusted_coordinates_lon()
-
-        d_lat = target_latitude - current_lat
-        d_lon = target_longitude - current_lon
-
-        x = math.cos(math.radians(current_lat)) * d_lon
-        y = d_lat
-        orient_yaw_deg = -math.degrees(math.atan2(x/y))
-        return orient_yaw_deg ##-180~180
     #########################################################################################################
 
     async def rotate_yaw(self, yaw):
