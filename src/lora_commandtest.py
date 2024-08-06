@@ -6,7 +6,7 @@ def send_and_receive(ser, data, wait_time=2):
         ser.write(data.encode('ascii'))  # データをASCIIエンコードして送信
         ser.flush()
         time.sleep(wait_time)  # 受信するための待機時間を長く設定
-        response = ser.read_until(b'\n\r').decode('ascii').strip()  # データをASCIIデコードして受信
+        response = ser.read_until(b'\n\r').decode('utf-8', errors='ignore').strip()  # データをUTF-8デコードして受信
         return response
     except Exception as e:
         print(f"通信エラー: {e}")
