@@ -22,16 +22,16 @@ class CaseHandler:
         self.nichrome_duration = 10
         
         #収納判定用定数
-        self.judge_storage_border_light = 300
-        self.judge_storage_countmax = 10
-        self.judge_storage_maxtime = 10 #300にする 
+        self.judge_storage_border_light = 500
+        self.judge_storage_countmax = 500
+        self.judge_storage_maxtime = 300 #300にする 
         self.judge_storage_sleep_time = 0.5
         self.light_counter = 0 #counterを設定
 
         #放出判定用定数
         self.judge_release_maxtime = 3600 #去年はARLISSで3600を使った
-        self.judge_release_lig_countmax = 5
-        self.judge_release_pre_countmax = 5
+        self.judge_release_lig_countmax = 6
+        self.judge_release_pre_countmax = 6
         self.judge_release_border_light = 500
         self.judge_release_sleep_time = 0.5
         
@@ -95,7 +95,7 @@ class CaseHandler:
                         self.light_counter +=1
                         
                     else:
-                        self.light_counter = 0#一回でも300以上であるならば外にいる判定
+                        self.light_counter = 0#一回でも500以上であるならば外にいる判定
                         self.logger.write("Still Outside")
                         print("Still Outside") #あとで消す
                         
@@ -107,6 +107,7 @@ class CaseHandler:
             
             print(self.light_counter) #あとで消す
             time.sleep(self.judge_storage_sleep_time)
+            self.logger.write("Judge Storage: LIGHT:",light_value,self.light_counter)
 
         print("Storage Succeeded")
         self.logger.write("Storage Succeeded")
@@ -145,6 +146,7 @@ class CaseHandler:
 
             if (self.pressure_counter < self.judge_release_pre_countmax) and self.pressure.CANUSEPRESSURE == True:
                 Judge = self.judge_pressure_stable(1) 
+                pressure_value = self.pressure.get_pressure()
 
                 if Judge == False:#pressureが変化していたら
                     self.pressure_counter +=1
@@ -158,8 +160,8 @@ class CaseHandler:
             if (self.light_counter >= self.judge_release_lig_countmax) and (self.pressure_counter >= self.judge_release_pre_countmax):
                 break
 
-            print(self.light_counter,self.pressure_counter)
-
+            print("Judge Release: LIGHT:",light_value, self.light_counter, "PRESSURE:",pressure_value, self.pressure_counter)
+            self.logger.write("Judge Release: LIGHT:",light_value, self.light_counter, "PRESSURE:",pressure_value, self.pressure_counter)
             time.sleep(self.judge_release_sleep_time)
 
         self.logger.write("Release Succeeded")
@@ -180,6 +182,8 @@ class CaseHandler:
                 if self.pressure.CANUSEPRESSURE == True:
                     if self.judge_pressure_stable(1): #5秒の測定の平均値を1秒ごとに計算
                         break
+                    pressure_value = self.pressure.get_pressure()
+                    self.logger.write("Judge Landing: PRESSURE:",pressure_value)
             
             self.logger.write("Pressure stability confirmed")
             print(f"Pressure stability confirmed")
