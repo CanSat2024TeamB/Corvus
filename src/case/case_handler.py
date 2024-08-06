@@ -24,7 +24,7 @@ class CaseHandler:
         #収納判定用定数
         self.judge_storage_border_light = 300
         self.judge_storage_countmax = 10
-        self.judge_storage_maxtime = 300 #300にする 
+        self.judge_storage_maxtime = 10 #300にする 
         self.judge_storage_sleep_time = 0.5
         self.light_counter = 0 #counterを設定
 
