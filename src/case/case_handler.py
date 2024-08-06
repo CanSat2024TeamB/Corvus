@@ -24,19 +24,19 @@ class CaseHandler:
         #収納判定用定数
         self.judge_storage_border_light = 300
         self.judge_storage_countmax = 10
-        self.judge_storage_maxtime = 60 #300にする 
+        self.judge_storage_maxtime = 300 #300にする 
         self.judge_storage_sleep_time = 0.5
         self.light_counter = 0 #counterを設定
 
         #放出判定用定数
-        self.judge_release_maxtime = 10 #去年はARLISSで3600を使った
+        self.judge_release_maxtime = 3600 #去年はARLISSで3600を使った
         self.judge_release_lig_countmax = 5
         self.judge_release_pre_countmax = 5
         self.judge_release_border_light = 500
         self.judge_release_sleep_time = 0.5
         
         #着地判定用定数
-        self.judge_landing_maxtime = 120 #去年は1200
+        self.judge_landing_maxtime = 1200 #去年は1200
 
 
 
@@ -103,10 +103,9 @@ class CaseHandler:
                     break
             else:
                 self.logger.write("CAN NOT USE LIGHT")
-                break
+                print("CAN NOT USE LIGHT")
             
             print(self.light_counter) #あとで消す
-
             time.sleep(self.judge_storage_sleep_time)
 
         print("Storage Succeeded")
@@ -145,7 +144,7 @@ class CaseHandler:
 
 
             if (self.pressure_counter < self.judge_release_pre_countmax) and self.pressure.CANUSEPRESSURE == True:
-                Judge = self.judge_pressure_stable(1) #何秒とる？？
+                Judge = self.judge_pressure_stable(1) 
 
                 if Judge == False:#pressureが変化していたら
                     self.pressure_counter +=1
