@@ -39,3 +39,6 @@ def main():
         print("シリアルポートを閉じました")
     except Exception as e:
         print(f"シリアルポートのクローズエラー: {e}")
+
+if __name__ == "__main__":
+    main()
