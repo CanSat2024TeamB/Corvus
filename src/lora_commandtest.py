@@ -5,11 +5,12 @@ def send_and_receive(ser, data, wait_time=2):
     try:
         ser.write(data.encode('ascii'))  # データをASCIIエンコードして送信
         ser.flush()
-        time.sleep(wait_time)  # 受信するための待機時間を長く設定
+        time.sleep(wait_time)  # 受信するための待機時間を設定
         response = ser.read_all()
 
         print(f"Raw response (bytes): {response}")
 
+        # 試しに複数のエンコーディングでデコードを試みる
         try:
             response_decoded = response.decode('utf-8').strip()
             print(f"UTF-8 decoded response: {response_decoded}")
@@ -37,7 +38,7 @@ def send_and_receive(ser, data, wait_time=2):
 def main():
     try:
         # シリアルポートの設定
-        ser = serial.Serial(port='/dev/ttyAMA0', baudrate=9600, bytesize=serial.EIGHTBITS, parity=serial.PARITY_NONE, stopbits=serial.STOPBITS_ONE, timeout=5)  # ボーレートとその他の設定を追加
+        ser = serial.Serial(port='/dev/ttyAMA0', baudrate=9600, bytesize=serial.EIGHTBITS, parity=serial.PARITY_NONE, stopbits=serial.STOPBITS_ONE, timeout=None)  # ボーレートとその他の設定を追加
         if ser.is_open:
             print(f"シリアルポート {ser.port} を開きました")
         else:
@@ -64,4 +65,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
