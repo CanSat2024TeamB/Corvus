@@ -7,11 +7,29 @@ def send_and_receive(ser, data, wait_time=2):
         ser.flush()
         time.sleep(wait_time)  # 受信するための待機時間を長く設定
         response = ser.read_all()
+
+        print(f"Raw response (bytes): {response}")
+
         try:
-            response = response.decode('utf-8').strip()  # データをUTF-8デコードして受信
+            response_decoded = response.decode('utf-8').strip()
+            print(f"UTF-8 decoded response: {response_decoded}")
         except UnicodeDecodeError:
-            response = response.decode('latin-1').strip()
-        return response
+            try:
+                response_decoded = response.decode('latin-1').strip()
+                print(f"Latin-1 decoded response: {response_decoded}")
+            except UnicodeDecodeError:
+                try:
+                    response_decoded = response.decode('ISO-8859-1').strip()
+                    print(f"ISO-8859-1 decoded response: {response_decoded}")
+                except UnicodeDecodeError:
+                    try:
+                        response_decoded = response.decode('ascii').strip()
+                        print(f"ASCII decoded response: {response_decoded}")
+                    except UnicodeDecodeError:
+                        print("すべてのデコード試行が失敗しました")
+                        response_decoded = ""
+
+        return response_decoded
     except Exception as e:
         print(f"通信エラー: {e}")
         return ""
