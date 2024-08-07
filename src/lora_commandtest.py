@@ -31,7 +31,7 @@ def main():
 
     # データの送受信
     for i in range(10):
-        data_to_send = 'p2p tx 123\n\r'  # 送信データは文字列のまま
+        data_to_send = 'p2p tx 1234\n\r'  # 送信データは文字列のまま
         print(f"送信したデータ: {data_to_send}")
         response = send_and_receive(ser, data_to_send)
         print(f"受信したデータ: {response}")
