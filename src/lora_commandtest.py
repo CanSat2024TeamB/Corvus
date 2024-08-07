@@ -6,7 +6,11 @@ def send_and_receive(ser, data, wait_time=2):
         ser.write(data.encode('ascii'))  # データをASCIIエンコードして送信
         ser.flush()
         time.sleep(wait_time)  # 受信するための待機時間を長く設定
-        response = ser.read_all().decode('utf-8').strip()  # データをASCIIデコードして受信
+        response = ser.read_all()
+        try:
+            response = response.decode('utf-8').strip()  # データをUTF-8デコードして受信
+        except UnicodeDecodeError:
+            response = response.decode('latin-1').strip()
         return response
     except Exception as e:
         print(f"通信エラー: {e}")
@@ -27,7 +31,7 @@ def main():
 
     # データの送受信
     for i in range(10):
-        data_to_send = 'p2p tx 1234\n\r'  # 送信データは文字列のまま
+        data_to_send = 'p2p tx 123\n\r'  # 送信データは文字列のまま
         print(f"送信したデータ: {data_to_send}")
         response = send_and_receive(ser, data_to_send)
         print(f"受信したデータ: {response}")
@@ -42,3 +46,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
