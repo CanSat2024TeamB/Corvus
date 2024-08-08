@@ -162,4 +162,9 @@ def test2():
         pos = cone_detector.capture_cone_position()
         print(pos)
 
-test1()
+def test3():
+    camera_handler = CameraHandler()
+    image = camera_handler.capture()
+    cv.imwrite("capture.png", image)
+
+test3()
