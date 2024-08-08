@@ -23,13 +23,13 @@ class CaseHandler:
         
         #収納判定用定数
         self.judge_storage_border_light = 500
-        self.judge_storage_countmax = 500
+        self.judge_storage_countmax = 100
         self.judge_storage_maxtime = 300 #300にする 
         self.judge_storage_sleep_time = 0.5
         self.light_counter = 0 #counterを設定
 
         #放出判定用定数
-        self.judge_release_maxtime = 3600 #去年はARLISSで3600を使った
+        self.judge_release_maxtime = 100 #去年はARLISSで3600を使った
         self.judge_release_lig_countmax = 6
         self.judge_release_pre_countmax = 6
         self.judge_release_border_light = 500
