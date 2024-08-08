@@ -13,15 +13,13 @@ class PressureHandler:
             except (RuntimeError, IOError):
                 print("Error: Pressure sensor not found.")
                 self.CANUSEPRESSURE = False
-        self.sensor.set_pressure_oversample(bme680.OS_4X)
-        self.sensor.set_temperature_oversample(bme680.OS_8X)
-        self.sensor.set_filter(bme680.FILTER_SIZE_3)
-       
+        if self.CANUSEPRESSURE:
+            self.sensor.set_pressure_oversample(bme680.OS_4X)
+            self.sensor.set_temperature_oversample(bme680.OS_8X)
+            self.sensor.set_filter(bme680.FILTER_SIZE_3)
+
         self.error_count = 0
-        self.interval = 1.0 
-        self.CANUSEPRESSURE = True
-
-
+        self.interval = 1.0
     
     def get_temperature(self):
         if self.sensor.get_sensor_data():
