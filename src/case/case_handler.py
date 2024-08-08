@@ -126,10 +126,12 @@ class CaseHandler:
         while (self.read_timer(time_sta) <= self.judge_release_maxtime):
             
             if self.light.CANUSELIGHT == False:
+                light_value = float('nan')
                 self.light_counter = self.judge_release_lig_countmax
                 time.sleep(5)
 
             if self.pressure.CANUSEPRESSURE == False:
+                pressure_value = float('nan')
                 self.pressure_counter = self.judge_release_pre_countmax
                 time.sleep(5)
 
