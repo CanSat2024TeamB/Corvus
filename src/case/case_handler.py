@@ -18,7 +18,9 @@ class CaseHandler:
         
         self.stable_pre_val = 1 ##1mで大体7hpaの差
         self.stable_vel_val = 0.1
-        self.stable_judge_count = 5
+        self.stable_judge_count_land = 5
+        self.stable_judge_count_release = 1
+        
         self.nichrome_duration = 10
         
         #収納判定用定数
@@ -30,8 +32,8 @@ class CaseHandler:
 
         #放出判定用定数
         self.judge_release_maxtime = 100 #去年はARLISSで3600を使った
-        self.judge_release_lig_countmax = 6
-        self.judge_release_pre_countmax = 6
+        self.judge_release_lig_countmax = 2 #能代は2、ARLISSは6？
+        self.judge_release_pre_countmax = 2 #能代は2、ARLISSは6？
         self.judge_release_border_light = 500
         self.judge_release_sleep_time = 0.5
         
@@ -42,19 +44,36 @@ class CaseHandler:
 
     def judge_pressure_stable(self,interval_def_ave_pressure):
         stable_count = 0
-        for i in range(self.stable_judge_count):
-            def_pre = self.pressure.dif_ave_pressure(interval_def_ave_pressure)
-            print(def_pre)####消す
-            if abs(def_pre) <= self.stable_pre_val:
-                stable_count += 1
+        if self.phase == "Storage":
+            for i in range(self.stable_judge_count_release):
+                def_pre = self.pressure.dif_ave_pressure(interval_def_ave_pressure)
+                print(def_pre)####消す
+                if abs(def_pre) <= self.stable_pre_val:
+                    stable_count += 1
 
+                else:
+                    break    
+            
+            if stable_count == self.stable_judge_count:
+                return True
             else:
-                break    
-        
-        if stable_count == self.stable_judge_count:
-            return True
-        else:
-            return False
+                return False
+        if self.phase == "Released":
+            for i in range(self.stable_judge_count_land):
+                def_pre = self.pressure.dif_ave_pressure(interval_def_ave_pressure)
+                print(def_pre)####消す
+                if abs(def_pre) <= self.stable_pre_val:
+                    stable_count += 1
+
+                else:
+                    break    
+            
+            if stable_count == self.stable_judge_count:
+                return True
+            else:
+                return False
+
+
         
     async def judge_velocity_stable(self, interval_def_ave_velocity):
         stable_count = 0
@@ -128,11 +147,13 @@ class CaseHandler:
             if self.light.CANUSELIGHT == False:
                 light_value = float('nan')
                 self.light_counter = self.judge_release_lig_countmax
+                print("CAN NOT USE LIGHT")
                 time.sleep(5)
 
             if self.pressure.CANUSEPRESSURE == False:
                 pressure_value = float('nan')
                 self.pressure_counter = self.judge_release_pre_countmax
+                print("CAN NOT USE PRESSURE")
                 time.sleep(5)
 
             if (self.light_counter < self.judge_release_lig_countmax) and self.light.CANUSELIGHT == True:
