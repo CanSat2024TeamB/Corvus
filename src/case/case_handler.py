@@ -127,7 +127,7 @@ class CaseHandler:
             print(light_value)
             print(self.light_counter) #あとで消す
             time.sleep(self.judge_storage_sleep_time)
-            #self.logger.write("Judge Storage: LIGHT:",light_value,self.light_counter)
+            self.logger.write(f"Judge Storage: LIGHT: {light_value} {self.light_counter}")
 
         print("Storage Succeeded")
         self.logger.write("Storage Succeeded")
