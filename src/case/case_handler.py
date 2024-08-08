@@ -99,12 +99,13 @@ class CaseHandler:
                         self.logger.write("Still Outside")
                         print("Still Outside") #あとで消す
                         
-                else:#10回連続で暗い判定ができたら中であると判定
+                else:#100回連続で暗い判定ができたら中であると判定
                     break
             else:
                 self.logger.write("CAN NOT USE LIGHT")
                 print("CAN NOT USE LIGHT")
             
+            print(light_value)
             print(self.light_counter) #あとで消す
             time.sleep(self.judge_storage_sleep_time)
             #self.logger.write("Judge Storage: LIGHT:",light_value,self.light_counter)
