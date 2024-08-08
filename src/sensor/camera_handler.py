@@ -165,6 +165,6 @@ def test2():
 def test3():
     camera_handler = CameraHandler()
     image = camera_handler.capture()
-    cv.imwrite("capture.png", image)
+    cv2.imwrite("capture.png", image)
 
 test3()
