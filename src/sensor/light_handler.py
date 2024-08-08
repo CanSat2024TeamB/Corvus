@@ -13,13 +13,14 @@ class LightSensor:
         try:
             # SPI通信で値を読み込む
             resp = self.spi.xfer2([0x68, 0x00])
-            # レスポンスの長さと値をチェックして、適切な範囲内かを確認する
-            if len(resp) != 2 or not (0 <= resp[0] <= 255 and 0 <= resp[1] <= 255):
-                raise ValueError("Invalid SPI response")
             light_value = ((resp[0] << 8) + resp[1]) & 0x3FF
-            # チェックポイントを追加して、値が0の場合でもエラーチェックを行う
+            # 値が0の場合でもエラーチェックを行う
             if light_value == 0:
-                raise ValueError("Light value is unexpectedly zero")
+                self.error_count += 1
+                if self.error_count >= self.max_errors:
+                    self.CANUSELIGHT = False
+                print(f"Error reading light intensity: {e}")
+                return None
             return light_value
         except Exception as e:
             self.error_count += 1
