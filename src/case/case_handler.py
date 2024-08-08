@@ -54,7 +54,7 @@ class CaseHandler:
                 else:
                     break    
             
-            if stable_count == self.stable_judge_count:
+            if stable_count == self.stable_judge_count_release:
                 return True
             else:
                 return False
@@ -68,7 +68,7 @@ class CaseHandler:
                 else:
                     break    
             
-            if stable_count == self.stable_judge_count:
+            if stable_count == self.stable_judge_count_land:
                 return True
             else:
                 return False
