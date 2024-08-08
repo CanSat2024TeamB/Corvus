@@ -20,14 +20,14 @@ class LightSensor:
                 if self.error_count >= self.max_errors:
                     self.CANUSELIGHT = False
                 print("Error reading light intensity: {e}")
-                return None
+                return float('nan')
             return light_value
         except Exception as e:
             self.error_count += 1
             if self.error_count >= self.max_errors:
                 self.CANUSELIGHT = False
             print("Error reading light intensity: {e}")
-            return None
+            return float('nan')
 
     def close(self):
         # SPI通信を終了する
