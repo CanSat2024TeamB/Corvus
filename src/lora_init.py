@@ -42,7 +42,7 @@ def select_port(baudrate):
         return None
 
 time.sleep(1)
-ser = select_port(9600)
+ser = select_port(115200)
 if ser:
     print(f"シリアルポートの設定が完了しました: {ser}")
 else:
