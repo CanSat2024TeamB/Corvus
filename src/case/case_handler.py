@@ -107,7 +107,7 @@ class CaseHandler:
             
             print(self.light_counter) #あとで消す
             time.sleep(self.judge_storage_sleep_time)
-            self.logger.write("Judge Storage: LIGHT:",light_value,self.light_counter)
+            #self.logger.write("Judge Storage: LIGHT:",light_value,self.light_counter)
 
         print("Storage Succeeded")
         self.logger.write("Storage Succeeded")
@@ -161,7 +161,7 @@ class CaseHandler:
                 break
 
             print("Judge Release: LIGHT:",light_value, self.light_counter, "PRESSURE:",pressure_value, self.pressure_counter)
-            self.logger.write("Judge Release: LIGHT:",light_value, self.light_counter, "PRESSURE:",pressure_value, self.pressure_counter)
+            #self.logger.write("Judge Release: LIGHT:",light_value, self.light_counter, "PRESSURE:",pressure_value, self.pressure_counter)
             time.sleep(self.judge_release_sleep_time)
 
         self.logger.write("Release Succeeded")
@@ -183,7 +183,7 @@ class CaseHandler:
                     if self.judge_pressure_stable(1): #5秒の測定の平均値を1秒ごとに計算
                         break
                     pressure_value = self.pressure.get_pressure()
-                    self.logger.write("Judge Landing: PRESSURE:",pressure_value)
+                    #self.logger.write("Judge Landing: PRESSURE:",pressure_value)
             
             self.logger.write("Pressure stability confirmed")
             print(f"Pressure stability confirmed")
