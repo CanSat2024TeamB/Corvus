@@ -17,6 +17,9 @@ class LightSensor:
             if len(resp) != 2 or not (0 <= resp[0] <= 255 and 0 <= resp[1] <= 255):
                 raise ValueError("Invalid SPI response")
             light_value = ((resp[0] << 8) + resp[1]) & 0x3FF
+            # チェックポイントを追加して、値が0の場合でもエラーチェックを行う
+            if light_value == 0:
+                raise ValueError("Light value is unexpectedly zero")
             return light_value
         except Exception as e:
             self.error_count += 1
