@@ -19,14 +19,14 @@ class LightSensor:
                 self.error_count += 1
                 if self.error_count >= self.max_errors:
                     self.CANUSELIGHT = False
-                print(f"Error reading light intensity: {e}")
+                print("Error reading light intensity: {e}")
                 return None
             return light_value
         except Exception as e:
             self.error_count += 1
             if self.error_count >= self.max_errors:
                 self.CANUSELIGHT = False
-            print(f"Error reading light intensity: {e}")
+            print("Error reading light intensity: {e}")
             return None
 
     def close(self):
