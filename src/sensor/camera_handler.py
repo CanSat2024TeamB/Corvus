@@ -8,7 +8,7 @@ import numpy as np
 class CameraHandler:
     def __init__(self):
         self.camera = Picamera2()
-        config = self.camera.create_preview_configuration({ "format": "BGR888" })
+        config = self.camera.create_preview_configuration({ "format": "RGB888" })
         self.camera.configure(config)
         self.camera.start()
 
