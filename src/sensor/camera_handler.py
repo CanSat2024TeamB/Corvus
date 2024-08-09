@@ -173,4 +173,4 @@ def test2():
     image = camera_handler.capture()
     cv2.imwrite("capture.png", image)
 
-#test1()
+test1()
