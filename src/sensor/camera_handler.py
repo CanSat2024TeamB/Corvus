@@ -176,20 +176,19 @@ class ConeDetector:
     
     def reader(self):
         while not self.finished:
-           frame = self.camera_handler.capture_bgr()
-           if self.condition.acquire():
-                self.frame = frame
-                self.condition.notify()
-                self.condition.release()
+            frame = self.camera_handler.capture_bgr()
+            self.condition.acquire()
+            self.frame = frame
+            self.condition.notify()
+            self.condition.release()
 
     
     def detector(self, conf = IOU_THRESHOLD):
         while not self.finished:
             self.condition.acquire()
-            frame = self.frame
-            if frame is None:
+            if self.frame is None:
                 self.condition.wait()
-                continue
+            frame = self.frame
             self.condition.release()
 
             pos = cone_detector.get_pos(frame, conf)
