@@ -12,20 +12,20 @@ async def main():
     await drone.connect()
     asyncio.create_task(drone.invoke_sensor())
     #await drone.arm()
-    await asyncio.sleep(1)
+    await asyncio.sleep(5)
 
-    num = 500
-    speed = 6.111
-    first_lon = drone.position_manager.adjusted_coordinates_lon()
-    first_lat = drone.position_manager.adjusted_coordinates_lat()
-    hov_alt = 1
-    target_coordinates_1 = Coordinates(first_lon,first_lat,hov_alt)
-    target_coordinates_2 = Coordinates(140.1080994,35.7701587,hov_alt)
-    args = [speed] + [target for pair in zip([target_coordinates_1] * num, [target_coordinates_2] * num) for target in pair]
+    num = 10
+    speed = 4
+    #first_lon = drone.position_manager.adjusted_coordinates_lon()
+    #first_lat = drone.position_manager.adjusted_coordinates_lat()
+    hov_alt = 5
+    takeoff_coordinates_1 = Coordinates(140.1081125,35.7700173,hov_alt)
+    target_coordinates_1 = Coordinates(140.1080039,35.7704584,hov_alt)
+    target_coordinates_2 = Coordinates(140.1081125,35.7700173,hov_alt)
+    args = [speed] + [takeoff_coordinates_1] + [target for pair in zip([target_coordinates_1] * num, [target_coordinates_2] * num) for target in pair]+[target_coordinates_1]
 
 
-    await drone.arm()
-    await drone.add_sequence_task(drone.sequence_test_endurance(*args))
+    await drone.add_sequence_task(drone.sequence_test_mission(*args))
     try:
         await asyncio.Future()
     except asyncio.CancelledError:
