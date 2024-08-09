@@ -1,19 +1,24 @@
 import spidev
-import time
 
 class LightSensor:
     def __init__(self):
         self.spi = spidev.SpiDev()
         self.spi.open(0, 0)
         self.spi.max_speed_hz = 1000000
+        self.error_count = 0
+        self.max_errors = 10
+        self.CANUSELIGHT = True
 
-    def read_light_value(self):
+    def get_light_value(self):
         try:
             # SPI通信で値を読み込む
             resp = self.spi.xfer2([0x68, 0x00])
             light_value = ((resp[0] << 8) + resp[1]) & 0x3FF
             return light_value
         except Exception as e:
+            self.error_count += 1
+            if self.error_count >= self.max_errors:
+                self.CANUSELIGHT = False
             print(f"Error reading light intensity: {e}")
             return None
 

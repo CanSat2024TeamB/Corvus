@@ -13,13 +13,15 @@ async def main():
     await asyncio.sleep(1)
 
     speed = 1.0
-    target_coordinates = Coordinates(139.760557,35.714995,0)
-    yaw_degree = 0.0
+    target_coordinates = Coordinates(140.1080417,35.7702389,3)
 
 
     await drone.arm()
-    await drone.add_sequence_task(drone.sequence_test_goto(speed,yaw_degree,target_coordinates))
-    #await asyncio.Future()
+    await drone.add_sequence_task(drone.sequence_test_goto(speed,target_coordinates))
+    try:
+        await asyncio.Future()
+    except asyncio.CancelledError:
+        print("Main loop cancelled")
 
 if __name__ == "__main__":
     asyncio.run(main())

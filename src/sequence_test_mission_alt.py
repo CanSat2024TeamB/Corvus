@@ -1,5 +1,4 @@
 import asyncio
-from pathlib import Path
 from control.coordinates import Coordinates
 from pathlib import Path
 from config.config_manager import ConfigManager
@@ -10,27 +9,22 @@ async def main():
     #config = ConfigManager(config_path)
     drone = DroneController()
     await drone.connect()
-    asyncio.create_task(drone.invoke_sensor())
     #await drone.arm()
+    asyncio.create_task(drone.invoke_sensor())
     await asyncio.sleep(1)
 
-    num = 500
-    speed = 6.111
+    speed = 1.0
     first_lon = drone.position_manager.adjusted_coordinates_lon()
     first_lat = drone.position_manager.adjusted_coordinates_lat()
-    hov_alt = 1
+    hov_alt = 2
     target_coordinates_1 = Coordinates(first_lon,first_lat,hov_alt)
-    target_coordinates_2 = Coordinates(140.1080994,35.7701587,hov_alt)
-    args = [speed] + [target for pair in zip([target_coordinates_1] * num, [target_coordinates_2] * num) for target in pair]
+    
 
-
-    await drone.arm()
-    await drone.add_sequence_task(drone.sequence_test_endurance(*args))
+    await drone.add_sequence_task(drone.sequence_test_mission(speed,target_coordinates_1))
     try:
         await asyncio.Future()
     except asyncio.CancelledError:
         print("Main loop cancelled")
-
 
 if __name__ == "__main__":
     asyncio.run(main())

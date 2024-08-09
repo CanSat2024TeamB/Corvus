@@ -8,6 +8,8 @@ import numpy as np
 class CameraHandler:
     def __init__(self):
         self.camera = Picamera2()
+        config = self.camera.create_preview_configuration({ "format": "RGB888" })
+        self.camera.configure(config)
         self.camera.start()
 
         camera_config = self.camera.create_preview_configuration()
@@ -144,18 +146,25 @@ class ConeDetector:
 #     os = cone_detector.capture_cone_position()
 #     print(pos)
 
-# def test1():
-#     camera_handler = CameraHandler()
-#     cone_detector = ConeDetector(camera_handler, Path(__file__).parent.parent.parent.joinpath("assets/model/cone_ncnn_model"))
-#     image = camera_handler.capture()
-#     box = cone_detector.get_cone_bouding_box(image, 0.5)
-#     if not box is None:
-#         cv2.rectangle(image, (box[0], box[1]), (box[2], box[3]), (255, 0, 0))
-#     cv2.imwrite("detect.png", image)
+def test1():
+    camera_handler = CameraHandler()
+    cone_detector = ConeDetector(camera_handler, Path(__file__).parent.parent.parent.joinpath("assets/model/cone_ncnn_model"))
+    image = camera_handler.capture()
+    box = cone_detector.get_cone_bouding_box(image, 0.5)
+    if not box is None:
+        cv2.rectangle(image, (box[0], box[1]), (box[2], box[3]), (255, 0, 0))
+    cv2.imwrite("detect.png", image)
 
-# def test2():
-#     camera_handler = CameraHandler()
-#     cone_detector = ConeDetector(camera_handler, Path(__file__).parent.parent.parent.joinpath("assets/model/cone_ncnn_model"))
-#     while True:
-#         pos = cone_detector.capture_cone_position()
-#         print(pos)
+def test2():
+    camera_handler = CameraHandler()
+    cone_detector = ConeDetector(camera_handler, Path(__file__).parent.parent.parent.joinpath("assets/model/cone_ncnn_model"))
+    while True:
+        pos = cone_detector.capture_cone_position()
+        print(pos)
+
+def test3():
+    camera_handler = CameraHandler()
+    image = camera_handler.capture()
+    cv2.imwrite("capture.png", image)
+
+test3()
