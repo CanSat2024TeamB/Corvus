@@ -170,7 +170,7 @@ class ConeDetector:
     
     def get_pos(self):
         self.condition.acquire()
-        pos = self.pos()
+        pos = self.pos
         self.condition.release()
         return pos
     
@@ -191,11 +191,15 @@ class ConeDetector:
                 self.condition.wait()
                 continue
             self.condition.release()
+
             pos = cone_detector.get_pos(frame, conf)
+            
+            self.condition.acquire()
             if pos[0] < -1:
                 self.pos = [None, None]
             else:
                 self.pos = pos
+            self.condition.release()
 
     def start(self, conf = IOU_THRESHOLD):
         reader_thread = threading.Thread(target = self.reader, daemon = True)
