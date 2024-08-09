@@ -1,8 +1,10 @@
 from pathlib import Path
 from picamera2 import Picamera2
+from picamera2.encoders import H264Encoder
 import cv2
+import threading
 import cone_detector
-#import time
+import time
 
 class CameraHandler:
     def __init__(self):
@@ -21,12 +23,31 @@ class CameraHandler:
     def get_height(self):
         return self.height
         
-    def capture(self):
+    def capture_bgr(self):
         return self.camera.capture_array()
+
+    def capture_rgb(self):
+        frame = self.camera.capture_array()
+        image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+        return image
     
     def capture_and_save(self, path = "image.jpg"):
-        image = self.capture()
+        image = self.capture_rgb()
         cv2.imwrite(path, image)
+    
+    def capture_video(self, output_path, length = 10):
+        def video_capturer(self, output_path, length):
+            video_config = self.camera.create_video_configuration()
+            self.camera.configure(video_config)
+
+            encoder = H264Encoder(10000000)
+
+            self.camera.start_recording(encoder, output_path)
+            time.sleep(length)
+            self.camera.stop_recording()
+        
+        video_thread = threading.Thread(target = video_capturer, args = (output_path, length,))
+        video_thread.start()
 
 class ConeDetector:
     # IMGSZ = 640
@@ -135,15 +156,48 @@ class ConeDetector:
     #         return result
     #     else:
     #         return [None, None]
-        
+
     IOU_THRESHOLD = 0.1
 
     def __init__(self, camera_handler, model_path: str = Path(__file__).parent.parent.joinpath("assets/model/cone_ncnn_model_v9_320"), imgsz = 320):
         self.camera_handler = camera_handler
         cone_detector.load_model(str(model_path), imgsz)
-        
-    def capture_cone_position(self, conf = 0.1):
-        image = self.camera_handler.capture()
+
+        self.frame = None
+        self.pos = [None, None]
+        self.finished = False
+    
+    def get_pos(self):
+        return self.pos
+    
+    def reader(self):
+        while not self.finished:
+            self.frame = self.camera_handler.capture_bgr()
+    
+    def detector(self, conf = IOU_THRESHOLD):
+        while not self.finished:
+            if self.frame is None:
+                return
+            det_start = time.perf_counter()
+            print(det_start)
+            pos = cone_detector.get_pos(self.frame, conf)
+            if pos[0] < -1:
+                self.pos = [None, None]
+            else:
+                self.pos = pos
+
+    def start(self, conf = IOU_THRESHOLD):
+        reader_thread = threading.Thread(target = self.reader, daemon = True)
+        detector_thread = threading.Thread(target = self.detector, args = (conf,), daemon = True)
+
+        reader_thread.start()
+        detector_thread.start()
+    
+    def stop(self):
+        self.finished = True
+
+    def capture_cone_position(self, conf = IOU_THRESHOLD):
+        image = self.camera_handler.capture_bgr()
 
         if not image is None:
             #det_start = time.perf_counter()
@@ -164,13 +218,21 @@ class ConeDetector:
 def test1():
     camera_handler = CameraHandler()
     cone_detector = ConeDetector(camera_handler, Path(__file__).parent.parent.parent.joinpath("assets/model/cone_ncnn_model_v9_320"), 320)
+    cone_detector.start()
+    start = time.perf_counter()
     while True:
-        pos = cone_detector.capture_cone_position()
+        pos = cone_detector.get_pos()
         print(pos)
+        time.sleep(1)
+        now = time.perf_counter()
+        if now - start > 15:
+            break
+    cone_detector.stop()
+
 
 def test2():
     camera_handler = CameraHandler()
-    image = camera_handler.capture()
+    image = camera_handler.capture_rgb()
     cv2.imwrite("capture.png", image)
 
 test1()
