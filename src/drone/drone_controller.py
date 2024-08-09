@@ -63,6 +63,10 @@ class DroneController:
     
     
     async def arm(self) -> bool:
+        await self.gps_handler.catch_gps()
+        print('global and local position ok')      
+        self.logger.write('global and local position ok')
+
         print("Waiting for drone to be armable...")
         self.logger.write("Waiting for drone to be armable...")
         async for is_armable in self.drone_instance.telemetry.health():
