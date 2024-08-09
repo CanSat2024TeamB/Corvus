@@ -176,8 +176,9 @@ class ConeDetector:
     
     def detector(self, conf = IOU_THRESHOLD):
         while not self.finished:
+            time.sleep(3)
             if self.frame is None:
-                return
+                continue
             det_start = time.perf_counter()
             print(det_start)
             pos = cone_detector.get_pos(self.frame, conf)
@@ -220,13 +221,13 @@ def test1():
     cone_detector = ConeDetector(camera_handler, Path(__file__).parent.parent.parent.joinpath("assets/model/cone_ncnn_model_v9_320"), 320)
     cone_detector.start()
     start = time.perf_counter()
-    while True:
-        pos = cone_detector.get_pos()
-        print(pos)
-        time.sleep(1)
-        now = time.perf_counter()
-        if now - start > 15:
-            break
+    with open("hello.txt", 'w') as f:
+        while True:
+            pos = cone_detector.get_pos()
+            now = time.perf_counter()
+            f.write(f"{now - start}s {pos}\n")
+            if now - start > 15:
+                break
     cone_detector.stop()
 
 
