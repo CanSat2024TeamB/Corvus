@@ -158,6 +158,7 @@ class ConeDetector:
     #         return [None, None]
 
     IOU_THRESHOLD = 0.1
+    condition = threading.Condition()
 
     def __init__(self, camera_handler, model_path: str = Path(__file__).parent.parent.joinpath("assets/model/cone_ncnn_model_v9_320"), imgsz = 320):
         self.camera_handler = camera_handler
@@ -168,18 +169,29 @@ class ConeDetector:
         self.finished = False
     
     def get_pos(self):
-        return self.pos
+        self.condition.acquire()
+        pos = self.pos()
+        self.condition.release()
+        return pos
     
     def reader(self):
         while not self.finished:
-            self.frame = self.camera_handler.capture_bgr()
+           frame = self.camera_handler.capture_bgr()
+           if self.condition.acquire():
+                self.frame = frame
+                self.condition.notify()
+                self.condition.release()
+
     
     def detector(self, conf = IOU_THRESHOLD):
         while not self.finished:
-            time.sleep(3)
-            if self.frame is None:
+            self.condition.acquire()
+            frame = self.frame
+            if frame is None:
+                self.condition.wait()
                 continue
-            pos = cone_detector.get_pos(self.frame, conf)
+            self.condition.release()
+            pos = cone_detector.get_pos(frame, conf)
             if pos[0] < -1:
                 self.pos = [None, None]
             else:
