@@ -199,6 +199,7 @@ class ConeDetector:
             else:
                 self.pos = pos
             self.condition.release()
+            time.sleep(2)
 
     def start(self, conf = IOU_THRESHOLD):
         reader_thread = threading.Thread(target = self.reader, daemon = True)
@@ -236,6 +237,7 @@ def test1():
     start = time.perf_counter()
     with open("hello.txt", 'w') as f:
         while True:
+            time.sleep(0.1)
             pos = cone_detector.get_pos()
             now = time.perf_counter()
             f.write(f"{now - start}s {pos}\n")
