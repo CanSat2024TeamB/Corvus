@@ -179,8 +179,6 @@ class ConeDetector:
             time.sleep(3)
             if self.frame is None:
                 continue
-            det_start = time.perf_counter()
-            print(det_start)
             pos = cone_detector.get_pos(self.frame, conf)
             if pos[0] < -1:
                 self.pos = [None, None]
