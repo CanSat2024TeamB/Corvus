@@ -15,12 +15,12 @@ class LightSensor:
             resp = self.spi.xfer2([0x68, 0x00])
             light_value = ((resp[0] << 8) + resp[1]) & 0x3FF
             # 値が0の場合でもエラーチェックを行う
-            # if light_value == 0:
-            #     self.error_count += 1
-            #     if self.error_count >= self.max_errors:
-            #         self.CANUSELIGHT = False
-            #     print("Error reading light intensity: {e}")
-            #     return float('nan')
+            if light_value == 0:
+                self.error_count += 1
+                if self.error_count >= self.max_errors:
+                    self.CANUSELIGHT = False
+                print("Error reading light intensity: {e}")
+                return float('nan')
             return light_value
         except Exception as e:
             self.error_count += 1
