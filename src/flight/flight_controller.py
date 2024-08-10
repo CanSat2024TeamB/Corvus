@@ -38,6 +38,9 @@ class FlightController:
         await self.drone.action.set_takeoff_altitude(takeoff_altitude+2)
         await self.drone.action.takeoff()
         while self.position_manager.adjusted_altitude() <= takeoff_altitude:
+            
+            print(f"{self.position_manager.adjusted_altitude()} m")
+            
             await asyncio.sleep(0.1)
         return True
 
@@ -189,6 +192,14 @@ class FlightController:
         return math.degrees(math.atan2(x/y)) ##-180~180
 
     #########################################################################################################
+
+    async def offboard_precise_land():
+        #self.drone.offboard.set_velocity_body(VelocityBodyYawspeed(0.0, 0.0, 0.0, 0.0))
+        self.cone_detector.start()
+        while True:
+            pass
+
+        return
 
     async def rotate_yaw(self, yaw):
         await self.drone.action.set_current_speed(0.1)

@@ -57,7 +57,7 @@ class ConeDetector:
     IOU_THRESHOLD = 0.1
     condition = threading.Condition()
 
-    def __init__(self, camera_handler, model_path: str = Path(__file__).parent.parent.joinpath("assets/model/cone_ncnn_model_v9_320"), imgsz = 320):
+    def __init__(self, camera_handler, model_path: str = Path(__file__).parent.parent.parent.joinpath("assets/model/cone_ncnn_model_v9_320"), imgsz = 320):
         self.camera_handler = camera_handler
         cone_detector.load_model(str(model_path), imgsz)
 
