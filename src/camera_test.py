@@ -8,5 +8,5 @@ cone_detector = ConeDetector(camera_handler)
 
 for i in range(100):
     print(f"capture{i}")
-    cone_detector.capture_cone_position_and_save(str(Path(__file__).parent.parent.joinpath(f"assets/log/image_{datetime.datetime.now().strftime('%Y-%m-%d_%H:%M:%S')}.jpg")), 0.3)
+    cone_detector.capture_cone_position_and_save(str(Path(__file__).parent.parent.joinpath(f"assets/log/image_{datetime.datetime.now().strftime('%Y-%m-%d_%H:%M:%S')}.jpg")), 0.35)
     time.sleep(1)

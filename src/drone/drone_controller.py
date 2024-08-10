@@ -156,7 +156,7 @@ class DroneController:
                 break
 
     async def sequence_test_goto(self,speed, target_coordinates: Coordinates):
-        await self.flight_controller.takeoff(6)
+        await self.flight_controller.takeoff(1.5)
         print('reached')
         self.logger.write('reached')
         print('goto started')
@@ -179,9 +179,16 @@ class DroneController:
                 await self.flight_controller.land()
     
     async def sequence_test_precise_land(self):
+        print("taking off")
         await self.flight_controller.takeoff(3)
+        print("finished taking off")
         await self.flight_controller.hovering(10)
+        print("start landing")
         await self.flight_controller.precise_land()
+        print("landed")
+    
+    async def sequence_test_goto_and_precise_land(self):
+        return
 
     async def capture_video_during_flight(self, speed, target_coordinates, output_path, video_length):
         await self.flight_controller.takeoff(3)
