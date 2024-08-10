@@ -38,9 +38,6 @@ class FlightController:
         await self.drone.action.set_takeoff_altitude(takeoff_altitude+2)
         await self.drone.action.takeoff()
         while self.position_manager.adjusted_altitude() <= takeoff_altitude:
-            
-            print(f"{self.position_manager.adjusted_altitude()} m")
-            
             await asyncio.sleep(0.1)
         return True
 
@@ -118,15 +115,11 @@ class FlightController:
             await asyncio.sleep(3)
             current_alt = self.position_manager.adjusted_altitude()
             if current_alt < 2:
-                print("target:", self.target_longitude, self.target_latitude, self.target_altitude + 2)
-                print("now:", self.position_manager.adjusted_coordinates_lon(), self.position_manager.adjusted_coordinates_lon(), self.position_manager.adjusted_altitude())
-                await self.go_to_location(Coordinates(self.target_longitude,
-                                                    self.target_latitude,
-                                                    self.target_altitude + 2))
+                await self.go_to_location(Coordinates(self.target_longitude, self.target_latitude, self.target_altitude + 2))
+                break                                    
             elif current_alt > 8:
-                await self.go_to_location(Coordinates(self.target_longitude,
-                                                    self.target_latitude,
-                                                    self.target_altitude - 4))
+                await self.go_to_location(Coordinates(self.target_longitude, self.target_latitude, self.target_altitude - 4))
+                break
         self.stop_here()
         return
 
@@ -138,16 +131,9 @@ class FlightController:
 ##############################################################################################################
 
     async def precise_land(self):
-        #self.cone_detector.start(0.3)
-
         while self.detected_pos == [None,None]:
                 await asyncio.sleep(1)
-
-                #self.detected_pos = self.cone_detector.get_pos()
-
                 self.detected_pos = self.cone_detector.capture_cone_position_and_save(str(Path(__file__).parent.parent.joinpath(f"assets/log/img_{datetime.datetime.now().strftime('%Y-%m-%d_%H:%M:%S')}.jpg")), 0.3)
-                #self.detected_pos = self.cone_detector.capture_cone_position(0.3)
-
                 print(self.detected_pos)
                 self.nondetected_counter += 1
                 if self.nondetected_counter == self.nondetected_counter_max:
@@ -176,8 +162,6 @@ class FlightController:
         while self.position_manager.adjusted_altitude() > 0.25:
             await asyncio.sleep(0.2)
         self.land()
-        
-        #self.cone_detector.stop()
 
         return
         
