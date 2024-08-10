@@ -133,7 +133,7 @@ class FlightController:
     async def precise_land(self):
         while self.detected_pos == [None,None]:
                 await asyncio.sleep(1)
-                self.detected_pos = self.cone_detector.capture_cone_position()
+                self.detected_pos = self.cone_detector.capture_cone_position(0.3)
                 print(self.detected_pos)
                 self.nondetected_counter += 1
                 if self.nondetected_counter == self.nondetected_counter_max:

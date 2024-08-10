@@ -10,6 +10,8 @@ from flight.flight_controller import FlightController
 from logger.logger import Logger
 from sensor.acceleration_velocity import Acceleration_Velocity
 
+from sensor.camera_handler import CameraHandler
+
 
 class DroneController:
     pixhawk_address: str = "serial:///dev/ttyACM0:115200"
@@ -175,5 +177,19 @@ class DroneController:
             await asyncio.sleep(1)
             if self.battery_watch.remaining_percent()<35:
                 await self.flight_controller.land()
+    
+    async def sequence_test_precise_land(self):
+        await self.flight_controller.takeoff(3)
+        await self.flight_controller.hovering(10)
+        await self.flight_controller.precise_land()
+
+    async def capture_video_during_flight(self, speed, target_coordinates, output_path, video_length):
+        await self.flight_controller.takeoff(3)
+        camera_handler = CameraHandler()
+        print(f"start capturing {video_length} s video")
+        camera_handler.capture_video(output_path, video_length)
+        await self.flight_controller.go_to_location(speed, target_coordinates)
+        await self.flight_controller.hovering(5)
+        await self.flight_controller.land()
 
 ###########################################################################################################    
