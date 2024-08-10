@@ -146,8 +146,8 @@ class ConeDetector:
 #     image = camera_handler.capture_rgb()
 #     cv2.imwrite("capture.png", image)
 
-def test3():
-    camera_handler = CameraHandler()
-    camera_handler.capture_video("test.mp4")
+# def test3():
+#     camera_handler = CameraHandler()
+#     camera_handler.capture_video("test.mp4")
 
-test3()
+#test3()
