@@ -4,9 +4,11 @@ from mavsdk.mission import (MissionItem, MissionPlan)
 from pathlib import Path
 import math
 
+import datetime
+
 from control.position_manager import PositionManager
 from control.coordinates import Coordinates
-from sensor.camera_handler import CameraHandler, ConeDetector
+#from sensor.camera_handler import CameraHandler, ConeDetector
 
 class FlightController:
 
@@ -131,9 +133,16 @@ class FlightController:
 ##############################################################################################################
 
     async def precise_land(self):
+        #self.cone_detector.start(0.3)
+
         while self.detected_pos == [None,None]:
                 await asyncio.sleep(1)
-                self.detected_pos = self.cone_detector.capture_cone_position(0.3)
+
+                #self.detected_pos = self.cone_detector.get_pos()
+
+                self.detected_pos = self.cone_detector.capture_cone_position_and_save(str(Path(__file__).parent.parent.joinpath(f"assets/log/img_{datetime.datetime.now().strftime('%Y-%m-%d_%H:%M:%S')}.jpg")), 0.3)
+                #self.detected_pos = self.cone_detector.capture_cone_position(0.3)
+
                 print(self.detected_pos)
                 self.nondetected_counter += 1
                 if self.nondetected_counter == self.nondetected_counter_max:
@@ -162,6 +171,9 @@ class FlightController:
         while self.position_manager.adjusted_altitude() > 0.25:
             await asyncio.sleep(0.2)
         self.land()
+        
+        #self.cone_detector.stop()
+
         return
         
 

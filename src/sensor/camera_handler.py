@@ -115,6 +115,18 @@ class ConeDetector:
         else:
             return [None, None]
 
+    def capture_cone_position_and_save(self, output_path, conf = IOU_THRESHOLD):
+        image = self.camera_handler.capture_bgr()
+
+        if not image is None:
+            result = cone_detector.get_pos(image, conf)
+            if result[0] >= -1:
+                cv2.circle(image, ((result[0] + 1) / 2 * 640, -(result[1] + 1) / 2 * 480), 10, (255, 0, 0))
+            cv2.imwrite(output_path, image)
+            return result
+        else:
+            return [None, None]
+
 # def test1():
 #     camera_handler = CameraHandler()
 #     cone_detector = ConeDetector(camera_handler, Path(__file__).parent.parent.parent.joinpath("assets/model/cone_ncnn_model_v9_320"), 320)
