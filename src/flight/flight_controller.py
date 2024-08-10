@@ -119,7 +119,7 @@ class FlightController:
             current_alt = self.position_manager.adjusted_altitude()
             if current_alt < 2:
                 print("target:", self.target_longitude, self.target_latitude, self.target_altitude + 2)
-                print("now:", self.position_manager.adjusted_coordinates_lon, self.position_manager.adjusted_coordinates_lon, self.position_manager.adjusted_altitude)
+                print("now:", self.position_manager.adjusted_coordinates_lon(), self.position_manager.adjusted_coordinates_lon(), self.position_manager.adjusted_altitude())
                 await self.go_to_location(Coordinates(self.target_longitude,
                                                     self.target_latitude,
                                                     self.target_altitude + 2))
