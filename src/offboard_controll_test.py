@@ -1,5 +1,6 @@
 import asyncio
 from drone.drone_controller import DroneController
+from mavsdk.offboard import (Attitude, PositionNedYaw, OffboardError)
 
 async def test1():
     drone = DroneController()
