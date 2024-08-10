@@ -10,7 +10,7 @@ from flight.flight_controller import FlightController
 from logger.logger import Logger
 from sensor.acceleration_velocity import Acceleration_Velocity
 
-#from sensor.camera_handler import CameraHandler
+from sensor.camera_handler import CameraHandler
 
 
 class DroneController:
