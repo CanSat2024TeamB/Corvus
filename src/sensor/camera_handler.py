@@ -120,8 +120,9 @@ class ConeDetector:
 
         if not image is None:
             result = cone_detector.get_pos(image, conf)
+            cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
             if result[0] >= -1:
-                cv2.circle(image, (int((result[0] + 1) / 2 * 640), int(-(result[1] + 1) / 2 * 480)), 10, (255, 0, 0))
+                cv2.circle(image, (int((result[0] + 1) / 2 * 640), int(-(result[1] + 1) / 2 * 480)), 25, (255, 0, 0), 5)
             cv2.imwrite(output_path, image)
             return result
         else:
