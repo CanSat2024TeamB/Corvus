@@ -175,7 +175,7 @@ class FlightController:
 
         x = self.lon_unit * d_lon
         y = self.lat_unit * d_lat
-        return math.degrees(math.atan2(x/y)) ##-180~180
+        return math.degrees(math.atan2(x, y)) ##-180~180
 
     #########################################################################################################
 
