@@ -111,7 +111,10 @@ class ConeDetector:
 
         if not image is None:
             result = cone_detector.get_pos(image, conf)
-            return result
+            if result[0] <= 1:
+                return [-result[0], -result[1]] # カメラの取り付け上下が逆になってることを考慮
+            else:
+                return [None, None]
         else:
             return [None, None]
 
@@ -121,8 +124,8 @@ class ConeDetector:
         if not image is None:
             result = cone_detector.get_pos(image, conf)
             image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-            if result[0] >= -1:
-                image = cv2.circle(image, (int((result[0] + 1) / 2 * 640), int((-result[1] + 1) / 2 * 480)), 25, (255, 255, 255), thickness = 5)
+            if result[0] <= 1:
+                image = cv2.circle(image, (int((-result[0] + 1) / 2 * 640), int((result[1] + 1) / 2 * 480)), 25, (255, 255, 255), thickness = 5)
             cv2.imwrite(output_path, image)
             return result
         else:
