@@ -4,6 +4,8 @@ from mavsdk.mission import (MissionItem, MissionPlan)
 from pathlib import Path
 import math
 
+import datetime
+
 from control.position_manager import PositionManager
 from control.coordinates import Coordinates
 from sensor.camera_handler import CameraHandler, ConeDetector
@@ -13,7 +15,7 @@ class FlightController:
     def __init__(self, drone: System, position_manager: PositionManager):
         self.drone: System = drone
         self.position_manager: PositionManager = position_manager
-        self.camera_handler = CameraHandler()
+        self.camera_handler = CameraHandler.get_instance()
         self.cone_detector = ConeDetector(self.camera_handler)
         self.target_latitude = 0
         self.target_longitude = 0
@@ -113,13 +115,11 @@ class FlightController:
             await asyncio.sleep(3)
             current_alt = self.position_manager.adjusted_altitude()
             if current_alt < 2:
-                await self.go_to_location(Coordinates(self.target_longitude,
-                                                    self.target_latitude,
-                                                    self.target_altitude + 2))
+                await self.go_to_location(Coordinates(self.target_longitude, self.target_latitude, self.target_altitude + 2))
+                break                                    
             elif current_alt > 8:
-                await self.go_to_location(Coordinates(self.target_longitude,
-                                                    self.target_latitude,
-                                                    self.target_altitude - 4))
+                await self.go_to_location(Coordinates(self.target_longitude, self.target_latitude, self.target_altitude - 4))
+                break
         self.stop_here()
         return
 
@@ -133,7 +133,7 @@ class FlightController:
     async def precise_land(self):
         while self.detected_pos == [None,None]:
                 await asyncio.sleep(1)
-                self.detected_pos = self.cone_detector.capture_cone_position()
+                self.detected_pos = self.cone_detector.capture_cone_position_and_save(str(Path(__file__).parent.parent.joinpath(f"assets/log/img_{datetime.datetime.now().strftime('%Y-%m-%d_%H:%M:%S')}.jpg")), 0.3)
                 print(self.detected_pos)
                 self.nondetected_counter += 1
                 if self.nondetected_counter == self.nondetected_counter_max:
@@ -162,6 +162,7 @@ class FlightController:
         while self.position_manager.adjusted_altitude() > 0.25:
             await asyncio.sleep(0.2)
         self.land()
+
         return
         
 
@@ -174,9 +175,17 @@ class FlightController:
 
         x = self.lon_unit * d_lon
         y = self.lat_unit * d_lat
-        return math.degrees(math.atan2(x/y)) ##-180~180
+        return math.degrees(math.atan2(x, y)) ##-180~180
 
     #########################################################################################################
+
+    async def offboard_precise_land():
+        #self.drone.offboard.set_velocity_body(VelocityBodyYawspeed(0.0, 0.0, 0.0, 0.0))
+        self.cone_detector.start()
+        while True:
+            pass
+
+        return
 
     async def rotate_yaw(self, yaw):
         await self.drone.action.set_current_speed(0.1)
