@@ -131,7 +131,7 @@ class DroneController:
 ####################################################################################################
     
     async def sequence_test_hovering(self):
-        await self.flight_controller.takeoff(1)
+        await self.flight_controller.takeoff(5)
         print('reached start hovering')
         self.logger.write('reached start hovering')
         await self.flight_controller.hovering(10)
@@ -156,7 +156,7 @@ class DroneController:
                 break
 
     async def sequence_test_goto(self,speed, target_coordinates: Coordinates):
-        await self.flight_controller.takeoff(1.5)
+        await self.flight_controller.takeoff(5)
         print('reached')
         self.logger.write('reached')
         print('goto started')
@@ -170,7 +170,7 @@ class DroneController:
         await self.flight_controller.land()
 
     async def sequence_test_endurance(self,speed, *target_coordinates: Coordinates): #要書き換え
-        await self.flight_controller.takeoff(3)
+        await self.flight_controller.takeoff(5)
         await self.flight_controller.hovering(10)
         await self.flight_controller.go_to(speed, *target_coordinates)
         while True:
@@ -180,18 +180,26 @@ class DroneController:
     
     async def sequence_test_precise_land(self):
         print("taking off")
-        await self.flight_controller.takeoff(3)
+        await self.flight_controller.takeoff(5)
         print("finished taking off")
         await self.flight_controller.hovering(10)
         print("start landing")
         await self.flight_controller.precise_land()
         print("landed")
     
-    async def sequence_test_goto_and_precise_land(self):
-        return
+    async def sequence_test_goto_and_precise_land(self, speed, target_coordinates):
+        print("taking off")
+        await self.flight_controller.takeoff(5)
+        print("finished taking off")
+        await self.flight_controller.hovering(10)
+        print('goto started')
+        await self.flight_controller.go_to_location(speed, target_coordinates)
+        print("start landing")
+        await self.flight_controller.precise_land()
+        print("landed")
 
     async def capture_video_during_flight(self, speed, target_coordinates, output_path, video_length):
-        await self.flight_controller.takeoff(3)
+        await self.flight_controller.takeoff(5)
         camera_handler = CameraHandler()
         print(f"start capturing {video_length} s video")
         camera_handler.capture_video(output_path, video_length)

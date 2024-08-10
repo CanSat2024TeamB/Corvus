@@ -22,6 +22,7 @@ async def main():
     await drone.arm()
     # `add_sequence_task`の呼び出し
     await drone.add_sequence_task(drone.sequence_test_goto(speed, target_coordinates))
+    #await drone.add_sequence_task(drone.sequence_test_goto_and_precise_land(speed, target_coordinates))
 
     try:
         # 無限ループを維持するためのFutureを作成
