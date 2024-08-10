@@ -1,6 +1,7 @@
 from pathlib import Path
 from picamera2 import Picamera2
 from picamera2.encoders import H264Encoder
+from pacamera2.outputs import FfmpegOutput
 import cv2
 import threading
 import cone_detector
@@ -38,15 +39,18 @@ class CameraHandler:
     def capture_video(self, output_path, length = 10):
         def video_capturer(self, output_path, length):
             video_config = self.camera.create_video_configuration()
+            self.camera.stop()
             self.camera.configure(video_config)
 
             encoder = H264Encoder(10000000)
+            output = FfmpegOutput(output_path)
 
-            self.camera.start_recording(encoder, output_path)
+            self.camera.start_recording(encoder, output)
             time.sleep(length)
             self.camera.stop_recording()
+            self.camera.start()
         
-        video_thread = threading.Thread(target = video_capturer, args = (output_path, length,))
+        video_thread = threading.Thread(target = video_capturer, args = (self, output_path, length,))
         video_thread.start()
 
 class ConeDetector:
