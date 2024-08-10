@@ -1,7 +1,7 @@
 from pathlib import Path
 from picamera2 import Picamera2
 from picamera2.encoders import H264Encoder
-from pacamera2.outputs import FfmpegOutput
+from picamera2.outputs import FfmpegOutput
 import cv2
 import threading
 import cone_detector
