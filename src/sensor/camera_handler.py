@@ -121,7 +121,7 @@ class ConeDetector:
         if not image is None:
             result = cone_detector.get_pos(image, conf)
             if result[0] >= -1:
-                cv2.circle(image, ((result[0] + 1) / 2 * 640, -(result[1] + 1) / 2 * 480), 10, (255, 0, 0))
+                cv2.circle(image, (int((result[0] + 1) / 2 * 640), int(-(result[1] + 1) / 2 * 480)), 10, (255, 0, 0))
             cv2.imwrite(output_path, image)
             return result
         else:
