@@ -136,6 +136,6 @@ class ConeDetector:
 
 def test3():
     camera_handler = CameraHandler()
-    camera_handler.capture_video("test.h264")
+    camera_handler.capture_video("test.mp4")
 
 test3()
