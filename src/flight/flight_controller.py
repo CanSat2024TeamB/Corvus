@@ -15,7 +15,7 @@ class FlightController:
     def __init__(self, drone: System, position_manager: PositionManager):
         self.drone: System = drone
         self.position_manager: PositionManager = position_manager
-        self.camera_handler = CameraHandler()
+        self.camera_handler = CameraHandler.get_instance()
         self.cone_detector = ConeDetector(self.camera_handler)
         self.target_latitude = 0
         self.target_longitude = 0

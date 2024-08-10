@@ -8,7 +8,13 @@ import cone_detector
 import time
 
 class CameraHandler:
-    def __init__(self):
+    _unique_instance = None
+
+    def __new__(self):
+        raise NotImplementedError('Cannot generate instance by constructor. Call get_instance() method instead.')
+    
+    @classmethod
+    def __internal_new__(self):
         self.camera = Picamera2()
         config = self.camera.create_preview_configuration({ "format": "BGR888" })
         self.camera.configure(config)
@@ -17,6 +23,13 @@ class CameraHandler:
         camera_config = self.camera.create_preview_configuration()
         self.width = camera_config["main"]["size"][0]
         self.height = camera_config["main"]["size"][1]
+        return super().__new__(self)
+
+    @classmethod
+    def get_instance(self):
+        if self._unique_instance is None:
+            self._unique_instance = self.__internal_new__()
+        return self._unique_instance
     
     def get_width(self):
         return self.width
