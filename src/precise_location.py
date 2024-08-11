@@ -6,6 +6,10 @@ from drone.drone_controller import DroneController
 async def main():
     drone = DroneController()
     await drone.connect()
+    asyncio.create_task(drone.invoke_sensor())
+
+    # すぐに`invoke_sensor`タスクを開始する
+    await asyncio.sleep(1)
 
     lat_list = []
     lon_list = []
