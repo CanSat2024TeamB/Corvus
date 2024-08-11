@@ -15,8 +15,8 @@ async def main():
     lon_list = []
 
     for _ in range(100):
-        lat = await drone.position_manager.adjusted_coordinates_lat()
-        lon = await drone.position_manager.adjusted_coordinates_lon()
+        lat = drone.position_manager.adjusted_coordinates_lat()
+        lon = drone.position_manager.adjusted_coordinates_lon()
         lat_list.append(lat)
         lon_list.append(lon)
         print([lat,lon])
