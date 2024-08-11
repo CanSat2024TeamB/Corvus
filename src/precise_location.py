@@ -19,6 +19,8 @@ async def main():
         lon = await drone.position_manager.adjusted_coordinates_lon()
         lat_list.append(lat)
         lon_list.append(lon)
+        print([lat,lon])
+
 
     # 平均値を計算
     lat_mean = mean(lat_list)
