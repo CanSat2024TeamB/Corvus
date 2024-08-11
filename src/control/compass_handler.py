@@ -26,7 +26,7 @@ class GPSHandler:
 
             await self.update_coordinates(latitude_deg, longitude_deg, absolute_altitude_m)
             print(f"Latitude: {latitude_deg}, Longitude: {longitude_deg}, Altitude AMSL: {absolute_altitude_m}")
-            await asyncio.sleep(0.05)
+            await asyncio.sleep(0.1)
 
     def get_coordinates(self) -> Coordinates:
         """現在の座標を取得"""
