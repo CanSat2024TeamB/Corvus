@@ -1,6 +1,7 @@
 import asyncio
 from mavsdk import System
 from mavsdk.mission import (MissionItem, MissionPlan)
+from mavsdk.offboard import (Attitude, PositionNedYaw, VelocityBodyYawspeed, OffboardError)
 from pathlib import Path
 import math
 
@@ -180,12 +181,37 @@ class FlightController:
     #########################################################################################################
 
     async def offboard_precise_land():
-        #self.drone.offboard.set_velocity_body(VelocityBodyYawspeed(0.0, 0.0, 0.0, 0.0))
-        self.cone_detector.start()
-        while True:
-            pass
+        velocity_body = VelocityBodyYawspeed(0.0, 0.0, 0.0, 0.0)
+        def turn_clock_wise(speed):
+            """
+            set yaw angular veocity of the drone
+            Parameter
+            ---------
+            speed : float
+                clock-wise angular speed rate (degree / s), negative param cause anti-clock-wise rotation.
+            """
+            velocity_body = VelocityBodyYawspeed(velocity_body.forward_m_s, velocity_body.right_m_s, velocity_body.down_m_s, speed)
+            self.drone.offboard.set_velocity_body(velocity_body)
 
-        return
+        def stop_rotation():
+            velocity_body = VelocityBodyYawspeed(velocity_body.forward_m_s, velocity_body.right_m_s, velocity_body.down_m_s, 0.0)
+            self.drone.offboard.set_velocity_body(velocity_body)
+
+        def set_yaw_angle():
+            return
+
+        self.drone.offboard.set_velocity_body(velocity_body)
+        
+        try:
+            await self.drone.offboard.start()
+            self.cone_detector.start()
+            while True:
+                pass
+
+            return
+        except:
+            print(f"Starting offboard controll failed, {error._result.result}")
+            return False
 
     async def rotate_yaw(self, yaw):
         await self.drone.action.set_current_speed(0.1)
