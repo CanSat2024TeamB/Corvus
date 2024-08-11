@@ -65,6 +65,7 @@ class DroneController:
     
     
     async def arm(self) -> bool:
+        print('gps check start')
         await self.gps_handler.catch_gps()
         print('global and local position ok')      
         self.logger.write('global and local position ok')
