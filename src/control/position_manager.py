@@ -38,3 +38,6 @@ class PositionManager:
     def adjusted_coordinates_AMSL(self) -> float:
         AMSL = self.gps_handler.gps_coordinates().altitude()
         return AMSL
+    
+    def yaw_deg(self) -> float:
+        return self.compass_handler.compass_attitude().get_yaw()

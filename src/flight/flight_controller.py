@@ -180,9 +180,38 @@ class FlightController:
 
     #########################################################################################################
 
-    async def offboard_precise_land():
+    async def offboard_precise_land(self):
+        CAMERA_YAW_DEG = 0 #pixhawk正面からはかったカメラの指向方向 (deg, 右回り正)
+        LAND_ALTITUDE = 0.25 #コーンに接近していってlandに移行する高度
+
+        position = PositionNedYaw(0.0, 0.0, 0.0, 0.0)
         velocity_body = VelocityBodyYawspeed(0.0, 0.0, 0.0, 0.0)
-        def turn_clock_wise(speed):
+        
+        async def set_position(self, new_position: PositionNedYaw):
+            nonlocal position
+            position = new_position
+            await self.drone.offboard.set_position_ned(position)
+
+        async def set_altitude(self, altitude: float):
+            nonlocal position
+            await set_position(self, PositionNedYaw(position.north_m, position.east_m, altitude, position.yaw_deg))
+            
+            alt_threshold = 0.5
+            while True:
+                if abs(self.position_manager.adjusted_altitude() - altitude) < alt_threshold:
+                    return
+
+        async def set_velocity_body(self, new_velocity_body: VelocityBodyYawspeed):
+            nonlocal velocity_body
+            velocity_body = new_velocity_body
+            await self.drone.offboard.set_velocity_body(velocity_body)
+
+        async def add_velocity_body(self, delta_velocity: VelocityBodyYawspeed):
+            nonlocal velocity_body
+            velocity_body = VelocityBodyYawspeed(velocity_body.forward_m_s + delta_velocity.forward_m_s, velocity_body.right_m_s + delta_velocity.right_m_s, velocity_body.down_m_s + delta_velocity.down_m_s, velocity_body.yawspeed_deg_s + delta_velocity.yawspeed_deg_s)
+            await self.drone.offboard.set_velocity_body(velocity_body)
+
+        async def turn_clock_wise(self, speed: float):
             """
             set yaw angular veocity of the drone
             Parameter
@@ -190,26 +219,98 @@ class FlightController:
             speed : float
                 clock-wise angular speed rate (degree / s), negative param cause anti-clock-wise rotation.
             """
-            velocity_body = VelocityBodyYawspeed(velocity_body.forward_m_s, velocity_body.right_m_s, velocity_body.down_m_s, speed)
-            self.drone.offboard.set_velocity_body(velocity_body)
+            await add_velocity_body(self, VelocityBodyYawspeed(0.0, 0.0, 0.0, speed))
 
-        def stop_rotation():
-            velocity_body = VelocityBodyYawspeed(velocity_body.forward_m_s, velocity_body.right_m_s, velocity_body.down_m_s, 0.0)
-            self.drone.offboard.set_velocity_body(velocity_body)
+        async def stop_rotation(self):
+            nonlocal velocity_body
+            await set_velocity_body(self, VelocityBodyYawspeed(velocity_body.forward_m_s, velocity_body.right_m_s, velocity_body.down_m_s, 0.0))
+        
+        def multiply_velocity_body(velocity_body: VelocityBodyYawspeed, f: float) -> VelocityBodyYawspeed:
+            return VelocityBodyYawspeed(velocity_body.forward_m_s * f, velocity_body.right_m_s * f, velocity_body.down_m_s * f, velocity_body.yawspeed_deg_s)
 
-        def set_yaw_angle():
-            return
+        async def adjust_velocity(self, yaw_deg, pos):
+            ADJUST_FACTOR = 0.1
+            yaw_rad = yaw_deg * math.pi / 180
+            normalized_delta_velocity = VelocityBodyYawspeed(pos[0] * (-1 * math.sin(yaw_rad)), pos[0] * math.cos(yaw_rad), pos[1], 0.0)
+            await add_velocity_body(self, multiply_velocity_body(normalized_delta_velocity, ADJUST_FACTOR))
 
-        self.drone.offboard.set_velocity_body(velocity_body)
+        def calc_velocity_body_to_target(yaw_deg) -> VelocityBodyYawspeed:
+            """
+            get normalized VelocityBodyYawspeed from yaw_deg, down rate = 1 m/s
+            Parameter
+            ---------
+            yaw_deg: float
+                clock-wise deg angular of target measured from north (north -> 0, east -> 90)
+            """
+            yaw_rad = yaw_deg * math.pi / 180
+            return VelocityBodyYawspeed(math.cos(yaw_rad), math.sin(yaw_rad), 1.0, 0.0)
+        
+        async def rotate_and_search_cone(self, rotate_rate: float):
+            await turn_clock_wise(self, rotate_rate)
+
+            while True: ####### しばらく回ってもコーンが見つからなかったときの処理が必要（まだない）
+                pos = self.cone_detector.get_pos()
+
+                if pos[0] <= 1:
+                    await stop_rotation(self)
+                    await asyncio.sleep(1)
+
+                    pos = self.cone_detector.get_pos()
+                    if pos[0] <= 1:
+                        print("cone detected")
+                        print(f"cone pos: {pos}")
+                    else:
+                        await rotate_and_search_cone(self, rotate_rate / 2) # コーンを認識して止まった後、静止状態でもう一回とって認識できなかったらゆっくり回ってもう一回（推定のラグを考慮）
+                    return
+                
+        async def approach_cone(self):
+            await rotate_and_search_cone(self, 20)
+            
+            body_yaw_deg = self.position_manager.yaw_deg()
+            nonlocal CAMERA_YAW_DEG
+            nonlocal LAND_ALTITUDE
+
+            await set_velocity_body(self, calc_velocity_body_to_target(body_yaw_deg + CAMERA_YAW_DEG))
+            while True:
+                pos = self.cone_detector.get_pos()
+                if pos[0] <= 1:
+                    print("cone detected while approaching cone")
+                    print(f"pos: {pos}")
+                    body_yaw_deg = self.position_manager.yaw_deg()
+                    await adjust_velocity(self, body_yaw_deg + CAMERA_YAW_DEG, pos)
+                else:
+                    print("lost cone")
+                    set_velocity_body(self, VelocityBodyYawspeed(0.0, 0.0, 0.0, 0.0))
+                    print("restarting searching cone")
+                    await approach_cone(self)
+                    return
+                
+                if self.position_manager.adjusted_altitude() < LAND_ALTITUDE:
+                    print("got ready to land")
+                    set_velocity_body(self, VelocityBodyYawspeed(0.0, 0.0, 0.0, 0.0))
+                    return
+
+        await set_position(self, position)
+        await set_velocity_body(self, velocity_body)
         
         try:
             await self.drone.offboard.start()
+            print("setting altitude 3 m")
+            await set_altitude(3)
+            
             self.cone_detector.start()
-            while True:
-                pass
 
-            return
-        except:
+            await approach_cone(self)
+
+            await self.cone_detector.stop()
+            print("stopped cone detector loop")
+            await self.drone.offboard.stop()
+            print("finished drone offboard control")
+
+            await self.land()
+
+            return True
+        except OffboardError as error:
             print(f"Starting offboard controll failed, {error._result.result}")
             return False
 
