@@ -19,7 +19,7 @@ class PressureHandler:
             self.sensor.set_filter(bme680.FILTER_SIZE_3)
 
         self.error_count = 0
-        self.interval = 1.0
+        self.interval = 0.5
     
     def get_temperature(self):
         if self.sensor.get_sensor_data():

@@ -16,7 +16,7 @@ class CaseHandler:
         self.wirehandler = WireHandler()
         self.ac_vel = Acceleration_Velocity(self.drone)
         
-        self.stable_pre_val = 1 ##1mで大体7hpaの差
+        self.stable_pre_val = 0.1 ##1mで大体0.1hpaの差 2.5秒に一回の判定なので、2m/sでも0.5くらい変わる。
         self.stable_vel_val = 0.1
         self.stable_judge_count_land = 5
         self.stable_judge_count_release = 1
@@ -24,7 +24,7 @@ class CaseHandler:
         self.nichrome_duration = 10
         
         #収納判定用定数
-        self.judge_storage_border_light = 500
+        self.judge_storage_border_light = 500  #あかり消した教室で260くらい　
         self.judge_storage_countmax = 100
         self.judge_storage_maxtime = 10 #300にする 
         self.judge_storage_sleep_time = 0.5
@@ -39,6 +39,7 @@ class CaseHandler:
         
         #着地判定用定数
         self.judge_landing_maxtime = 1200 #去年は1200
+        self.stable_judge_count_vel = 5
 
 
 
@@ -77,7 +78,7 @@ class CaseHandler:
         
     async def judge_velocity_stable(self, interval_def_ave_velocity):
         stable_count = 0
-        for i in range(self.stable_judge_count):
+        for i in range(self.stable_judge_count_vel):
             def_vel = await self.ac_vel.dif_ave_velocity(interval_def_ave_velocity)
             print(def_vel)  ## 値の確認のための出力、必要ない場合はコメントアウトする
 
@@ -86,7 +87,7 @@ class CaseHandler:
             else:
                 break
 
-        if stable_count == self.stable_judge_count:
+        if stable_count == self.stable_judge_count_vel:
             return True
         else:
             return False
