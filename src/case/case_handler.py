@@ -18,28 +18,28 @@ class CaseHandler:
         
         self.stable_pre_val = 0.1 ##1mで大体0.1hpaの差 2.5秒に一回の判定なので、2m/sでも0.5くらい変わる。
         self.stable_vel_val = 0.1
-        self.stable_judge_count_land = 5
-        self.stable_judge_count_release = 1
         
         self.nichrome_duration = 10
         
         #収納判定用定数
         self.judge_storage_border_light = 500  #あかり消した教室で260くらい　
-        self.judge_storage_countmax = 100
-        self.judge_storage_maxtime = 10 #300にする 
+        self.judge_storage_countmax = 100 #ARLISSは500、能代は100
+        self.judge_storage_maxtime = 300 #300にする 
         self.judge_storage_sleep_time = 0.5
         self.light_counter = 0 #counterを設定
 
         #放出判定用定数
-        self.judge_release_maxtime = 100 #去年はARLISSで3600を使った
+        self.judge_release_maxtime = 300 #去年はARLISSで3600を使った、能代は300
         self.judge_release_lig_countmax = 2 #能代は2、ARLISSは6？
         self.judge_release_pre_countmax = 2 #能代は2、ARLISSは6？
         self.judge_release_border_light = 500
         self.judge_release_sleep_time = 0.5
+        self.stable_judge_count_release = 1 #能代は1、ARLISSは
         
         #着地判定用定数
-        self.judge_landing_maxtime = 1200 #去年は1200
+        self.judge_landing_maxtime = 300 #去年は1200、能代は300
         self.stable_judge_count_vel = 5
+        self.stable_judge_count_land = 5
 
 
 
