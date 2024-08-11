@@ -26,7 +26,6 @@ class CaseHandler:
         self.judge_storage_countmax = 100 #ARLISSは500、能代は100
         self.judge_storage_maxtime = 300 #300にする 
         self.judge_storage_sleep_time = 0.5
-        self.light_counter = 0 #counterを設定
 
         #放出判定用定数
         self.judge_release_maxtime = 300 #去年はARLISSで3600を使った、能代は300
