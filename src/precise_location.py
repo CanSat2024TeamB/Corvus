@@ -20,6 +20,7 @@ async def main():
         lat_list.append(lat)
         lon_list.append(lon)
         print([lat,lon])
+        await asyncio.sleep(1)
 
 
     # 平均値を計算
