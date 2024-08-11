@@ -25,7 +25,6 @@ class GPSHandler:
             absolute_altitude_m = position.absolute_altitude_m
 
             await self.update_coordinates(latitude_deg, longitude_deg, absolute_altitude_m)
-            print(f"Latitude: {latitude_deg}, Longitude: {longitude_deg}, Altitude AMSL: {absolute_altitude_m}")
             await asyncio.sleep(0.1)
 
     def gps_coordinates(self) -> Coordinates:
