@@ -9,9 +9,7 @@ class GPSHandler:
         self.coordinates = Coordinates()
 
     def update_coordinates(self,position) -> None:
-        self.coordinates.set_longitude(position.longitude_deg)
-        self.coordinates.set_latitude(position.latitude_deg)
-        self.coordinates.set_altitude(position.altitude)
+        self.coordinates = position
         return
 #############################################################以下がオープン
 
