@@ -33,7 +33,7 @@ class CaseHandler:
         self.judge_release_pre_countmax = 2 #能代は2、ARLISSは6？
         self.judge_release_border_light = 500
         self.judge_release_sleep_time = 0.5
-        self.stable_judge_count_release = 1 #能代は1、ARLISSは
+        self.stable_judge_count_release = 1 #能代は1
         
         #着地判定用定数
         self.judge_landing_maxtime = 300 #去年は1200、能代は300
