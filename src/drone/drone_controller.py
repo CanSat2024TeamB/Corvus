@@ -157,6 +157,7 @@ class DroneController:
                 break
 
     async def sequence_test_goto(self,speed, target_coordinates: Coordinates):
+        await self.arm()
         await self.flight_controller.takeoff(5)
         print('reached')
         self.logger.write('reached')
