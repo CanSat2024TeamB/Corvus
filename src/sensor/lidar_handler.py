@@ -12,6 +12,7 @@ class LiDARHandler:
     async def invoke_loop(self) -> None:
         async for distance_sensor in self.drone.telemetry.distance_sensor():
             self.update_altitude(distance_sensor.current_distance_m)
+            print('lidar updated')
             await asyncio.sleep(0.05)
 
     def get_altitude(self) -> float:
