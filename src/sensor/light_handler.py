@@ -26,7 +26,7 @@ class LightSensor:
             self.error_count += 1
             if self.error_count >= self.max_errors:
                 self.CANUSELIGHT = False
-            print("Error reading light intensity: {e}")
+            print("Error readting light intensity: {e}")
             return float('nan')
 
     def close(self):

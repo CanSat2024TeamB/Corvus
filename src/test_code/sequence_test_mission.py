@@ -21,8 +21,6 @@ async def main():
     target_coordinates_1 = Coordinates(first_lon,first_lat,hov_alt)
     target_coordinates_2 = Coordinates(140.1080417,35.7702389,3)
     
-
-    await drone.arm()
     await drone.add_sequence_task(drone.sequence_test_mission(speed,target_coordinates_1,target_coordinates_2))
     try:
         await asyncio.Future()

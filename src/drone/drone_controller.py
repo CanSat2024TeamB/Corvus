@@ -65,6 +65,7 @@ class DroneController:
     
     
     async def arm(self) -> bool:
+        print('gps check start')
         await self.gps_handler.catch_gps()
         print('global and local position ok')      
         self.logger.write('global and local position ok')
@@ -97,11 +98,11 @@ class DroneController:
             message_1 = str(self.position_manager.adjusted_altitude())
             message_2 = str(self.position_manager.adjusted_coordinates_lon())
             message_3 = str(self.position_manager.adjusted_coordinates_lat())
-
             #message_4 = str(self.ac_vel.get_velocity())
             #message_5 = str(self.battery_watch.remaining_percent())
             #message_6 = str(self.battery_watch.voltage_v())
             #message_7 = str(self.battery_watch.temperature_degc())
+            
             self.logger.write(message_1,message_2,message_3,)
 
 #############################################################################################
@@ -156,6 +157,7 @@ class DroneController:
                 break
 
     async def sequence_test_goto(self,speed, target_coordinates: Coordinates):
+        await self.arm()
         await self.flight_controller.takeoff(5)
         print('reached')
         self.logger.write('reached')
