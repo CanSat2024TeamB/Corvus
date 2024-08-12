@@ -1,6 +1,5 @@
 import asyncio
 from mavsdk import System
-import datetime
 
 from sensor.lidar_handler import LiDARHandler
 from control.coordinates import Coordinates
