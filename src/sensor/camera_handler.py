@@ -1,3 +1,8 @@
+import sys
+from pathlib import Path
+
+sys.path.append(Path(__file__).parent.parent.joinpath("assets/module"))
+
 from pathlib import Path
 from picamera2 import Picamera2
 from picamera2.encoders import H264Encoder
@@ -18,7 +23,7 @@ class CameraHandler:
         try:
             self.camera = Picamera2()
         except Exception as e:
-            print(f"Cannot connect to the camera, {type(e)}")
+            print(f"Cannot connect the camera.")
             self.is_connected = False
             return
         else:

@@ -3,8 +3,7 @@ import datetime
 import os
 
 class Logger:
-    default_dir = "/home/admin/corvus/assets/log"
-    def __init__(self, dir: str = default_dir):
+    def __init__(self, dir):
         # 動的にログファイルのパスを生成
         self.dir = dir
         self.path = str(Path(self.dir).joinpath(f"log_{datetime.datetime.now().strftime('%Y-%m-%d_%H:%M:%S')}.txt"))
