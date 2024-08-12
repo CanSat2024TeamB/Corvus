@@ -45,7 +45,7 @@ async def test1():
 
     await drone_instance.action.land()
 
-def ned_test():
+async def ned_test():
     drone = DroneController()
 
     await drone.connect()
