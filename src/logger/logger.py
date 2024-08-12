@@ -9,7 +9,7 @@ class Logger:
         self.dir = dir
         self.path = str(Path(self.dir).joinpath(f"log_{datetime.datetime.now().strftime('%Y-%m-%d_%H:%M:%S')}.txt"))
         print(f"Logs will be written to the file, {self.path}")
-        self.create_file(self.path)
+        self.create_file()
 
     def create_file(self) -> bool:
         # ディレクトリが存在しない場合は作成する
