@@ -3,7 +3,7 @@ import datetime
 import os
 
 class Logger:
-    default_dir = "~/corvus/assets/log"
+    default_dir = "/home/admin/corvus/assets/log"
     def __init__(self, dir: str = default_dir):
         # 動的にログファイルのパスを生成
         self.dir = dir
