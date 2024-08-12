@@ -15,15 +15,23 @@ class CameraHandler:
     
     @classmethod
     def __internal_new__(self):
-        self.camera = Picamera2()
-        config = self.camera.create_preview_configuration({ "format": "BGR888" })
-        self.camera.configure(config)
-        self.camera.start()
+        try:
+            self.camera = Picamera2()
+        except Exception as e:
+            print(f"Cannot connect to the camera, {type(e)}")
+            self.is_connected = False
+            return
+        else:
+            self.is_connected = True
 
-        camera_config = self.camera.create_preview_configuration()
-        self.width = camera_config["main"]["size"][0]
-        self.height = camera_config["main"]["size"][1]
-        return super().__new__(self)
+            config = self.camera.create_preview_configuration({ "format": "BGR888" })
+            self.camera.configure(config)
+            self.camera.start()
+
+            camera_config = self.camera.create_preview_configuration()
+            self.width = camera_config["main"]["size"][0]
+            self.height = camera_config["main"]["size"][1]
+            return super().__new__(self)
 
     @classmethod
     def get_instance(self):
@@ -36,6 +44,9 @@ class CameraHandler:
     
     def get_height(self):
         return self.height
+
+    def is_connected(self):
+        return self.is_connected
         
     def capture_bgr(self):
         return self.camera.capture_array()
