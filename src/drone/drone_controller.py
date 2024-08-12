@@ -1,5 +1,7 @@
 import asyncio
 from mavsdk import System
+import datetime
+
 from sensor.lidar_handler import LiDARHandler
 from control.coordinates import Coordinates
 from control.battery import Battery_watch
@@ -9,7 +11,6 @@ from control.compass_handler import CompassHandler
 from flight.flight_controller import FlightController
 from logger.logger import Logger
 from sensor.acceleration_velocity import Acceleration_Velocity
-
 from sensor.camera_handler import CameraHandler
 
 
@@ -17,7 +18,9 @@ class DroneController:
     pixhawk_address: str = "serial:///dev/ttyACM0:115200"
     #pixhawk_address: str = "udp://:14540"
 
-    def __init__(self):
+    default_log_dir: str = f"~/corvus/assets/log/"
+
+    def __init__(self, log_dir = default_log_dir):
         self.drone_instance = System()
         #self.drone = System(mavsdk_server_address='localhost', port=50051)
         self.lidar_handler = LiDARHandler(self.drone_instance)
@@ -26,7 +29,7 @@ class DroneController:
         self.compass_handler = CompassHandler(self.drone_instance)
         self.position_manager = PositionManager(self.drone_instance, self.gps_handler, self.compass_handler, self.lidar_handler)
         self.flight_controller = FlightController(self.drone_instance, self.position_manager)
-        self.logger = Logger()
+        self.logger = Logger(log_dir)
         self.ac_vel = Acceleration_Velocity(self.drone_instance)
 
         self.tasks = []
