@@ -16,6 +16,15 @@ class ConfigManager:
     def read(self, section: str, item: str) -> str:
         return self.config_ini.get(section, item)
     
+    def read_int(self, section: str, item: str) -> int:
+        return self.config_ini.getint(section, item)
+    
+    def read_float(self, section: str, item: str) -> int:
+        return self.config_ini.getfloat(section, item)
+    
+    def read_bool(self, section: str, item: str) -> int:
+        return self.config_ini.getboolean(section, item)
+    
     def read_default(self, item: str) -> str:
         return self.config_ini.get("DEFAULT", item)
     

@@ -9,15 +9,15 @@ import datetime
 
 from control.position_manager import PositionManager
 from control.coordinates import Coordinates
-#from sensor.camera_handler import CameraHandler, ConeDetector
+from sensor.camera_handler import CameraHandler, ConeDetector
 
 class FlightController:
 
     def __init__(self, drone: System, position_manager: PositionManager):
         self.drone: System = drone
         self.position_manager: PositionManager = position_manager
-        #self.camera_handler = CameraHandler.get_instance()
-        #self.cone_detector = ConeDetector(self.camera_handler)
+        self.camera_handler = CameraHandler.get_instance()
+        self.cone_detector = ConeDetector(self.camera_handler)
         self.target_latitude = 0
         self.target_longitude = 0
         self.target_altitude = 0
@@ -131,7 +131,10 @@ class FlightController:
 
 ##############################################################################################################
 
-    async def precise_land(self):
+    async def precise_land(self) -> bool:
+        if not self.camera_handler.is_connected():
+            raise RuntimeError("Camera is not connected. Stopped the precies land sequence.")
+        
         while self.detected_pos == [None,None]:
                 await asyncio.sleep(1)
                 self.detected_pos = self.cone_detector.capture_cone_position_and_save(str(Path(__file__).parent.parent.joinpath(f"assets/log/img_{datetime.datetime.now().strftime('%Y-%m-%d_%H:%M:%S')}.jpg")), 0.3)
@@ -164,7 +167,7 @@ class FlightController:
             await asyncio.sleep(0.2)
         self.land()
 
-        return
+        return True
         
 
     def calculate_delta_angle(self,target_latitude, target_longitude):
@@ -180,10 +183,13 @@ class FlightController:
 
     #########################################################################################################
 
-    async def offboard_precise_land(self):
+    async def offboard_precise_land(self) -> bool:        
         CAMERA_YAW_DEG = 0 #pixhawk正面からはかったカメラの指向方向 (deg, 右回り正)
         LAND_ALTITUDE = 0.25 #コーンに接近していってlandに移行する高度
 
+        if not self.camera_handler.is_connected():
+            raise RuntimeError("Camera is not connected. Stopped the precies land sequence.")
+        
         position = PositionNedYaw(0.0, 0.0, 0.0, 0.0)
         velocity_body = VelocityBodyYawspeed(0.0, 0.0, 0.0, 0.0)
         
