@@ -215,8 +215,11 @@ class DroneController:
     async def capture_video_during_flight(self, speed, target_coordinates, output_path, video_length):
         await self.flight_controller.takeoff(5)
         camera_handler = CameraHandler.get_instance()
-        print(f"start capturing {video_length} s video")
-        camera_handler.capture_video(output_path, video_length)
+        if camera_handler.is_connected():
+            print(f"start capturing {video_length} s video")
+            camera_handler.capture_video(output_path, video_length)
+        else:
+            print("Camera is not connected.")
         await self.flight_controller.go_to_location(speed, target_coordinates)
         await self.flight_controller.hovering(5)
         await self.flight_controller.land()
