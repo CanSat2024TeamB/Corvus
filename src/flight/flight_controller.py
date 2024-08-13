@@ -17,8 +17,8 @@ class FlightController:
     def __init__(self, drone: System, position_manager: PositionManager):
         self.drone: System = drone
         self.position_manager: PositionManager = position_manager
-        self.camera_handler = CameraHandler.get_instance()
-        self.cone_detector = ConeDetector(self.camera_handler)
+        self.camera_handler: CameraHandler = CameraHandler.get_instance()
+        self.cone_detector: ConeDetector = ConeDetector(self.camera_handler)
         self.target_latitude = 0
         self.target_longitude = 0
         self.target_altitude = 0
@@ -188,6 +188,8 @@ class FlightController:
         CAMERA_YAW_DEG = 0 #pixhawk正面からはかったカメラの指向方向 (deg, 右回り正)
         LAND_ALTITUDE = 0.25 #コーンに接近していってlandに移行する高度
         PROB_THRESHOLD = 0.2 #画像認識probabilityの閾値
+        DECENDING_SPEED = 0.1 #降下速度（2^0.5を乗じた値が降下速度）
+        ADJUST_FACTOR = 0.1 #上下左右方向の補正係数
 
         if not self.camera_handler.is_connected():
             raise RuntimeError("Camera is not connected. Stopped the precies land sequence.")
@@ -237,7 +239,7 @@ class FlightController:
             return VelocityBodyYawspeed(velocity_body.forward_m_s * f, velocity_body.right_m_s * f, velocity_body.down_m_s * f, velocity_body.yawspeed_deg_s)
 
         async def adjust_velocity(self, yaw_deg, pos):
-            ADJUST_FACTOR = 0.1
+            nonlocal ADJUST_FACTOR
             yaw_rad = yaw_deg * math.pi / 180
             normalized_delta_velocity = VelocityBodyYawspeed(pos[0] * (-1 * math.sin(yaw_rad)), pos[0] * math.cos(yaw_rad), pos[1], 0.0)
             await add_velocity_body(self, multiply_velocity_body(normalized_delta_velocity, ADJUST_FACTOR))
@@ -284,8 +286,9 @@ class FlightController:
                 body_yaw_deg = self.position_manager.yaw_deg()
                 nonlocal CAMERA_YAW_DEG
                 nonlocal LAND_ALTITUDE
+                nonlocal DECENDING_SPEED
 
-                await set_velocity_body(self, calc_velocity_body_to_target(body_yaw_deg + CAMERA_YAW_DEG))
+                await set_velocity_body(self, multiply_velocity_body(calc_velocity_body_to_target(body_yaw_deg + CAMERA_YAW_DEG), DECENDING_SPEED))
                 while True:
                     pos = self.cone_detector.get_pos()
                     if pos[0] >= -1:
