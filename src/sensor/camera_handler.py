@@ -21,18 +21,16 @@ class CameraHandler:
     @classmethod
     def __internal_new__(self):
         try:
-           self.camera = Picamera2()
+            self.camera = Picamera2()
+            config = self.camera.create_preview_configuration({ "format": "BGR888" })
+            self.camera.configure(config)
+            self.camera.start()
         except Exception as e:
             print(f"Cannot connect the camera.")
             self._is_connected = False
             return
         else:
             self._is_connected = True
-
-            config = self.camera.create_preview_configuration({ "format": "BGR888" })
-            self.camera.configure(config)
-            self.camera.start()
-
             camera_config = self.camera.create_preview_configuration()
             self.width = camera_config["main"]["size"][0]
             self.height = camera_config["main"]["size"][1]

@@ -16,8 +16,8 @@ try:
     print("ok")
 except RuntimeError as e:
     print(e)
-
 else:
     cone_detector = ConeDetector(camera_handler)
     print(cone_detector.get_pos())
 
+print("finish")
