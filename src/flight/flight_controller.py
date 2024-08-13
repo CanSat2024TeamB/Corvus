@@ -5,6 +5,7 @@ from mavsdk.offboard import (Attitude, PositionNedYaw, VelocityBodyYawspeed, Off
 from pathlib import Path
 import math
 
+import time
 import datetime
 
 from control.position_manager import PositionManager
@@ -16,8 +17,8 @@ class FlightController:
     def __init__(self, drone: System, position_manager: PositionManager):
         self.drone: System = drone
         self.position_manager: PositionManager = position_manager
-        self.camera_handler = CameraHandler.get_instance()
-        self.cone_detector = ConeDetector(self.camera_handler)
+        self.camera_handler: CameraHandler = CameraHandler.get_instance()
+        self.cone_detector: ConeDetector = ConeDetector(self.camera_handler)
         self.target_latitude = 0
         self.target_longitude = 0
         self.target_altitude = 0
@@ -137,7 +138,7 @@ class FlightController:
         
         while self.detected_pos == [None,None]:
                 await asyncio.sleep(1)
-                self.detected_pos = self.cone_detector.capture_cone_position_and_save(str(Path(__file__).parent.parent.joinpath(f"assets/log/img_{datetime.datetime.now().strftime('%Y-%m-%d_%H:%M:%S')}.jpg")), 0.3)
+                self.detected_pos = self.cone_detector.capture_cone_position_and_save(str(Path(__file__).parent.parent.parent.joinpath(f"assets/log/img_{datetime.datetime.now().strftime('%Y-%m-%d_%H:%M:%S')}.jpg")), 0.3)
                 print(self.detected_pos)
                 self.nondetected_counter += 1
                 if self.nondetected_counter == self.nondetected_counter_max:
@@ -186,6 +187,9 @@ class FlightController:
     async def offboard_precise_land(self) -> bool:        
         CAMERA_YAW_DEG = 0 #pixhawk正面からはかったカメラの指向方向 (deg, 右回り正)
         LAND_ALTITUDE = 0.25 #コーンに接近していってlandに移行する高度
+        PROB_THRESHOLD = 0.2 #画像認識probabilityの閾値
+        DECENDING_SPEED = 1 #降下速度（2^0.5を乗じた値が降下速度）
+        ADJUST_FACTOR = 0.1 #上下左右方向の補正係数
 
         if not self.camera_handler.is_connected():
             raise RuntimeError("Camera is not connected. Stopped the precies land sequence.")
@@ -200,7 +204,7 @@ class FlightController:
 
         async def set_altitude(self, altitude: float):
             nonlocal position
-            await set_position(self, PositionNedYaw(position.north_m, position.east_m, altitude, position.yaw_deg))
+            await set_position(self, PositionNedYaw(position.north_m, position.east_m, -1 * altitude, self.position_manager.yaw_deg()))
             
             alt_threshold = 0.5
             while True:
@@ -235,7 +239,7 @@ class FlightController:
             return VelocityBodyYawspeed(velocity_body.forward_m_s * f, velocity_body.right_m_s * f, velocity_body.down_m_s * f, velocity_body.yawspeed_deg_s)
 
         async def adjust_velocity(self, yaw_deg, pos):
-            ADJUST_FACTOR = 0.1
+            nonlocal ADJUST_FACTOR
             yaw_rad = yaw_deg * math.pi / 180
             normalized_delta_velocity = VelocityBodyYawspeed(pos[0] * (-1 * math.sin(yaw_rad)), pos[0] * math.cos(yaw_rad), pos[1], 0.0)
             await add_velocity_body(self, multiply_velocity_body(normalized_delta_velocity, ADJUST_FACTOR))
@@ -251,50 +255,62 @@ class FlightController:
             yaw_rad = yaw_deg * math.pi / 180
             return VelocityBodyYawspeed(math.cos(yaw_rad), math.sin(yaw_rad), 1.0, 0.0)
         
-        async def rotate_and_search_cone(self, rotate_rate: float):
+        async def rotate_and_search_cone(self, rotate_rate: float) -> bool:
+            search_time = 60 #この秒数見つからなかったら強制的に着陸
             await turn_clock_wise(self, rotate_rate)
-
-            while True: ####### しばらく回ってもコーンが見つからなかったときの処理が必要（まだない）
+            
+            time_start = time.perf_counter()
+            while True: ####### コーンがみつからなかったときに近くを徘徊するコードがまだない
+                # await set_altitude(3)
                 pos = self.cone_detector.get_pos()
 
-                if pos[0] <= 1:
+                if pos[0] >= -1:
                     await stop_rotation(self)
                     await asyncio.sleep(1)
 
                     pos = self.cone_detector.get_pos()
-                    if pos[0] <= 1:
+                    if pos[0] >= -1:
                         print("cone detected")
                         print(f"cone pos: {pos}")
                     else:
                         await rotate_and_search_cone(self, rotate_rate / 2) # コーンを認識して止まった後、静止状態でもう一回とって認識できなかったらゆっくり回ってもう一回（推定のラグを考慮）
-                    return
+                    return True
+
+                time_now = time.perf_counter()
+                if time_now - time_start > search_time:
+                    return False
                 
         async def approach_cone(self):
-            await rotate_and_search_cone(self, 20)
-            
-            body_yaw_deg = self.position_manager.yaw_deg()
-            nonlocal CAMERA_YAW_DEG
-            nonlocal LAND_ALTITUDE
+            found_cone = await rotate_and_search_cone(self, 20)
+            if found_cone:
+                body_yaw_deg = self.position_manager.yaw_deg()
+                nonlocal CAMERA_YAW_DEG
+                nonlocal LAND_ALTITUDE
+                nonlocal DECENDING_SPEED
 
-            await set_velocity_body(self, calc_velocity_body_to_target(body_yaw_deg + CAMERA_YAW_DEG))
-            while True:
-                pos = self.cone_detector.get_pos()
-                if pos[0] <= 1:
-                    print("cone detected while approaching cone")
-                    print(f"pos: {pos}")
-                    body_yaw_deg = self.position_manager.yaw_deg()
-                    await adjust_velocity(self, body_yaw_deg + CAMERA_YAW_DEG, pos)
-                else:
-                    print("lost cone")
-                    set_velocity_body(self, VelocityBodyYawspeed(0.0, 0.0, 0.0, 0.0))
-                    print("restarting searching cone")
-                    await approach_cone(self)
-                    return
-                
-                if self.position_manager.adjusted_altitude() < LAND_ALTITUDE:
-                    print("got ready to land")
-                    set_velocity_body(self, VelocityBodyYawspeed(0.0, 0.0, 0.0, 0.0))
-                    return
+                await set_velocity_body(self, multiply_velocity_body(calc_velocity_body_to_target(body_yaw_deg + CAMERA_YAW_DEG), DECENDING_SPEED))
+                while True:
+                    pos = self.cone_detector.get_pos()
+                    if pos[0] >= -1:
+                        print("cone detected while approaching cone")
+                        print(f"pos: {pos}")
+                        body_yaw_deg = self.position_manager.yaw_deg()
+                        await adjust_velocity(self, body_yaw_deg + CAMERA_YAW_DEG, pos)
+                    else:
+                        print("lost cone")
+                        set_velocity_body(self, VelocityBodyYawspeed(0.0, 0.0, 0.0, 0.0))
+                        print("restarting searching cone")
+                        await approach_cone(self)
+                        return
+                    
+                    if self.position_manager.adjusted_altitude() < LAND_ALTITUDE:
+                        print("got ready to land")
+                        set_velocity_body(self, VelocityBodyYawspeed(0.0, 0.0, 0.0, 0.0))
+                        return
+            else:
+                print("Could not find cone in the searching process.")
+                set_velocity_body(self, VelocityBodyYawspeed(0.0, 0.0, 0.0, 0.0))
+                return
 
         await set_position(self, position)
         await set_velocity_body(self, velocity_body)
@@ -304,7 +320,7 @@ class FlightController:
             print("setting altitude 3 m")
             await set_altitude(3)
             
-            self.cone_detector.start()
+            self.cone_detector.start(PROB_THRESHOLD)
 
             await approach_cone(self)
 
