@@ -197,8 +197,8 @@ class FlightController:
         ADJUST_FACTOR = 0.1 #上下左右方向の補正係数
 
         print("camera check")
-        if not self.camera_handler.is_connected():
-            raise RuntimeError("Camera is not connected. Stopped the precies land sequence.")
+        # if not self.camera_handler.is_connected():
+        #     raise RuntimeError("Camera is not connected. Stopped the precies land sequence.")
         
         print("checked camaera")
 
