@@ -54,12 +54,13 @@ class CameraHandler:
         return self.is_connected
         
     def capture_bgr(self):
-        return self.camera.capture_array()
+        image = self.camera.capture_array()
+        return cv2.rotate(image, cv2.ROTATE_180) # カメラの取り付け上下が逆になってることを考慮
 
     def capture_rgb(self):
         frame = self.camera.capture_array()
         image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-        return image
+        return cv2.rotate(image, cv2.ROTATE_180) # カメラの取り付け上下が逆になってることを考慮
     
     def capture_and_save(self, path = "image.jpg"):
         image = self.capture_rgb()
@@ -140,8 +141,8 @@ class ConeDetector:
 
         if not image is None:
             result = cone_detector.get_pos(image, conf)
-            if result[0] <= 1:
-                return [-result[0], -result[1]] # カメラの取り付け上下が逆になってることを考慮
+            if result[0] >= -1:
+                return [result[0], result[1]]
             else:
                 return [None, None]
         else:
@@ -153,10 +154,10 @@ class ConeDetector:
         if not image is None:
             result = cone_detector.get_pos(image, conf)
             image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-            if result[0] <= 1:
+            if result[0] >= -1:
                 image = cv2.circle(image, (int((result[0] + 1) / 2 * 640), int((-result[1] + 1) / 2 * 480)), 25, (255, 255, 255), thickness = 5)
                 cv2.imwrite(output_path, image)
-                return [-result[0], -result[1]]
+                return result
             else:
                 cv2.imwrite(output_path, image)
                 return [None, None]
