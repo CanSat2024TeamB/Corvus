@@ -332,7 +332,7 @@ class FlightController:
         try:
             await self.drone.offboard.start()
             print("setting altitude 3 m")
-            await set_altitude(3)
+            #await set_altitude(3)
             
             self.cone_detector.start(PROB_THRESHOLD)
 
