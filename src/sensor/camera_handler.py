@@ -24,10 +24,10 @@ class CameraHandler:
            self.camera = Picamera2()
         except Exception as e:
             print(f"Cannot connect the camera.")
-            self.is_connected = False
+            self._is_connected = False
             return
         else:
-            self.is_connected = True
+            self._is_connected = True
 
             config = self.camera.create_preview_configuration({ "format": "BGR888" })
             self.camera.configure(config)
@@ -51,7 +51,7 @@ class CameraHandler:
         return self.height
 
     def is_connected(self):
-        return self.is_connected
+        return self._is_connected
         
     def capture_bgr(self):
         image = self.camera.capture_array()
