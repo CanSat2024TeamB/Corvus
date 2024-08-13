@@ -1,8 +1,11 @@
 import configparser
 import os
+from pathlib import Path
 
 class ConfigManager:
-    def __init__(self, path: str):
+    default_path = Path(__file__).parent.parent.parent.joinpath("assets/config/config.ini")
+
+    def __init__(self, path: str = str(default_path)):
         self.config_ini = configparser.ConfigParser()
         self.load(path)
         return

@@ -9,7 +9,10 @@ import time
 async def main():
     drone = DroneController()
     case = CaseHandler(drone)
-    nichrome_pin_no = 25
+
+    config = ConfigManager()
+    config_section = "NOSHIRO"
+    nichrome_pin_no = config.read_int(config_section, "Nichrome_pin")
 
     global status 
     status = "outside"
