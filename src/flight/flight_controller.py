@@ -128,8 +128,11 @@ class FlightController:
         return
 
     def if_goto_location_finished(self, target_latitude, target_longitude, target_altitude):
-        return abs(target_altitude - self.position_manager.adjusted_altitude()) <= 1.0 and \
-            abs(target_latitude - self.position_manager.adjusted_coordinates_lat()) *  self.lat_unit <= 2.0 and \
+        #return abs(target_altitude - self.position_manager.adjusted_altitude()) <= 1.0 and \
+            #abs(target_latitude - self.position_manager.adjusted_coordinates_lat()) *  self.lat_unit <= 2.0 and \
+            #abs(target_longitude - self.position_manager.adjusted_coordinates_lon()) * self.lon_unit <= 2.0 
+    
+        return abs(target_latitude - self.position_manager.adjusted_coordinates_lat()) *  self.lat_unit <= 2.0 and \
             abs(target_longitude - self.position_manager.adjusted_coordinates_lon()) * self.lon_unit <= 2.0 
 
 ##############################################################################################################
