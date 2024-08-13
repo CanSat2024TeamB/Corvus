@@ -117,12 +117,14 @@ class FlightController:
             await asyncio.sleep(3)
             current_alt = self.position_manager.adjusted_altitude()
             if current_alt < 2:
+                print('altitude too low')
                 await self.go_to_location(Coordinates(self.target_longitude, self.target_latitude, self.target_altitude + 2))
                 break                                    
             elif current_alt > 8:
+                print('altitude too high')
                 await self.go_to_location(Coordinates(self.target_longitude, self.target_latitude, self.target_altitude - 4))
                 break
-        self.stop_here()
+        await self.stop_here()
         return
 
     def if_goto_location_finished(self, target_latitude, target_longitude, target_altitude):
