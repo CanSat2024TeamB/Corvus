@@ -316,10 +316,13 @@ class FlightController:
                 print("Could not find cone in the searching process.")
                 set_velocity_body(self, VelocityBodyYawspeed(0.0, 0.0, 0.0, 0.0))
                 return
+            
+        print("start precise landing")
 
         await set_position(self, position)
         await set_velocity_body(self, velocity_body)
         
+        print("starting offboard landing...")
         try:
             await self.drone.offboard.start()
             print("setting altitude 3 m")
