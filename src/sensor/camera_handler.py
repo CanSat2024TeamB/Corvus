@@ -1,7 +1,7 @@
 import sys
 from pathlib import Path
 
-sys.path.append(Path(__file__).parent.parent.joinpath("assets/module"))
+sys.path.append(str(Path(__file__).parent.parent.joinpath("assets/module")))
 
 from pathlib import Path
 from picamera2 import Picamera2
