@@ -9,7 +9,7 @@ import time
 async def main():
     drone = DroneController()
     case = CaseHandler(drone)
-
+    
     config = ConfigManager()
     config_section = "NOSHIRO"
     nichrome_pin_no = config.read_int(config_section, "Nichrome_pin")
