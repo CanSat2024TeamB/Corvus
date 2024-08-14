@@ -1,3 +1,8 @@
+import sys
+from pathlib import Path
+
+sys.path.append(str(Path(__file__).parent.parent.parent.joinpath("assets/module")))
+
 from pathlib import Path
 from picamera2 import Picamera2
 from picamera2.encoders import H264Encoder
