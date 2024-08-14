@@ -35,7 +35,7 @@ async def main():
     case.para_case_stand_nichrome(nichrome_pin_no)
     print(f"1para and case nichrome cut end")
     case.nichrome_cleanup()
-    await asyncio.sleep(5)
+    await asyncio.sleep(20)
 
     #config_path: str = Path(__file__).resolve().parent.parent.joinpath("assets/config/config.ini")
     #config = ConfigManager(config_path)
