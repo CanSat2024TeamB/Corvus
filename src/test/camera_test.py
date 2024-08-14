@@ -24,13 +24,8 @@ camera_handler = CameraHandler.get_instance()
 
 cone_detector = ConeDetector(camera_handler)
 
-try:
-    try:
-        while True:
-            cone_detector.start()
-            pos = cone_detector.get_pos()
-            print(f"pos: {pos}")
-    except RuntimeError as e:
-        print("<inner> error has occured!")
-except:
-    print("<outer> error has occured!")
+while True:
+    cone_detector.start()
+    pos = cone_detector.get_pos(0.2)
+    print(f"pos: {pos}")
+    time.sleep(0.5)
