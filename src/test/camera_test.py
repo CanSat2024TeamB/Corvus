@@ -28,5 +28,5 @@ with open("camera_test.txt", "w") as f:
     while True:
         cone_detector.start(0.2)
         pos = cone_detector.get_pos()
-        f.write(f"{datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S %f")} {pos}")
+        f.write(f"{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S %f')} {pos}")
         time.sleep(0.1)
