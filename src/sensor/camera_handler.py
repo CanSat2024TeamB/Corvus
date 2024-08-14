@@ -1,8 +1,3 @@
-import sys
-from pathlib import Path
-
-sys.path.append(str(Path(__file__).parent.parent.parent.joinpath("assets/module")))
-
 from pathlib import Path
 from picamera2 import Picamera2
 from picamera2.encoders import H264Encoder
@@ -16,7 +11,7 @@ class CameraHandler:
     _unique_instance = None
 
     def __new__(self):
-        raise NotImplementedError('Cannot generate instance by constructor. Call get_instance() method instead.')
+        raise NotImplementedError("Cannot generate instance by constructor. Call get_instance() method instead.")
     
     @classmethod
     def __internal_new__(self):
