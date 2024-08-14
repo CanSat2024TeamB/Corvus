@@ -8,6 +8,7 @@ from picamera2 import Picamera2
 from picamera2.encoders import H264Encoder
 from picamera2.outputs import FfmpegOutput
 import cv2
+import numpy as np
 import threading
 import cone_detector
 import time
@@ -91,7 +92,7 @@ class ConeDetector:
     condition = threading.Condition()
 
     def __init__(self, camera_handler, model_path: str = Path(__file__).parent.parent.parent.joinpath("assets/model/cone_ncnn_model_v9_320_opt"), imgsz = 320):
-        self.camera_handler = camera_handler
+        self.camera_handler: CameraHandler = camera_handler
         cone_detector.load_model(str(model_path), imgsz)
 
         self.frame = None
@@ -105,8 +106,16 @@ class ConeDetector:
         return pos
     
     def reader(self):
-        while not self.finished:
-            frame = self.camera_handler.capture_bgr()
+        try:
+            while not self.finished:
+                frame = self.camera_handler.capture_bgr()
+                self.condition.acquire()
+                self.frame = frame
+                self.condition.notify()
+                self.condition.release()
+        except Exception as e:
+            print("Could not normally capture image.")
+            frame = np.zeros((self.camera_handler.get_height, self.camera_handler.get_width, 3))
             self.condition.acquire()
             self.frame = frame
             self.condition.notify()
