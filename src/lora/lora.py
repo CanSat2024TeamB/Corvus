@@ -1,15 +1,15 @@
 import RPi.GPIO as GPIO
 import serial
 import asyncio
+import time
 
 class Lora:
     def __init__(self, drone):
         self.drone = drone
         self.rst = 4
         self.power = 18
-        self.CRLF = "\r\n"
-        self.serial = None
-
+        self.CRLF = "\n\r"
+        self.ser = None  # シリアルポートオブジェクトをメンバー変数として保持
         self.is_on = False
         self.counter = 0
 
@@ -18,17 +18,18 @@ class Lora:
         GPIO.setup(self.rst, GPIO.OUT)
         GPIO.setup(self.power, GPIO.OUT)
 
-    async def lora_reset(self):
-        """Start Lora"""
+    async def lora_start(self):
         GPIO.output(self.power, GPIO.HIGH)
-        print('lora enable')
+        print('Lora enabled')
         await asyncio.sleep(10)
         print('awaited')
         try:
-            self.serial = serial.Serial("/dev/ttyS0", 9600, timeout=1)
+            self.ser = serial.Serial(port='/dev/ttyAMA0', baudrate=115200, bytesize=serial.EIGHTBITS, 
+                                     parity=serial.PARITY_NONE, stopbits=serial.STOPBITS_ONE, timeout=1)
         except serial.SerialException as e:
             print(f"Error opening serial port: {e}")
             raise e
+
         GPIO.output(self.rst, GPIO.LOW)
         await asyncio.sleep(2)
         GPIO.output(self.rst, GPIO.HIGH)
@@ -37,64 +38,42 @@ class Lora:
         self.is_on = True
 
     async def lora_set_sync(self, sync_num):
-        await self.serial_write(f'p2p set_sync {sync_num}')
-        response = await self.serial_read()
+        response = await self.send_and_receive(f'p2p set_sync {sync_num}')
         print('Response:', response)
 
     async def lora_set_freq(self, freq_num):
-        await self.serial_write(f'p2p set_freq {freq_num}')
-        response = await self.serial_read()
+        response = await self.send_and_receive(f'p2p set_freq {freq_num}')
         print('Response:', response)
 
     async def lora_set_sf(self, sf_num):
-        await self.serial_write(f'p2p set_sf {sf_num}')
-        response = await self.serial_read()
+        response = await self.send_and_receive(f'p2p set_sf {sf_num}')
         print('Response:', response)
 
     async def lora_set_bw(self, bw_num):
-        await self.serial_write(f'p2p set_bw {bw_num}')
-        response = await self.serial_read()
+        response = await self.send_and_receive(f'p2p set_bw {bw_num}')
         print('Response:', response)
 
     async def lora_save(self):
-        await self.serial_write('p2p save')
-        response = await self.serial_read()
+        response = await self.send_and_receive('p2p save')
         print('Response:', response)
 
-    async def serial_write(self, message: str) -> None:
-        cmd_send = f'> {message}' + self.CRLF
-        self.serial.write(cmd_send.encode("ascii"))
-        print('Sent:', cmd_send)
-        await asyncio.sleep(1)  # Wait a moment before reading the response
+    async def send_and_receive(self, data, wait_time=2):
+        try:
+            # データを指定されたエンコード方式で送信
+            self.ser.write(data.encode('ascii'))  
+            self.ser.flush()
+            await asyncio.sleep(wait_time)  # 受信するための待機時間を設定
 
-    async def lora_write(self, message: str):
-        await self.serial_write(f'p2p tx {message}')
-        # Read and process two responses
-        response1 = await self.serial_read()
-        print('First response:', response1)
-        if 'Ok' in response1:
-            response2 = await self.serial_read()
-            print('Second response:', response2)
-        else:
-            print('Invalid data format.')
-
-    async def serial_read(self, timeout: float = 5.0) -> str:
-        response = ''
-        start_time = asyncio.get_event_loop().time()
-        while True:
-            if self.serial.in_waiting > 0:
-                print('something')
-                chunk = self.serial.readline(self.serial.in_waiting).decode('ascii')
-                response += chunk
-                if '>>' in chunk:
-                    break
-            if asyncio.get_event_loop().time() - start_time > timeout:
-                print('Read timeout')
-                break
-            await asyncio.sleep(0.1)  # Short delay to ensure complete read
-        return response.strip()
+            # 受信データを読み取ってデコード
+            response = self.ser.read_all()
+            response_decoded = response.decode('ascii').strip()  # 'ascii'で統一
+            return response_decoded  # 正常時にはデコードされたレスポンスを返す
+        except serial.SerialException as e:
+            print(f"通信エラー: {e}")
+            return ""
 
     def lora_end(self):
         if self.is_on:
+            self.ser.close()  # シリアルポートを閉じる
             GPIO.cleanup()
             self.is_on = False

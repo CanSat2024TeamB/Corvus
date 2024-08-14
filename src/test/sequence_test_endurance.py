@@ -1,5 +1,9 @@
-import asyncio
+import sys
 from pathlib import Path
+
+sys.path.append(str(Path(__file__).parent.parent))
+
+import asyncio
 from control.coordinates import Coordinates
 from pathlib import Path
 from config.config_manager import ConfigManager

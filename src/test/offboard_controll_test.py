@@ -1,3 +1,8 @@
+import sys
+from pathlib import Path
+
+sys.path.append(str(Path(__file__).parent.parent))
+
 import asyncio
 from drone.drone_controller import DroneController
 from mavsdk.offboard import (Attitude, PositionNedYaw, OffboardError)

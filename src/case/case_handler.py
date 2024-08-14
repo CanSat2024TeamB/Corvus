@@ -16,29 +16,29 @@ class CaseHandler:
         self.wirehandler = WireHandler()
         self.ac_vel = Acceleration_Velocity(self.drone)
         
-        self.stable_pre_val = 1 ##1mで大体7hpaの差
+        self.stable_pre_val = 0.5 ##1mで大体0.1hpaの差 2.5秒に一回の判定なので、2m/sでも0.5くらい変わる。
         self.stable_vel_val = 0.1
-        self.stable_judge_count_land = 5
-        self.stable_judge_count_release = 1
         
         self.nichrome_duration = 10
         
         #収納判定用定数
-        self.judge_storage_border_light = 500
-        self.judge_storage_countmax = 100
-        self.judge_storage_maxtime = 10 #300にする 
+        self.judge_storage_border_light = 500  #あかり消した教室で260くらい　
+        self.judge_storage_countmax = 100 #ARLISSは500、能代は100
+        self.judge_storage_maxtime = 300 #能代は300、ARLISSは1200
         self.judge_storage_sleep_time = 0.5
-        self.light_counter = 0 #counterを設定
 
         #放出判定用定数
-        self.judge_release_maxtime = 100 #去年はARLISSで3600を使った
+        self.judge_release_maxtime = 100 #去年はARLISSで3600を使った、能代は100
         self.judge_release_lig_countmax = 2 #能代は2、ARLISSは6？
         self.judge_release_pre_countmax = 2 #能代は2、ARLISSは6？
         self.judge_release_border_light = 500
         self.judge_release_sleep_time = 0.5
+        self.stable_judge_count_release = 1 
         
         #着地判定用定数
-        self.judge_landing_maxtime = 1200 #去年は1200
+        self.judge_landing_maxtime = 30 #去年は1200、能代は30
+        self.stable_judge_count_vel = 5
+        self.stable_judge_count_land = 5
 
 
 
@@ -48,6 +48,7 @@ class CaseHandler:
             for i in range(self.stable_judge_count_release):
                 def_pre = self.pressure.dif_ave_pressure(interval_def_ave_pressure)
                 print(def_pre)####消す
+                self.logger.write(f"Pressure_def: {def_pre}")
                 if abs(def_pre) <= self.stable_pre_val:
                     stable_count += 1
 
@@ -77,16 +78,17 @@ class CaseHandler:
         
     async def judge_velocity_stable(self, interval_def_ave_velocity):
         stable_count = 0
-        for i in range(self.stable_judge_count):
+        for i in range(self.stable_judge_count_vel):
             def_vel = await self.ac_vel.dif_ave_velocity(interval_def_ave_velocity)
             print(def_vel)  ## 値の確認のための出力、必要ない場合はコメントアウトする
+            self.logger.write(f"velocity_def: {def_vel}")
 
             if np.all(np.abs(def_vel) <= self.stable_vel_val):
                 stable_count += 1
             else:
                 break
 
-        if stable_count == self.stable_judge_count:
+        if stable_count == self.stable_judge_count_vel:
             return True
         else:
             return False
@@ -127,7 +129,7 @@ class CaseHandler:
             print(light_value)
             print(self.light_counter) #あとで消す
             time.sleep(self.judge_storage_sleep_time)
-            self.logger.write(f"Judge Storage: LIGHT: {light_value} {self.light_counter}")
+            self.logger.write(f"LIGHT: {light_value} {self.light_counter}")
 
         print("Storage Succeeded")
         self.logger.write("Storage Succeeded")
@@ -167,6 +169,8 @@ class CaseHandler:
                     self.logger.write("Light still low")
                     print("Light still low")
 
+                self.logger.write(f"LIGHT: {light_value} {self.light_counter}")
+
 
             if (self.pressure_counter < self.judge_release_pre_countmax) and self.pressure.CANUSEPRESSURE == True:
                 Judge = self.judge_pressure_stable(1) 
@@ -180,12 +184,12 @@ class CaseHandler:
                     self.pressure_counter = 0
                     self.logger.write("Disp pressure too stable or minus")
                     print("Disp pressure too stable or minus")
+                
+                self.logger.write(f"Pressure: {self.pressure_counter}")
             
             if (self.light_counter >= self.judge_release_lig_countmax) and (self.pressure_counter >= self.judge_release_pre_countmax):
                 break
 
-            print("Judge Release: LIGHT:",light_value, self.light_counter, "PRESSURE:",pressure_value, self.pressure_counter)
-            #self.logger.write("Judge Release: LIGHT:",light_value, self.light_counter, "PRESSURE:",pressure_value, self.pressure_counter)
             time.sleep(self.judge_release_sleep_time)
 
         self.logger.write("Release Succeeded")
@@ -206,8 +210,6 @@ class CaseHandler:
                 if self.pressure.CANUSEPRESSURE == True:
                     if self.judge_pressure_stable(1): #5秒の測定の平均値を1秒ごとに計算
                         break
-                    pressure_value = self.pressure.get_pressure()
-                    #self.logger.write("Judge Landing: PRESSURE:",pressure_value)
             
             self.logger.write("Pressure stability confirmed")
             print(f"Pressure stability confirmed")

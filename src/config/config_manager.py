@@ -1,8 +1,11 @@
 import configparser
 import os
+from pathlib import Path
 
 class ConfigManager:
-    def __init__(self, path: str):
+    default_path = Path(__file__).parent.parent.parent.joinpath("assets/config/config.ini")
+
+    def __init__(self, path: str = str(default_path)):
         self.config_ini = configparser.ConfigParser()
         self.load(path)
         return
@@ -15,6 +18,15 @@ class ConfigManager:
 
     def read(self, section: str, item: str) -> str:
         return self.config_ini.get(section, item)
+    
+    def read_int(self, section: str, item: str) -> int:
+        return self.config_ini.getint(section, item)
+    
+    def read_float(self, section: str, item: str) -> int:
+        return self.config_ini.getfloat(section, item)
+    
+    def read_bool(self, section: str, item: str) -> int:
+        return self.config_ini.getboolean(section, item)
     
     def read_default(self, item: str) -> str:
         return self.config_ini.get("DEFAULT", item)
