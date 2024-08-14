@@ -23,8 +23,9 @@ async def main():
     await asyncio.sleep(5)
     await lora.lora_save()
     await asyncio.sleep(5)
-    await lora.lora_write("123456")
-    await asyncio.sleep(5)
+    for i in range(10):
+        await lora.lora_write("123456")
+        await asyncio.sleep(5)
     lora.lora_end()
 
 # 実行するためのエントリーポイント
