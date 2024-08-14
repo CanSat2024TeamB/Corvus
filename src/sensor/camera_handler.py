@@ -78,11 +78,10 @@ class CameraHandler:
                 self.camera.start_recording(encoder, output)
                 time.sleep(length)
                 self.camera.stop_recording()
-            except Exception as e:
-                print("Error has occured. Stopped capturing a video")
-                print(e)
-            else:
                 self.camera.start()
+            except Exception as e:
+                print("Error has occured. Stopped capturing video")
+                print(e)
         
         video_thread = threading.Thread(target = video_capturer, args = (self, output_path, length,))
         video_thread.start()
