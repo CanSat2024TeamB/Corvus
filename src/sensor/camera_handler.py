@@ -20,32 +20,22 @@ class CameraHandler:
     
     @classmethod
     def __internal_new__(self):
-        #try:
-        #    self.camera = Picamera2()
-        # except Exception as e:
-        #     print(f"Cannot connect the camera.")
-        #     self.is_connected = False
-        #     return
-        # else:
-        #     self.is_connected = True
+        self._is_connected = False
 
-        #     config = self.camera.create_preview_configuration({ "format": "BGR888" })
-        #     self.camera.configure(config)
-        #     self.camera.start()
-
-        #     camera_config = self.camera.create_preview_configuration()
-        #     self.width = camera_config["main"]["size"][0]
-        #     self.height = camera_config["main"]["size"][1]
-        #     return super().__new__(self)
-        self.camera = Picamera2()
-        config = self.camera.create_preview_configuration({ "format": "BGR888" })
-        self.camera.configure(config)
-        self.camera.start()
-
-        camera_config = self.camera.create_preview_configuration()
-        self.width = camera_config["main"]["size"][0]
-        self.height = camera_config["main"]["size"][1]
-        return super().__new__(self)
+        try:
+            self.camera = Picamera2()
+            config = self.camera.create_preview_configuration({ "format": "BGR888" })
+            self.camera.configure(config)
+            self.camera.start()
+        except Exception as e:
+            print(f"Cannot connect the camera.")
+        else:
+            self._is_connected = True
+            camera_config = self.camera.create_preview_configuration()
+            self.width = camera_config["main"]["size"][0]
+            self.height = camera_config["main"]["size"][1]
+        finally:
+            return super().__new__(self)
 
     @classmethod
     def get_instance(self):
@@ -60,7 +50,7 @@ class CameraHandler:
         return self.height
 
     def is_connected(self):
-        return self.is_connected
+        return self._is_connected
         
     def capture_bgr(self):
         image = self.camera.capture_array()
