@@ -300,6 +300,7 @@ class FlightController:
                 nonlocal DECENDING_SPEED
 
                 await set_velocity_body(self, multiply_velocity_body(calc_velocity_body_to_target(body_yaw_deg + CAMERA_YAW_DEG), DECENDING_SPEED))
+
                 while True:
                     pos = self.cone_detector.get_pos()
                     if pos[0] >= -1:
@@ -322,7 +323,7 @@ class FlightController:
                 print("Could not find cone in the searching process.")
                 set_velocity_body(self, VelocityBodyYawspeed(0.0, 0.0, 0.0, 0.0))
                 return
-            
+
         print("start precise landing")
 
         await set_position(self, position)
