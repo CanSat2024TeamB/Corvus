@@ -10,15 +10,15 @@ import datetime
 
 from control.position_manager import PositionManager
 from control.coordinates import Coordinates
-from sensor.camera_handler import CameraHandler, ConeDetector
+#from sensor.camera_handler import CameraHandler, ConeDetector
 
 class FlightController:
 
     def __init__(self, drone: System, position_manager: PositionManager):
         self.drone: System = drone
         self.position_manager: PositionManager = position_manager
-        self.camera_handler: CameraHandler = CameraHandler.get_instance()
-        self.cone_detector: ConeDetector = ConeDetector(self.camera_handler)
+        #self.camera_handler: CameraHandler = CameraHandler.get_instance()
+        #self.cone_detector: ConeDetector = ConeDetector(self.camera_handler)
         self.target_latitude = 0
         self.target_longitude = 0
         self.target_altitude = 0
@@ -296,6 +296,7 @@ class FlightController:
                 nonlocal DECENDING_SPEED
 
                 await set_velocity_body(self, multiply_velocity_body(calc_velocity_body_to_target(body_yaw_deg + CAMERA_YAW_DEG), DECENDING_SPEED))
+
                 while True:
                     pos = self.cone_detector.get_pos()
                     if pos[0] >= -1:
@@ -318,7 +319,9 @@ class FlightController:
                 print("Could not find cone in the searching process.")
                 set_velocity_body(self, VelocityBodyYawspeed(0.0, 0.0, 0.0, 0.0))
                 return
-        
+
+        print("start precise landing")
+
         await set_position(self, position)
         await set_velocity_body(self, velocity_body)
         
