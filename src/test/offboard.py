@@ -28,7 +28,6 @@ async def run():
     await drone_controller.arm()
 
     await asyncio.sleep(1)
-    await drone_controller.add_sequence_task(drone_controller.sequence_test_precise_land())
 
     print("drone taking off")
     logger.write("drone taking off")
