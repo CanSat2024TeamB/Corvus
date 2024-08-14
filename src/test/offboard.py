@@ -48,9 +48,9 @@ async def run():
     except OffboardError as error:
         print(error._result.result)
 
-    print("ascending 3 m")
-    logger.write("ascending 3 m")
-    await drone.offboard.set_position_ned(PositionNedYaw(0.0, 0.0, -3.0, 0))
+    print("ascending 5 m")
+    logger.write("ascending 5 m")
+    await drone.offboard.set_position_ned(PositionNedYaw(0.0, 0.0, -5.0, 0))
     await asyncio.sleep(5)
         
     print("start_turning")
@@ -69,6 +69,8 @@ async def run():
     await drone.offboard.stop()
     print("stopped offboard controll")
     logger.write("stopped offboard controll")
+
+    await drone.action.land()
 
 if __name__ == "__main__":
     record_alt_thread = Thread(target = record_alt, daemon = True)
