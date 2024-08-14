@@ -36,7 +36,9 @@ async def run():
     print("drone taking off")
     logger.write("drone taking off")
     await drone_controller.flight_controller.takeoff(1)
+    print("hovering...")
     await drone_controller.flight_controller.hovering(3)
+    print("end hovering")
 
     drone = drone_controller.get_drone_instance()
 
