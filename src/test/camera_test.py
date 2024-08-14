@@ -37,5 +37,6 @@ camera_handler = CameraHandler.get_instance()
 cone_detector = ConeDetector(camera_handler)
 
 for i in range(20):
-    cone_detector.capture_cone_position_and_save("/home/admin/corvus/assets/log/img_{i}.png", 0.3)
+    print(i)
+    cone_detector.capture_cone_position_and_save(f"/home/admin/corvus/assets/log/img_{i}.png", 0.5)
     time.sleep(1)
