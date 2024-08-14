@@ -5,14 +5,10 @@ sys.path.append(str(Path(__file__).parent.parent))
 
 import asyncio
 import time
-from drone.drone_controller import DroneController
+from sensor.camera_handler import CameraHandler
 
-async def run():
-    drone = DroneController()
-    await asyncio.sleep(5)
+camera_handler = CameraHandler()
 
-    print("start capturing")
-    await drone.add_sequence_task(drone.capture_video_during_flight(1, None, "test.mp4", 10))
-
-if __name__ == "__main__":
-    asyncio.run(run())
+print("start capturing")
+camera_handler.capture_video("test.mp4", 10)
+print("finish")

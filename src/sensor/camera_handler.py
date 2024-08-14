@@ -74,10 +74,15 @@ class CameraHandler:
             encoder = H264Encoder(10000000)
             output = FfmpegOutput(output_path)
 
-            self.camera.start_recording(encoder, output)
-            time.sleep(length)
-            self.camera.stop_recording()
-            self.camera.start()
+            try:
+                self.camera.start_recording(encoder, output)
+                time.sleep(length)
+                self.camera.stop_recording()
+            except Exception as e:
+                print("Error has occured. Stopped capturing a video")
+                print(e)
+            finally:
+                self.camera.start()
         
         video_thread = threading.Thread(target = video_capturer, args = (self, output_path, length,))
         video_thread.start()
