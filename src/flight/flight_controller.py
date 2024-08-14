@@ -10,15 +10,15 @@ import datetime
 
 from control.position_manager import PositionManager
 from control.coordinates import Coordinates
-from sensor.camera_handler import CameraHandler, ConeDetector
+#from sensor.camera_handler import CameraHandler, ConeDetector
 
 class FlightController:
 
     def __init__(self, drone: System, position_manager: PositionManager):
         self.drone: System = drone
         self.position_manager: PositionManager = position_manager
-        self.camera_handler: CameraHandler = CameraHandler.get_instance()
-        self.cone_detector: ConeDetector = ConeDetector(self.camera_handler)
+        #self.camera_handler: CameraHandler = CameraHandler.get_instance()
+        #self.cone_detector: ConeDetector = ConeDetector(self.camera_handler)
         self.target_latitude = 0
         self.target_longitude = 0
         self.target_altitude = 0
