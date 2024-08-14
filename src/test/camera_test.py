@@ -24,8 +24,9 @@ camera_handler = CameraHandler.get_instance()
 
 cone_detector = ConeDetector(camera_handler)
 
-while True:
-    cone_detector.start(0.2)
-    pos = cone_detector.get_pos()
-    print(f"pos: {pos}")
-    time.sleep(0.5)
+with open("camera_test.txt", "w") as f:
+    while True:
+        cone_detector.start(0.2)
+        pos = cone_detector.get_pos()
+        f.write(f"{datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S %f")} {pos}")
+        time.sleep(0.1)
