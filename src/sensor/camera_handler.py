@@ -106,16 +106,12 @@ class ConeDetector:
         return pos
     
     def reader(self):
-        try:
-            while not self.finished:
+        while not self.finished:
+            try:
                 frame = self.camera_handler.capture_bgr()
-                self.condition.acquire()
-                self.frame = frame
-                self.condition.notify()
-                self.condition.release()
-        except Exception as e:
-            print("Could not normally capture image.")
-            frame = np.zeros((self.camera_handler.get_height, self.camera_handler.get_width, 3))
+            except Exception as e:
+                print(e)
+                frame = np.zeros((self.camera_handler.get_height, self.camera_handler.get_width, 3))
             self.condition.acquire()
             self.frame = frame
             self.condition.notify()
