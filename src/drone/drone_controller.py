@@ -10,7 +10,7 @@ from control.compass_handler import CompassHandler
 from flight.flight_controller import FlightController
 from logger.logger import Logger
 from sensor.acceleration_velocity import Acceleration_Velocity
-from sensor.camera_handler import CameraHandler
+#from sensor.camera_handler import CameraHandler
 
 
 class DroneController:
@@ -190,7 +190,7 @@ class DroneController:
         await self.flight_controller.hovering(10)
         print("start landing")
         try:
-            await self.flight_controller.precise_land()
+            await self.flight_controller.offboard_precise_land()
         except RuntimeError as e:
             print(e)
             await self.flight_controller.land()

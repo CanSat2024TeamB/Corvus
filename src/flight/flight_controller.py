@@ -10,15 +10,15 @@ import datetime
 
 from control.position_manager import PositionManager
 from control.coordinates import Coordinates
-from sensor.camera_handler import CameraHandler, ConeDetector
+#from sensor.camera_handler import CameraHandler, ConeDetector
 
 class FlightController:
 
     def __init__(self, drone: System, position_manager: PositionManager):
         self.drone: System = drone
         self.position_manager: PositionManager = position_manager
-        self.camera_handler = CameraHandler.get_instance()
-        self.cone_detector = ConeDetector(self.camera_handler)
+        #self.camera_handler: CameraHandler = CameraHandler.get_instance()
+        #self.cone_detector: ConeDetector = ConeDetector(self.camera_handler)
         self.target_latitude = 0
         self.target_longitude = 0
         self.target_altitude = 0
@@ -117,17 +117,22 @@ class FlightController:
             await asyncio.sleep(3)
             current_alt = self.position_manager.adjusted_altitude()
             if current_alt < 2:
+                print('altitude too low')
                 await self.go_to_location(Coordinates(self.target_longitude, self.target_latitude, self.target_altitude + 2))
                 break                                    
             elif current_alt > 8:
+                print('altitude too high')
                 await self.go_to_location(Coordinates(self.target_longitude, self.target_latitude, self.target_altitude - 4))
                 break
-        self.stop_here()
+        await self.stop_here()
         return
 
     def if_goto_location_finished(self, target_latitude, target_longitude, target_altitude):
-        return abs(target_altitude - self.position_manager.adjusted_altitude()) <= 1.0 and \
-            abs(target_latitude - self.position_manager.adjusted_coordinates_lat()) *  self.lat_unit <= 2.0 and \
+        #return abs(target_altitude - self.position_manager.adjusted_altitude()) <= 1.0 and \
+            #abs(target_latitude - self.position_manager.adjusted_coordinates_lat()) *  self.lat_unit <= 2.0 and \
+            #abs(target_longitude - self.position_manager.adjusted_coordinates_lon()) * self.lon_unit <= 2.0 
+    
+        return abs(target_latitude - self.position_manager.adjusted_coordinates_lat()) *  self.lat_unit <= 2.0 and \
             abs(target_longitude - self.position_manager.adjusted_coordinates_lon()) * self.lon_unit <= 2.0 
 
 ##############################################################################################################
@@ -188,12 +193,20 @@ class FlightController:
         CAMERA_YAW_DEG = 0 #pixhawk正面からはかったカメラの指向方向 (deg, 右回り正)
         LAND_ALTITUDE = 0.25 #コーンに接近していってlandに移行する高度
         PROB_THRESHOLD = 0.2 #画像認識probabilityの閾値
+        DECENDING_SPEED = 1 #降下速度（2^0.5を乗じた値が降下速度）
+        ADJUST_FACTOR = 0.1 #上下左右方向の補正係数
 
-        if not self.camera_handler.is_connected():
-            raise RuntimeError("Camera is not connected. Stopped the precies land sequence.")
+        print("camera check")
+        # if not self.camera_handler.is_connected():
+        #     raise RuntimeError("Camera is not connected. Stopped the precies land sequence.")
         
+        print("checked camaera")
+
         position = PositionNedYaw(0.0, 0.0, 0.0, 0.0)
+        print("test")
         velocity_body = VelocityBodyYawspeed(0.0, 0.0, 0.0, 0.0)
+
+        print("finish init")
         
         async def set_position(self, new_position: PositionNedYaw):
             nonlocal position
@@ -237,7 +250,7 @@ class FlightController:
             return VelocityBodyYawspeed(velocity_body.forward_m_s * f, velocity_body.right_m_s * f, velocity_body.down_m_s * f, velocity_body.yawspeed_deg_s)
 
         async def adjust_velocity(self, yaw_deg, pos):
-            ADJUST_FACTOR = 0.1
+            nonlocal ADJUST_FACTOR
             yaw_rad = yaw_deg * math.pi / 180
             normalized_delta_velocity = VelocityBodyYawspeed(pos[0] * (-1 * math.sin(yaw_rad)), pos[0] * math.cos(yaw_rad), pos[1], 0.0)
             await add_velocity_body(self, multiply_velocity_body(normalized_delta_velocity, ADJUST_FACTOR))
@@ -284,8 +297,10 @@ class FlightController:
                 body_yaw_deg = self.position_manager.yaw_deg()
                 nonlocal CAMERA_YAW_DEG
                 nonlocal LAND_ALTITUDE
+                nonlocal DECENDING_SPEED
 
-                await set_velocity_body(self, calc_velocity_body_to_target(body_yaw_deg + CAMERA_YAW_DEG))
+                await set_velocity_body(self, multiply_velocity_body(calc_velocity_body_to_target(body_yaw_deg + CAMERA_YAW_DEG), DECENDING_SPEED))
+
                 while True:
                     pos = self.cone_detector.get_pos()
                     if pos[0] >= -1:
@@ -309,13 +324,16 @@ class FlightController:
                 set_velocity_body(self, VelocityBodyYawspeed(0.0, 0.0, 0.0, 0.0))
                 return
 
+        print("start precise landing")
+
         await set_position(self, position)
         await set_velocity_body(self, velocity_body)
         
+        print("starting offboard landing...")
         try:
             await self.drone.offboard.start()
             print("setting altitude 3 m")
-            await set_altitude(3)
+            #await set_altitude(3)
             
             self.cone_detector.start(PROB_THRESHOLD)
 

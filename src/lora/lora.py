@@ -25,7 +25,7 @@ class Lora:
         await asyncio.sleep(10)
         print('awaited')
         try:
-            self.serial = serial.Serial("/dev/ttyS0", 9600, timeout=1)
+            self.serial = serial.Serial("/dev/ttyAMA0", 115200, timeout=1)
         except serial.SerialException as e:
             print(f"Error opening serial port: {e}")
             raise e
