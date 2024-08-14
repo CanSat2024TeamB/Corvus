@@ -13,15 +13,19 @@ import datetime
 
 from threading import Thread
 
-def record_alt(drone_controller: DroneController):
+drone_controller = DroneController()
+
+def record_alt():
+    global drone_controller
+    logger = drone_controller.get_logger_instance()
     while True:
         altitude = drone_controller.position_manager.raw_altitude()
         yaw_deg = drone_controller.position_manager.yaw_deg()
-        drone_controller.get_logger_instance().write(f"{datetime.datetime.now().strftime('%f')}", f"alt: {altitude}, yaw: {yaw_deg}")
+        logger.write(f"{datetime.datetime.now().strftime('%f')}", f"alt: {altitude}, yaw: {yaw_deg}")
         time.sleep(0.1)
 
 async def run():
-    drone_controller = DroneController()
+    global drone_controller
     logger = drone_controller.get_logger_instance()
 
     await drone_controller.connect()
@@ -31,7 +35,7 @@ async def run():
 
     print("drone taking off")
     logger.write("drone taking off")
-    await drone_controller.flight_controller.takeoff(3)
+    await drone_controller.flight_controller.takeoff(1)
     await drone_controller.flight_controller.hovering(3)
 
     drone = drone_controller.get_drone_instance()
@@ -48,8 +52,8 @@ async def run():
         print(error._result.result)
 
     print("ascending 5 m")
-    logger.write("ascending 5 m")
-    await drone.offboard.set_position_ned(PositionNedYaw(0.0, 0.0, -5.0, 0))
+    logger.write("ascending 0.5 m")
+    await drone.offboard.set_position_ned(PositionNedYaw(0.0, 0.0, -0.5, 0))
     await asyncio.sleep(5)
         
     print("start_turning")
