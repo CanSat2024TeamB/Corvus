@@ -25,7 +25,7 @@ camera_handler = CameraHandler.get_instance()
 cone_detector = ConeDetector(camera_handler)
 
 while True:
-    cone_detector.start()
-    pos = cone_detector.get_pos(0.2)
+    cone_detector.start(0.2)
+    pos = cone_detector.get_pos()
     print(f"pos: {pos}")
     time.sleep(0.5)
