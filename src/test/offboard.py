@@ -6,14 +6,14 @@ sys.path.append(str(Path(__file__).parent.parent))
 from drone.drone_controller import DroneController
 from mavsdk.offboard import (OffboardError, PositionNedYaw, VelocityNedYaw, VelocityBodyYawspeed)
 import asyncio
-import math
 
 import time
 import datetime
 
-from threading import Thread
+from threading import Thread, Condition
 
 drone_controller = DroneController()
+condition = Condition()
 
 def record_alt():
     global drone_controller
@@ -21,12 +21,20 @@ def record_alt():
     while True:
         altitude = drone_controller.position_manager.raw_altitude()
         yaw_deg = drone_controller.position_manager.yaw_deg()
+        
+        condition.acquire()
         logger.write(f"{datetime.datetime.now().strftime('%f')}", f"alt: {altitude}, yaw: {yaw_deg}")
+        condition.release()
+
         time.sleep(0.1)
 
 async def run():
     global drone_controller
     logger = drone_controller.get_logger_instance()
+
+    condition.acquire()
+    logger.write("start sequence")
+    condition.release()
 
     await drone_controller.connect()
     await drone_controller.arm()
@@ -34,7 +42,11 @@ async def run():
     await asyncio.sleep(1)
 
     print("drone taking off")
+
+    condition.acquire()
     logger.write("drone taking off")
+    condition.release()
+    
     await drone_controller.flight_controller.takeoff(1)
     print("hovering...")
     await drone_controller.flight_controller.hovering(3)
@@ -43,28 +55,47 @@ async def run():
     drone = drone_controller.get_drone_instance()
 
     print("initializing offbord mode")
+
+    condition.acquire()
     logger.write("initializing offbord mode")
+    condition.release()
+
     await drone.offboard.set_position_ned(PositionNedYaw(0.0, 0.0, 0.0, 0))
 
     print("starting offboard controll")
+
+    condition.acquire()
     logger.write("starting offboard controll")
+    condition.release()
+
     try:
         await drone.offboard.start()
     except OffboardError as error:
         print(error._result.result)
 
     print("ascending 5 m")
+
+    condition.acquire()
     logger.write("ascending 0.5 m")
+    condition.release()
+
     await drone.offboard.set_position_ned(PositionNedYaw(0.0, 0.0, -0.5, 0))
     await asyncio.sleep(5)
         
     print("start_turning")
+
+    condition.acquire()
     logger.write("start_turning")
+    condition.release()
+
     await drone.offboard.set_velocity_body(VelocityBodyYawspeed(0, 0, 0, 20))
     #await drone.offboard.set_position_ned(PositionNedYaw(5.0, 0.0, -2.0, 0.0))
     await asyncio.sleep(10)
     print("reached target")
+
+    condition.acquire()
     logger.write("reached target")
+    condition.release()
     
     # yaw_deg = drone_controller.position_manager.yaw_deg()
     # yaw_rad = yaw_deg * math.pi / 180
@@ -73,7 +104,10 @@ async def run():
 
     await drone.offboard.stop()
     print("stopped offboard controll")
+
+    condition.acquire()
     logger.write("stopped offboard controll")
+    condition.release()
 
     await drone.action.land()
 
