@@ -17,7 +17,7 @@ def record_alt(drone_controller: DroneController):
     while True:
         altitude = drone_controller.position_manager.raw_altitude()
         yaw_deg = drone_controller.position_manager.yaw_deg()
-        drone_controller.get_logger_instance().write(f"{datetime.datetime.now().strftime('%Y-%m-%d_%H:%M:%S')}", altitude, yaw_deg)
+        drone_controller.get_logger_instance().write(f"{datetime.datetime.now().strftime('%f')}", f"alt: {altitude}, yaw: {yaw_deg}")
         time.sleep(0.1)
 
 async def run():
