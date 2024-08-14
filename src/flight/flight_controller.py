@@ -196,17 +196,13 @@ class FlightController:
         DECENDING_SPEED = 1 #降下速度（2^0.5を乗じた値が降下速度）
         ADJUST_FACTOR = 0.1 #上下左右方向の補正係数
 
-        print("camera check")
-        # if not self.camera_handler.is_connected():
-        #     raise RuntimeError("Camera is not connected. Stopped the precies land sequence.")
-        
-        print("checked camaera")
+        print("checking camera connection...")
+        if not self.camera_handler.is_connected():
+            raise RuntimeError("Camera is not connected. Stopped the precies land sequence.")
+        print("camaera connection checked")
 
         position = PositionNedYaw(0.0, 0.0, 0.0, 0.0)
-        print("test")
         velocity_body = VelocityBodyYawspeed(0.0, 0.0, 0.0, 0.0)
-
-        print("finish init")
         
         async def set_position(self, new_position: PositionNedYaw):
             nonlocal position
@@ -272,7 +268,7 @@ class FlightController:
             
             time_start = time.perf_counter()
             while True: ####### コーンがみつからなかったときに近くを徘徊するコードがまだない
-                # await set_altitude(3)
+                await set_altitude(3)
                 pos = self.cone_detector.get_pos()
 
                 if pos[0] >= -1:
@@ -322,9 +318,7 @@ class FlightController:
                 print("Could not find cone in the searching process.")
                 set_velocity_body(self, VelocityBodyYawspeed(0.0, 0.0, 0.0, 0.0))
                 return
-            
-        print("start precise landing")
-
+        
         await set_position(self, position)
         await set_velocity_body(self, velocity_body)
         
