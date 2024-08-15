@@ -11,7 +11,7 @@ async def main():
     drone = DroneController()
     case = CaseHandler(drone)
     
-    logger = DroneController.get_logger_instance()
+    logger = drone.get_logger_instance()
     config = ConfigManager()
     config_section = "NOSHIRO"
     nichrome_pin_no = config.read_int(config_section, "Nichrome_pin")
