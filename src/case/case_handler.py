@@ -186,7 +186,7 @@ class CaseHandler:
                     self.logger.write("Disp pressure too stable or minus")
                     print("Disp pressure too stable or minus")
                 
-                self.logger.write(f"Pressure: {self.pressure_counter}")
+                self.logger.write(f"Pressure_counter: {self.pressure_counter}")
             
             if (self.light_counter >= self.judge_release_lig_countmax) and (self.pressure_counter >= self.judge_release_pre_countmax):
                 break
