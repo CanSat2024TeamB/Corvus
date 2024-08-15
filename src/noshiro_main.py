@@ -26,6 +26,7 @@ async def main():
         case.judge_release()
         status = "release"
     if status == "release":
+        #await asyncio.sleep(30)
         await case.judge_landing()
         status = "land"
 
