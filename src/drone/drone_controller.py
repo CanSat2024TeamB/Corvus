@@ -130,6 +130,18 @@ class DroneController:
         new_task = asyncio.create_task(coro)
         self.tasks.append(new_task)
         print('added task')
+    
+    async def exe_sequence_task(self, coro):
+        if not hasattr(self, 'tasks'):
+            self.tasks = []
+
+        # 新しいタスクを追加
+        new_task = asyncio.create_task(coro)
+        self.tasks.append(new_task)
+        print('added task')
+
+        for task in self.tasks:
+            await task
         
 ####################################################################################################
     

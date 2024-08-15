@@ -69,14 +69,23 @@ async def main():
     target_coordinates_1 = Coordinates(first_lon,first_lat,hov_alt)
     target_coordinates_2 = Coordinates(140.05860198099998, 40.193250305, 5)
     
-    await drone.add_sequence_task(drone.sequence_test_mission(speed,target_coordinates_1,target_coordinates_2))
+    # await drone.add_sequence_task(drone.sequence_test_mission(speed,target_coordinates_1,target_coordinates_2))
+    # try:
+    #     await asyncio.Future()
+    # except asyncio.CancelledError:
+    #     print("Main loop cancelled")
+    #     logger.write("Main loop cancelled")
+
     try:
-        await asyncio.Future()
+        await drone.add_sequence_task(drone.sequence_test_mission(speed,target_coordinates_1,target_coordinates_2))
     except asyncio.CancelledError:
         print("Main loop cancelled")
         logger.write("Main loop cancelled")
     
     flight_log.stop()
+
+    print("sequence ended")
+    logger.write("sequence ended")
 
 def countdown(seconds, logger):
     while seconds > 0:
