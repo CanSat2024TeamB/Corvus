@@ -4,12 +4,14 @@ from control.coordinates import Coordinates
 from pathlib import Path
 from config.config_manager import ConfigManager
 from case.case_handler import CaseHandler
+import logger.flight_log as flight_log
 import time
 
 async def main():
     drone = DroneController()
     case = CaseHandler(drone)
     
+    logger = DroneController.get_logger_instance()
     config = ConfigManager()
     config_section = "NOSHIRO"
     nichrome_pin_no = config.read_int(config_section, "Nichrome_pin")
@@ -26,14 +28,27 @@ async def main():
     if status == "release":
         await case.judge_landing()
         status = "land"
-    countdown(10)
+
+    countdown(10, logger)
+
     print(f"1para and case nichrome cut start")
+    logger.write(f"1para and case nichrome cut start")
+
     case.para_case_stand_nichrome(nichrome_pin_no)
+
     print(f"1para and case nichrome cut end")
-    countdown(10)
+    logger.write(f"1para and case nichrome cut end")
+
+    countdown(10, logger)
+
     print(f"1para and case nichrome cut start")
+    logger.write(f"1para and case nichrome cut start")
+
     case.para_case_stand_nichrome(nichrome_pin_no)
+
     print(f"1para and case nichrome cut end")
+    logger.write(f"1para and case nichrome cut end")
+
     case.nichrome_cleanup()
     await asyncio.sleep(20)
 
@@ -43,6 +58,10 @@ async def main():
     #await drone.arm()
     await asyncio.sleep(5)
 
+
+    position_manager = drone.get_position_manager_instance()
+    flight_log.start(logger, position_manager)
+    
     speed = 1.0
     first_lon = drone.position_manager.adjusted_coordinates_lon()
     first_lat = drone.position_manager.adjusted_coordinates_lat()
@@ -55,10 +74,14 @@ async def main():
         await asyncio.Future()
     except asyncio.CancelledError:
         print("Main loop cancelled")
+        logger.write("Main loop cancelled")
+    
+    flight_log.stop()
 
-def countdown(seconds):
+def countdown(seconds, logger):
     while seconds > 0:
         print(f"{seconds}秒")
+        logger.write(f"{seconds}秒")
         time.sleep(1)
         seconds -= 1
 

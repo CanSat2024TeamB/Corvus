@@ -11,12 +11,14 @@ import datetime
 from control.position_manager import PositionManager
 from control.coordinates import Coordinates
 from sensor.camera_handler import CameraHandler, ConeDetector
+from logger.logger import Logger
 
 class FlightController:
 
-    def __init__(self, drone: System, position_manager: PositionManager):
+    def __init__(self, drone: System, position_manager: PositionManager, logger: Logger):
         self.drone: System = drone
         self.position_manager: PositionManager = position_manager
+        self.logger = logger
         self.camera_handler: CameraHandler = CameraHandler.get_instance()
         self.cone_detector: ConeDetector = ConeDetector(self.camera_handler)
         self.target_latitude = 0
@@ -67,32 +69,54 @@ class FlightController:
     async def go_to(self, speed, *target_coordinates: Coordinates) -> bool:
         mission_items = []
         await self.drone.mission.clear_mission()
+
         print('mission cleared')
+        self.logger.write('mission cleared')
+
         for coordinates in target_coordinates:
             mission_items.append(MissionItem(coordinates.latitude(), coordinates.longitude(), coordinates.altitude(), speed, True, float('nan'), float('nan'), MissionItem.CameraAction.NONE, float('nan'), float('nan'), float('nan'), float('nan'), float('nan'), MissionItem.VehicleAction.NONE))
             #mission_items.append(MissionItem(coordinates.latitude(), coordinates.longitude(), coordinates.altitude(), speed, True, float('nan'), float('nan'), MissionItem.CameraAction.NONE, float('nan'), float('nan'), float('nan'), float('nan'), float('nan'), MissionItem.VehicleAction.NONE))
         mission_plan = MissionPlan(mission_items)
+
         print('mission plan made')
+        self.logger.write('mission plan made')
         print('do not return setting')
+        self.logger.write('do not return setting')
+
         await self.drone.mission.set_return_to_launch_after_mission(False)
+
         print('do not return start upload')
+        self.logger.write('do not return start upload')
+
         await self.drone.mission.upload_mission(mission_plan)
+
         print('mission plan uploading.move to hold mode')
+        self.logger.write('mission plan uploading.move to hold mode')
+
         await self.stop_here() #####先輩のをみるとholdに入れてる
         await asyncio.sleep(10) #####アップロードにかかる時間？
+
         print("Waiting for drone to be armable...")
+        self.logger.write("Waiting for drone to be armable...")
+
         async for is_armable in self.drone.telemetry.health():
             if is_armable:
                 print("Drone is armable")
+                self.logger.write("Drone is armable")
+
                 break
             await asyncio.sleep(0.11)
 
         print("Arming the drone...")
+        self.logger.write("Arming the drone...")
+
         await self.drone.action.arm()
 
         async for is_armed in self.drone.telemetry.armed():
             if is_armed:
                 print("drone is armed")
+                self.logger.write("drone is armed")
+
                 break
             await asyncio.sleep(0.1)
         await self.drone.mission.start_mission()
