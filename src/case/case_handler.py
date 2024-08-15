@@ -63,6 +63,7 @@ class CaseHandler:
             for i in range(self.stable_judge_count_land):
                 def_pre = self.pressure.dif_ave_pressure(interval_def_ave_pressure)
                 print(def_pre)####消す
+                self.logger.write(f"Pressure_def: {def_pre}")
                 if abs(def_pre) <= self.stable_pre_val:
                     stable_count += 1
 
