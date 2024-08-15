@@ -22,7 +22,7 @@ class CaseHandler:
         self.nichrome_duration = 10
         
         #収納判定用定数
-        self.judge_storage_border_light = 600  #あかり消した教室で260くらい　
+        self.judge_storage_border_light = 700  #あかり消した教室で260くらい　
         self.judge_storage_countmax = 100 #ARLISSは500、能代は100
         self.judge_storage_maxtime = 300 #能代は300、ARLISSは1200
         self.judge_storage_sleep_time = 0.5
