@@ -31,8 +31,8 @@ class FlightController:
         self.nondetected_counter_max = 10
         self.alp = 45 ## カメラ取り付け角
         self.theta = [54, 41] ##カメラ視野角
-        self.lat_unit = 110964.027 #m 緯度一度の長さ　八千代
-        self.lon_unit = 90424.106 #m　経度一度の長さ　八千代
+        self.lat_unit = 111047.008 #m 緯度一度の長さ　八千代
+        self.lon_unit = 85215.711 #m　経度一度の長さ　八千代
 
         
         self.detected_flag = False
@@ -156,8 +156,8 @@ class FlightController:
             #abs(target_latitude - self.position_manager.adjusted_coordinates_lat()) *  self.lat_unit <= 2.0 and \
             #abs(target_longitude - self.position_manager.adjusted_coordinates_lon()) * self.lon_unit <= 2.0 
     
-        return abs(target_latitude - self.position_manager.adjusted_coordinates_lat()) *  self.lat_unit <= 2.0 and \
-            abs(target_longitude - self.position_manager.adjusted_coordinates_lon()) * self.lon_unit <= 2.0 
+        return abs(target_latitude - self.position_manager.adjusted_coordinates_lat()) *  self.lat_unit <= 1.0 and \
+            abs(target_longitude - self.position_manager.adjusted_coordinates_lon()) * self.lon_unit <= 1.0 
 
 ##############################################################################################################
 
