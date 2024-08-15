@@ -168,6 +168,8 @@ class DroneController:
                 print(' hovering finished start landing')
                 self.logger.write('hovering finished start landing')
                 await self.flight_controller.land()
+                print("landed")
+                self.logger.write("landed")
                 break
 
     async def sequence_test_goto(self,speed, target_coordinates: Coordinates):
