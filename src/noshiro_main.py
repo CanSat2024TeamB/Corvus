@@ -62,7 +62,7 @@ async def main():
     position_manager = drone.get_position_manager_instance()
     flight_log.start(logger, position_manager)
     
-    speed = 1.0
+    speed = 4.0
     first_lon = drone.position_manager.adjusted_coordinates_lon()
     first_lat = drone.position_manager.adjusted_coordinates_lat()
     hov_alt = 5
