@@ -27,8 +27,8 @@ class DroneController:
         self.battery_watch = Battery_watch(self.drone_instance)
         self.compass_handler = CompassHandler(self.drone_instance)
         self.position_manager = PositionManager(self.drone_instance, self.gps_handler, self.compass_handler, self.lidar_handler)
-        self.flight_controller = FlightController(self.drone_instance, self.position_manager)
         self.logger = Logger(log_dir)
+        self.flight_controller = FlightController(self.drone_instance, self.position_manager, self.logger)
         self.ac_vel = Acceleration_Velocity(self.drone_instance)
 
         self.tasks = []

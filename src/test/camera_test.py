@@ -10,14 +10,33 @@ from sensor.camera_handler import CameraHandler, ConeDetector
 
 camera_handler = CameraHandler.get_instance()
 
-try:
-    if not camera_handler.is_connected():
-        raise RuntimeError("Camera is not connected. Stopped the precies land sequence.")
-    print("ok")
-except RuntimeError as e:
-    print(e)
-else:
-    cone_detector = ConeDetector(camera_handler)
-    print(cone_detector.get_pos())
+# try:
+#     if not camera_handler.is_connected():
+#         raise RuntimeError("Camera is not connected. Stopped the precies land sequence.")
+#     print("ok")
+# except RuntimeError as e:
+#     print(e)
+# else:
+#     cone_detector = ConeDetector(camera_handler)
+#     print(cone_detector.get_pos())
 
-print("finish")
+# print("finish")
+
+
+# cone_detector = ConeDetector(camera_handler)
+# cone_detector.start(0.3)
+
+# with open("camera_test.txt", "w") as f:
+#     while True:
+#         pos = cone_detector.get_pos()
+#         f.write(f"{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S %f')} {pos}\n")
+#         print("hi")
+#         time.sleep(0.1)
+
+
+cone_detector = ConeDetector(camera_handler)
+
+for i in range(20):
+    print(i)
+    cone_detector.capture_cone_position_and_save(f"/home/admin/corvus/assets/log/img_{i}.png", 0.5)
+    time.sleep(1)
