@@ -22,16 +22,16 @@ class CaseHandler:
         self.nichrome_duration = 10
         
         #収納判定用定数
-        self.judge_storage_border_light = 500  #あかり消した教室で260くらい　
+        self.judge_storage_border_light = 600  #あかり消した教室で260くらい　
         self.judge_storage_countmax = 100 #ARLISSは500、能代は100
         self.judge_storage_maxtime = 300 #能代は300、ARLISSは1200
         self.judge_storage_sleep_time = 0.5
 
         #放出判定用定数
-        self.judge_release_maxtime = 720 #去年はARLISSで3600を使った、能代は720
+        self.judge_release_maxtime = 600 #去年はARLISSで3600を使った、能代は600
         self.judge_release_lig_countmax = 2 #能代は2、ARLISSは6？
-        self.judge_release_pre_countmax = 2 #能代は2、ARLISSは6？
-        self.judge_release_border_light = 500
+        self.judge_release_pre_countmax = 1 #能代は2、ARLISSは6？
+        self.judge_release_border_light = 600
         self.judge_release_sleep_time = 0.5
         self.stable_judge_count_release = 1 
         
