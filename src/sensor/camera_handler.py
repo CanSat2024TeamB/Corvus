@@ -8,6 +8,7 @@ from picamera2 import Picamera2
 from picamera2.encoders import H264Encoder
 from picamera2.outputs import FfmpegOutput
 import cv2
+import numpy as np
 import threading
 import cone_detector
 import time
@@ -16,7 +17,7 @@ class CameraHandler:
     _unique_instance = None
 
     def __new__(self):
-        raise NotImplementedError('Cannot generate instance by constructor. Call get_instance() method instead.')
+        raise NotImplementedError("Cannot generate instance by constructor. Call get_instance() method instead.")
     
     @classmethod
     def __internal_new__(self):
@@ -74,10 +75,14 @@ class CameraHandler:
             encoder = H264Encoder(10000000)
             output = FfmpegOutput(output_path)
 
-            self.camera.start_recording(encoder, output)
-            time.sleep(length)
-            self.camera.stop_recording()
-            self.camera.start()
+            try:
+                self.camera.start_recording(encoder, output)
+                time.sleep(length)
+                self.camera.stop_recording()
+                self.camera.start()
+            except Exception as e:
+                print("Error has occured. Stopped capturing video")
+                print(e)
         
         video_thread = threading.Thread(target = video_capturer, args = (self, output_path, length,))
         video_thread.start()
@@ -87,7 +92,7 @@ class ConeDetector:
     condition = threading.Condition()
 
     def __init__(self, camera_handler, model_path: str = Path(__file__).parent.parent.parent.joinpath("assets/model/cone_ncnn_model_v9_320_opt"), imgsz = 320):
-        self.camera_handler = camera_handler
+        self.camera_handler: CameraHandler = camera_handler
         cone_detector.load_model(str(model_path), imgsz)
 
         self.frame = None
@@ -102,7 +107,11 @@ class ConeDetector:
     
     def reader(self):
         while not self.finished:
-            frame = self.camera_handler.capture_bgr()
+            try:
+                frame = self.camera_handler.capture_bgr()
+            except Exception as e:
+                print(e)
+                frame = np.zeros((self.camera_handler.get_height, self.camera_handler.get_width, 3))
             self.condition.acquire()
             self.frame = frame
             self.condition.notify()

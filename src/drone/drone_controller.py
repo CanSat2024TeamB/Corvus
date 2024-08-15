@@ -10,7 +10,7 @@ from control.compass_handler import CompassHandler
 from flight.flight_controller import FlightController
 from logger.logger import Logger
 from sensor.acceleration_velocity import Acceleration_Velocity
-#from sensor.camera_handler import CameraHandler
+from sensor.camera_handler import CameraHandler
 
 
 class DroneController:
@@ -27,8 +27,8 @@ class DroneController:
         self.battery_watch = Battery_watch(self.drone_instance)
         self.compass_handler = CompassHandler(self.drone_instance)
         self.position_manager = PositionManager(self.drone_instance, self.gps_handler, self.compass_handler, self.lidar_handler)
-        self.flight_controller = FlightController(self.drone_instance, self.position_manager)
         self.logger = Logger(log_dir)
+        self.flight_controller = FlightController(self.drone_instance, self.position_manager, self.logger)
         self.ac_vel = Acceleration_Velocity(self.drone_instance)
 
         self.tasks = []
@@ -130,6 +130,18 @@ class DroneController:
         new_task = asyncio.create_task(coro)
         self.tasks.append(new_task)
         print('added task')
+    
+    async def exe_sequence_task(self, coro):
+        if not hasattr(self, 'tasks'):
+            self.tasks = []
+
+        # 新しいタスクを追加
+        new_task = asyncio.create_task(coro)
+        self.tasks.append(new_task)
+        print('added task')
+
+        for task in self.tasks:
+            await task
         
 ####################################################################################################
     
@@ -156,6 +168,8 @@ class DroneController:
                 print(' hovering finished start landing')
                 self.logger.write('hovering finished start landing')
                 await self.flight_controller.land()
+                print("landed")
+                self.logger.write("landed")
                 break
 
     async def sequence_test_goto(self,speed, target_coordinates: Coordinates):

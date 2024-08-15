@@ -17,7 +17,7 @@ class CaseHandler:
         self.ac_vel = Acceleration_Velocity(self.drone)
         
         self.stable_pre_val = 0.5 ##1mで大体0.1hpaの差 2.5秒に一回の判定なので、2m/sでも0.5くらい変わる。
-        self.stable_vel_val = 0.1
+        self.stable_vel_val = 0.5
         
         self.nichrome_duration = 10
         
