@@ -40,10 +40,15 @@ class FlightController:
         self.is_in_air: bool = False
         
     async def takeoff(self, takeoff_altitude) -> bool:
-        await self.drone.action.set_takeoff_altitude(takeoff_altitude+2)
+        take_off_max_time = 0
+        await self.drone.action.set_takeoff_altitude(takeoff_altitude*2)
         await self.drone.action.takeoff()
         while self.position_manager.adjusted_altitude() <= takeoff_altitude:
             await asyncio.sleep(0.1)
+            take_off_max_time += 0.1
+            if take_off_max_time > 20:
+                print('take off max time')
+                break
         return True
 
     async def hovering(self, time: float) -> bool:
