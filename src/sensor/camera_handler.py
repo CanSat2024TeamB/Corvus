@@ -2,15 +2,22 @@ import sys
 from pathlib import Path
 
 sys.path.append(str(Path(__file__).parent.parent.parent.joinpath("assets/module")))
+try:
+    from picamera2 import Picamera2
+    from picamera2.encoders import H264Encoder
+    from picamera2.outputs import FfmpegOutput
+except ImportError as e:
+    print("Could not import picamera2 module")
+
+try:
+    import cone_detector
+except ImportError as e:
+    print("Could not import cone_detector module")
 
 from pathlib import Path
-from picamera2 import Picamera2
-from picamera2.encoders import H264Encoder
-from picamera2.outputs import FfmpegOutput
 import cv2
 import numpy as np
 import threading
-import cone_detector
 import time
 
 class CameraHandler:
@@ -93,7 +100,11 @@ class ConeDetector:
 
     def __init__(self, camera_handler, model_path: str = Path(__file__).parent.parent.parent.joinpath("assets/model/cone_ncnn_model_v9_320_opt"), imgsz = 320):
         self.camera_handler: CameraHandler = camera_handler
-        cone_detector.load_model(str(model_path), imgsz)
+
+        try:
+            cone_detector.load_model(str(model_path), imgsz)
+        except NameError as e:
+            print("Could not load ncnn model")
 
         self.frame = None
         self.pos = [None, None]

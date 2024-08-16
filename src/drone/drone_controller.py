@@ -74,8 +74,8 @@ class DroneController:
 
         print("Waiting for drone to be armable...")
         self.logger.write("Waiting for drone to be armable...")
-        async for is_armable in self.drone_instance.telemetry.health():
-            if is_armable:
+        async for health in self.drone_instance.telemetry.health():
+            if health.is_armable:
                 print("Drone is armable")
                 self.logger.write("Drone is armable")
                 break
