@@ -60,8 +60,8 @@ async def main():
     await asyncio.sleep(5)
 
 
-    #position_manager = drone.get_position_manager_instance()
-    #flight_log.start(logger, position_manager)
+    position_manager = drone.get_position_manager_instance()
+    flight_log.start(logger, position_manager)
     
     speed = 4.0
     #first_lon = drone.position_manager.adjusted_coordinates_lon()
