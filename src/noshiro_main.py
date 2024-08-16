@@ -69,7 +69,7 @@ async def main():
     #hov_alt = 5
     #target_coordinates_1 = Coordinates(first_lon,first_lat,hov_alt)
     #target_coordinates_2 = Coordinates(139.987196935, 40.142438475, 5) honnbann
-    target_coordinates_2 = Coordinates(140.05863601,40.193261534,5)
+    target_coordinates_2 = Coordinates(139.987197098,40.142462332,5)
     
     
     await drone.add_sequence_task(drone.sequence_test_goto(speed, target_coordinates_2))
