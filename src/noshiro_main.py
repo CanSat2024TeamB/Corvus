@@ -21,7 +21,7 @@ async def main():
 
     if status == "outside":
        case.judge_storage()
-        status = "storage"
+       status = "storage"
     if status == "storage":
         case.judge_release()
         status = "release"
