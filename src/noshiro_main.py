@@ -19,39 +19,39 @@ async def main():
     global status 
     status = "outside"
 
-    #if status == "outside":
-    #   case.judge_storage()
-    #    status = "storage"
-    #if status == "storage":
-    #    case.judge_release()
-    #    status = "release"
-    #if status == "release":
-    #    countdown(30,logger)
-    #    await case.judge_landing()
-    #    status = "land"
+    if status == "outside":
+       case.judge_storage()
+        status = "storage"
+    if status == "storage":
+        case.judge_release()
+        status = "release"
+    if status == "release":
+        countdown(30,logger)
+        await case.judge_landing()
+        status = "land"
 
-    #countdown(10, logger)
+    countdown(10, logger)
 
-    #print(f"1para and case nichrome cut start")
-    #logger.write(f"1para and case nichrome cut start")
+    print(f"1para and case nichrome cut start")
+    logger.write(f"1para and case nichrome cut start")
 
-    #case.para_case_stand_nichrome(nichrome_pin_no)
+    case.para_case_stand_nichrome(nichrome_pin_no)
 
-    #print(f"1para and case nichrome cut end")
-    #logger.write(f"1para and case nichrome cut end")
+    print(f"1para and case nichrome cut end")
+    logger.write(f"1para and case nichrome cut end")
 
-    #countdown(10, logger)
+    countdown(10, logger)
 
-    #print(f"1para and case nichrome cut start")
-    #logger.write(f"1para and case nichrome cut start")
+    print(f"1para and case nichrome cut start")
+    logger.write(f"1para and case nichrome cut start")
 
-    #case.para_case_stand_nichrome(nichrome_pin_no)
+    case.para_case_stand_nichrome(nichrome_pin_no)
 
-    #print(f"1para and case nichrome cut end")
-    #logger.write(f"1para and case nichrome cut end")
+    print(f"1para and case nichrome cut end")
+    logger.write(f"1para and case nichrome cut end")
 
-    #case.nichrome_cleanup()
-    countdown(60, logger)
+    case.nichrome_cleanup()
+    #countdown(60, logger)
 
     #config_path: str = Path(__file__).resolve().parent.parent.joinpath("assets/config/config.ini")
     #config = ConfigManager(config_path)
