@@ -51,7 +51,7 @@ async def main():
     logger.write(f"1para and case nichrome cut end")
 
     case.nichrome_cleanup()
-    countdown(60)
+    countdown(60, logger)
 
     #config_path: str = Path(__file__).resolve().parent.parent.joinpath("assets/config/config.ini")
     #config = ConfigManager(config_path)
