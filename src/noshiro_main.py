@@ -51,7 +51,7 @@ async def main():
     logger.write(f"1para and case nichrome cut end")
 
     case.nichrome_cleanup()
-    #countdown(60, logger)
+    countdown(60, logger)
 
     #config_path: str = Path(__file__).resolve().parent.parent.joinpath("assets/config/config.ini")
     #config = ConfigManager(config_path)
@@ -60,14 +60,14 @@ async def main():
     await asyncio.sleep(5)
 
 
-    position_manager = drone.get_position_manager_instance()
-    flight_log.start(logger, position_manager)
+    #position_manager = drone.get_position_manager_instance()
+    #flight_log.start(logger, position_manager)
     
     speed = 4.0
-    first_lon = drone.position_manager.adjusted_coordinates_lon()
-    first_lat = drone.position_manager.adjusted_coordinates_lat()
-    hov_alt = 5
-    target_coordinates_1 = Coordinates(first_lon,first_lat,hov_alt)
+    #first_lon = drone.position_manager.adjusted_coordinates_lon()
+    #first_lat = drone.position_manager.adjusted_coordinates_lat()
+    #hov_alt = 5
+    #target_coordinates_1 = Coordinates(first_lon,first_lat,hov_alt)
     #target_coordinates_2 = Coordinates(139.987196935, 40.142438475, 5) honnbann
     target_coordinates_2 = Coordinates(140.05863601,40.193261534,5)
     
