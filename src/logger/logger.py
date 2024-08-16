@@ -3,7 +3,10 @@ import datetime
 import os
 
 class Logger:
-    def __init__(self, dir):
+    def __init__(self, dir, disable = False):
+        self.disable = disable
+        if self.disable:
+            return
         # 動的にログファイルのパスを生成
         self.dir = dir
         self.path = str(Path(self.dir).joinpath(f"log_{datetime.datetime.now().strftime('%Y-%m-%d_%H:%M:%S')}.txt"))
@@ -18,6 +21,8 @@ class Logger:
         return True
 
     def write(self, *msg: str) -> bool:
+        if self.disable:
+            return
         timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         with open(self.path, 'a', encoding="UTF-8") as f:
             f.write(f"{timestamp} {' '.join(msg)}\n")

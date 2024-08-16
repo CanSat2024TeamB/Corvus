@@ -1,14 +1,17 @@
-
+from mavsdk import System
 from control.attitude import Attitude
 from control.coordinates import Coordinates
+from sensor.gps_handler import GPSHandler
+from sensor.lidar_handler import LiDARHandler
+from sensor.compass_handler import CompassHandler
 import numpy as np
 
 class PositionManager:
-    def __init__(self, drone, GPS_handler, Compass_handler, LiDARHandler):
-        self.drone = drone
-        self.gps_handler = GPS_handler
-        self.compass_handler = Compass_handler
-        self.lidar_handler = LiDARHandler
+    def __init__(self, drone, gps_handler, compass_handler, lidar_Handler):
+        self.drone: System = drone
+        self.gps_handler: GPSHandler = gps_handler
+        self.compass_handler: CompassHandler = compass_handler
+        self.lidar_handler: LiDARHandler = lidar_Handler
 
     
     def raw_altitude(self) -> float:

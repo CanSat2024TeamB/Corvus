@@ -41,7 +41,9 @@ class FlightController:
     async def takeoff(self, takeoff_altitude) -> bool:
         await self.drone.action.set_takeoff_altitude(takeoff_altitude+2)
         await self.drone.action.takeoff()
+        print("hihihihih")
         while self.position_manager.adjusted_altitude() <= takeoff_altitude:
+            print(f"{self.position_manager.adjusted_altitude()} m")
             await asyncio.sleep(0.1)
         return True
 
@@ -142,11 +144,12 @@ class FlightController:
             current_alt = self.position_manager.adjusted_altitude()
             if current_alt < 2:
                 print('altitude too low')
-                await self.go_to_location(Coordinates(self.target_longitude, self.target_latitude, self.target_altitude + 2))
+                await self.go_to_location(speed, Coordinates(self.target_longitude, self.target_latitude, self.target_altitude + 2))
                 break                                    
             elif current_alt > 8:
                 print('altitude too high')
-                await self.go_to_location(Coordinates(self.target_longitude, self.target_latitude, self.target_altitude - 4))
+                await self.go_to_location(speed, Coordinates(self.target_longitude, self.target_latitude, self.target_altitude - 4))
+                print("adjustment ended")
                 break
         await self.stop_here()
         return

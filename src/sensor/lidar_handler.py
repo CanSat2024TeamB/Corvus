@@ -1,8 +1,9 @@
 import asyncio
+from mavsdk import System
 
 class LiDARHandler:
     def __init__(self, drone):
-        self.drone = drone
+        self.drone: System = drone
         self.altitude: float = -1.0
 
     def update_altitude(self, altitude: float) -> None:
