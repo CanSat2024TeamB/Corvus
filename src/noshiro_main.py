@@ -85,7 +85,7 @@ async def main():
     #     print("Main loop cancelled")
     #     logger.write("Main loop cancelled")
     
-    # flight_log.stop()
+    flight_log.stop()
 
     print("sequence ended")
     logger.write("sequence ended")
