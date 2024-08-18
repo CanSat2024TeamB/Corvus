@@ -18,7 +18,7 @@ async def main():
     #await drone.arm()
     await asyncio.sleep(5)
 
-    num = 4
+    num = 5
     speed = 7.8
     #first_lon = drone.position_manager.adjusted_coordinates_lon()
     #first_lat = drone.position_manager.adjusted_coordinates_lat()
@@ -26,7 +26,7 @@ async def main():
     takeoff_coordinates_1 = Coordinates(140.0600941,40.1946223,hov_alt)
     target_coordinates_1 = Coordinates(140.0600941,40.1946223,hov_alt)
     target_coordinates_2 = Coordinates(140.0550077,40.1921846,hov_alt)
-    args = [speed] +  [target for pair in zip([target_coordinates_1] * num, [target_coordinates_2] * num) for target in pair]
+    args = [speed] +  [target for pair in zip([target_coordinates_1] * num, [target_coordinates_2] * num) for target in pair] + [target_coordinates_1]
 
 
     await drone.add_sequence_task(drone.sequence_test_mission(*args))
