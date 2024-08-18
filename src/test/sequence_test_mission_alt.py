@@ -28,7 +28,7 @@ async def main():
     speed = 1.0
     first_lon = drone.position_manager.adjusted_coordinates_lon()
     first_lat = drone.position_manager.adjusted_coordinates_lat()
-    hov_alt = 2
+    hov_alt = 5
     target_coordinates_1 = Coordinates(first_lon, first_lat, hov_alt)
     
     # 任務を追加する
