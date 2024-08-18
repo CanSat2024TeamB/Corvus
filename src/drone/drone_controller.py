@@ -178,7 +178,7 @@ class DroneController:
         await self.arm()
         print("taking off...")
         self.logger.write("taking off...")
-        await self.flight_controller.takeoff(5)
+        await self.flight_controller.takeoff(10)
         print('reached')
         self.logger.write('reached')
         await self.flight_controller.hovering(5)
