@@ -19,10 +19,10 @@ async def main():
     await asyncio.sleep(5)
 
     num = 10
-    speed = 4
+    speed = 7.8
     #first_lon = drone.position_manager.adjusted_coordinates_lon()
     #first_lat = drone.position_manager.adjusted_coordinates_lat()
-    hov_alt = 5
+    hov_alt = 8
     takeoff_coordinates_1 = Coordinates(140.1081125,35.7700173,hov_alt)
     target_coordinates_1 = Coordinates(140.1080039,35.7704584,hov_alt)
     target_coordinates_2 = Coordinates(140.1081125,35.7700173,hov_alt)
