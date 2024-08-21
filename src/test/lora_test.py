@@ -11,7 +11,7 @@ async def main():
     dronecontroller = DroneController()
     drone = dronecontroller.get_drone_instance()
     lora = Lora(drone)
-    await lora.lora_reset()
+    await lora.lora_start()
     await asyncio.sleep(5)
     await lora.lora_set_sync(72)
     await asyncio.sleep(5)
@@ -24,7 +24,7 @@ async def main():
     await lora.lora_save()
     await asyncio.sleep(5)
     for i in range(10):
-        await lora.lora_write("123456")
+        await lora.lora_send(123456)
         await asyncio.sleep(5)
     lora.lora_end()
 

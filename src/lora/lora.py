@@ -7,22 +7,15 @@ class Lora:
     def __init__(self, drone):
         self.drone = drone
         self.rst = 4
-        self.power = 18
         self.CRLF = "\n\r"
         self.ser = None  # シリアルポートオブジェクトをメンバー変数として保持
         self.is_on = False
-        self.counter = 0
 
         GPIO.setmode(GPIO.BCM)
         GPIO.setwarnings(False)
         GPIO.setup(self.rst, GPIO.OUT)
-        GPIO.setup(self.power, GPIO.OUT)
 
     async def lora_start(self):
-        GPIO.output(self.power, GPIO.HIGH)
-        print('Lora enabled')
-        await asyncio.sleep(10)
-        print('awaited')
         try:
             self.ser = serial.Serial(port='/dev/ttyAMA0', baudrate=115200, bytesize=serial.EIGHTBITS, 
                                      parity=serial.PARITY_NONE, stopbits=serial.STOPBITS_ONE, timeout=1)
@@ -55,6 +48,10 @@ class Lora:
 
     async def lora_save(self):
         response = await self.send_and_receive('p2p save')
+        print('Response:', response)
+
+    async def lora_send(self,message):
+        response = await self.send_and_receive(f'p2p tx {message}')
         print('Response:', response)
 
     async def send_and_receive(self, data, wait_time=2):
