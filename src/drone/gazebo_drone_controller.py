@@ -15,14 +15,14 @@ class GazeboDroneController(DroneController):
 
     default_log_dir = "/Users/adminair/Documents/Sources/VSCode/Corvus/assets/log"
 
-    def __init__(self, log_dir = default_log_dir):
+    def __init__(self, log = False, log_dir = default_log_dir):
         self.drone_instance = System()
         self.lidar_handler = LiDARHandler(self.drone_instance)
         self.gps_handler = GPSHandler(self.drone_instance)
         self.battery_watch = Battery_watch(self.drone_instance)
         self.compass_handler = CompassHandler(self.drone_instance)
         self.position_manager = PositionManager(self.drone_instance, self.gps_handler, self.compass_handler, self.lidar_handler)
-        self.logger = Logger(log_dir, True)
+        self.logger = Logger(log_dir, not log)
         self.flight_controller = FlightController(self.drone_instance, self.position_manager, self.logger)
         self.ac_vel = Acceleration_Velocity(self.drone_instance)
 
