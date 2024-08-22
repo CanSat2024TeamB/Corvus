@@ -78,7 +78,7 @@ async def run():
     await drone.offboard.set_velocity_body(VelocityBodyYawspeed(0.0, 0.0, 0.0, 0.0))
     await asyncio.sleep(2)
         
-    print("startb turning")
+    print("start turning")
     logger.write("start turning")
 
     await drone.offboard.set_velocity_body(VelocityBodyYawspeed(0, 0, 0, 20))
