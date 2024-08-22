@@ -188,16 +188,16 @@ class FlightController:
         beta =  self.theta[0] * cone_x * 0.5
         gamma = self.theta[1] * cone_y * 0.5
         delta = self.calculate_delta_angle(self.target_latitude,self.target_longitude) 
-        alt = self.position_manager.adjusted_altitude()
-        east_len_m = alt * math.tan(math.radians(self.alp + gamma)) * math.cos(math.radians(delta - beta))
-        north_len_m = alt * math.tan(math.radians(self.alp + gamma)) * math.sin(math.radians(delta - beta))
+        self.current_lidar_alt = self.position_manager.adjusted_altitude()
+        east_len_m = self.current_lidar_alt * math.tan(math.radians(self.alp + gamma)) * math.cos(math.radians(delta - beta))
+        north_len_m = self.current_lidar_alt * math.tan(math.radians(self.alp + gamma)) * math.sin(math.radians(delta - beta))
         error_lon = east_len_m / self.lon_unit
         error_lat = north_len_m / self.lat_unit
         self.AMSL = self.position_manager.adjusted_coordinates_AMSL()
 
         await self.drone.action.goto_location(self.target_latitude + error_lat,
                                               self.target_longitude + error_lon, 
-                                              self.AMSL, 0)
+                                              self.AMSL-self.current_lidar_alt, 0)
         await self.drone.action.set_current_speed(0.5)
 
         while self.position_manager.adjusted_altitude() > 0.25:
