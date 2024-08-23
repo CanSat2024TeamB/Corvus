@@ -37,7 +37,7 @@ async def main():
     # 平均値を計算
     lat_mean = mean(lat_list)
     lon_mean = mean(lon_list)
-    AMSL_mean = mean(AMSL)
+    AMSL_mean = mean(AMSL_list)
 
     # 標準偏差を計算
     lat_stdev = stdev(lat_list)
