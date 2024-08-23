@@ -144,7 +144,7 @@ class FlightController:
         print('current lidar',self.current_lidar_alt)
         
         print('target got')
-        target_final_altitude = self.target_altitude
+        target_final_altitude = self.AMSL
         await self.drone.action.goto_location(self.target_latitude, self.target_longitude, target_final_altitude, 0)
         print('goto started')
         await self.drone.action.set_current_speed(speed)
