@@ -138,6 +138,9 @@ class FlightController:
         self.target_altitude = target_coordinates.altitude()
         self.AMSL = self.position_manager.adjusted_coordinates_AMSL()
         self.current_lidar_alt = self.position_manager.adjusted_altitude()
+        print(self.target_altitude)
+        print(self.AMSL)
+        print(self.current_lidar_alt)
         
         print('target got')
         await self.drone.action.goto_location(self.target_latitude, self.target_longitude, self.AMSL-self.current_lidar_alt+self.target_altitude, 0)
@@ -147,13 +150,13 @@ class FlightController:
         while not self.if_goto_location_finished(self.target_latitude, self.target_longitude, self.target_altitude):
             await asyncio.sleep(1)
             self.current_lidar_alt = self.position_manager.adjusted_altitude()
-            if self.current_lidar_alt < 3:
+            if self.current_lidar_alt < 5:
                 print('altitude too low')
-                await self.go_to_location(speed,Coordinates(self.target_longitude, self.target_latitude, self.target_altitude + 2))
+                await self.go_to_location(speed,Coordinates(self.target_longitude, self.target_latitude, self.target_altitude + 1))
                 break                                    
             elif self.current_lidar_alt > 8:
                 print('altitude too high')
-                await self.go_to_location(speed,Coordinates(self.target_longitude, self.target_latitude, self.target_altitude - 4))
+                await self.go_to_location(speed,Coordinates(self.target_longitude, self.target_latitude, self.target_altitude - 1))
                 break
         await self.stop_here()
         return
