@@ -138,37 +138,41 @@ class FlightController:
         self.target_altitude = target_coordinates.altitude()
         self.AMSL = self.position_manager.adjusted_coordinates_AMSL()
         self.current_lidar_alt = self.position_manager.adjusted_altitude()
+        
         print(self.target_altitude)
         print(self.AMSL)
         print(self.current_lidar_alt)
         
         print('target got')
-        await self.drone.action.goto_location(self.target_latitude, self.target_longitude, self.AMSL-self.current_lidar_alt+self.target_altitude, 0)
+        target_final_altitude = self.AMSL - self.current_lidar_alt + self.target_altitude
+        await self.drone.action.goto_location(self.target_latitude, self.target_longitude, target_final_altitude, 0)
         print('goto started')
         await self.drone.action.set_current_speed(speed)
         
         while not self.if_goto_location_finished(self.target_latitude, self.target_longitude, self.target_altitude):
             await asyncio.sleep(1)
             self.current_lidar_alt = self.position_manager.adjusted_altitude()
+            
             if self.current_lidar_alt < 5:
                 print('altitude too low')
-                await self.go_to_location(speed,Coordinates(self.target_longitude, self.target_latitude, self.target_altitude + 1))
-                break                                    
+                target_final_altitude += 1
+                await self.drone.action.goto_location(self.target_latitude, self.target_longitude, target_final_altitude, 0)
+                
             elif self.current_lidar_alt > 8:
                 print('altitude too high')
-                await self.go_to_location(speed,Coordinates(self.target_longitude, self.target_latitude, self.target_altitude - 1))
-                break
+                target_final_altitude -= 1
+                await self.drone.action.goto_location(self.target_latitude, self.target_longitude, target_final_altitude, 0)
+
         await self.stop_here()
         return
-
-    def if_goto_location_finished(self, target_latitude, target_longitude, target_altitude):
-        #return abs(target_altitude - self.position_manager.adjusted_altitude()) <= 1.0 and \
-            #abs(target_latitude - self.position_manager.adjusted_coordinates_lat()) *  self.lat_unit <= 2.0 and \
-            #abs(target_longitude - self.position_manager.adjusted_coordinates_lon()) * self.lon_unit <= 2.0 
     
-        return abs(target_latitude - self.position_manager.adjusted_coordinates_lat()) *  self.lat_unit <= 1.0 and \
-            abs(target_longitude - self.position_manager.adjusted_coordinates_lon()) * self.lon_unit <= 1.0 
-
+    def if_goto_location_finished(self, target_latitude, target_longitude, target_altitude):
+            #return abs(target_altitude - self.position_manager.adjusted_altitude()) <= 1.0 and \
+                #abs(target_latitude - self.position_manager.adjusted_coordinates_lat()) *  self.lat_unit <= 2.0 and \
+                #abs(target_longitude - self.position_manager.adjusted_coordinates_lon()) * self.lon_unit <= 2.0 
+        
+            return abs(target_latitude - self.position_manager.adjusted_coordinates_lat()) *  self.lat_unit <= 1.0 and \
+                abs(target_longitude - self.position_manager.adjusted_coordinates_lon()) * self.lon_unit <= 1.0 
 ##############################################################################################################
 
     async def precise_land(self) -> bool:
