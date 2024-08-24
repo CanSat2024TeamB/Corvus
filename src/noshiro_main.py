@@ -12,7 +12,7 @@ async def main():
     case = CaseHandler(drone)
     
     logger = drone.get_logger_instance()
-    lora = drone.get_lora_instance
+    lora = drone.get_lora_instance()
 
     config = ConfigManager()
     config_section = "NOSHIRO"
