@@ -12,6 +12,8 @@ async def main():
     case = CaseHandler(drone)
     
     logger = drone.get_logger_instance()
+    lora = drone.get_lora_instance
+
     config = ConfigManager()
     config_section = "NOSHIRO"
     nichrome_pin_no = config.read_int(config_section, "Nichrome_pin")
@@ -19,16 +21,36 @@ async def main():
     global status 
     status = "outside"
 
+    await lora.lora_start()
+    await asyncio.sleep(5)
+    await lora.lora_set_sync(72)
+    await asyncio.sleep(5)
+    await lora.lora_set_freq(922000000)
+    await asyncio.sleep(5)
+    await lora.lora_set_sf(7)
+    await asyncio.sleep(5)
+    await lora.lora_set_bw(125)
+    await asyncio.sleep(5)
+    await lora.lora_save()
+    await asyncio.sleep(5)
+    await lora.lora_send('lora ok')
+    await asyncio.sleep(5)
+
     if status == "outside":
        case.judge_storage()
        status = "storage"
+       await lora.lora_send('storage')
+
     if status == "storage":
         case.judge_release()
         status = "release"
+        await lora.lora_send('release')
+
     if status == "release":
         countdown(30,logger)
         await case.judge_landing()
         status = "land"
+        await lora.lora_send('land')
 
     countdown(10, logger)
 
@@ -51,6 +73,7 @@ async def main():
     logger.write(f"1para and case nichrome cut end")
 
     case.nichrome_cleanup()
+    await lora.lora_send('nichrome_end')
     countdown(60, logger)
 
     #config_path: str = Path(__file__).resolve().parent.parent.joinpath("assets/config/config.ini")
@@ -64,12 +87,8 @@ async def main():
     flight_log.start(logger, position_manager)
     
     speed = 4.0
-    #first_lon = drone.position_manager.adjusted_coordinates_lon()
-    #first_lat = drone.position_manager.adjusted_coordinates_lat()
-    #hov_alt = 5
-    #target_coordinates_1 = Coordinates(first_lon,first_lat,hov_alt)
-    #target_coordinates_2 = Coordinates(139.987196935, 40.142438475, 5) honnbann
-    target_coordinates_2 = Coordinates(139.987197098,40.142462332,5)
+    hov_alt = 5
+    target_coordinates_2 = Coordinates(139.987197098,40.142462332,hov_alt)
     
     
     await drone.add_sequence_task(drone.sequence_test_goto(speed, target_coordinates_2))

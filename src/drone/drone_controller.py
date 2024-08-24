@@ -11,6 +11,7 @@ from flight.flight_controller import FlightController
 from logger.logger import Logger
 from sensor.acceleration_velocity import Acceleration_Velocity
 from sensor.camera_handler import CameraHandler
+from lora.lora import Lora
 
 
 class DroneController:
@@ -30,6 +31,7 @@ class DroneController:
         self.logger = Logger(log_dir)
         self.flight_controller = FlightController(self.drone_instance, self.position_manager, self.logger)
         self.ac_vel = Acceleration_Velocity(self.drone_instance)
+        self.lora = Lora(self.drone_instance)
 
         self.tasks = []
        
@@ -42,6 +44,9 @@ class DroneController:
 
     def get_logger_instance(self):
         return self.logger
+    
+    def get_lora_instance(self):
+        return self.lora
 
     async def connect(self) -> bool:
         print("Connecting...")
@@ -105,7 +110,22 @@ class DroneController:
             #message_6 = str(self.battery_watch.voltage_v())
             #message_7 = str(self.battery_watch.temperature_degc())
             
-            self.logger.write(message_1,message_2,message_3,)
+            self.logger.write(message_1,message_2,message_3)
+
+    async def lora_write(self):
+        while True:
+            await asyncio.sleep(30)
+            message_4 = str(self.position_manager.adjusted_altitude())
+            message_5 = str(self.position_manager.adjusted_coordinates_lon())
+            message_6 = str(self.position_manager.adjusted_coordinates_lat())
+            #message_4 = str(self.ac_vel.get_velocity())
+            #message_5 = str(self.battery_watch.remaining_percent())
+            #message_6 = str(self.battery_watch.voltage_v())
+            #message_7 = str(self.battery_watch.temperature_degc())
+            
+            message = ' '.join([message_4, message_5, message_6])
+            await self.lora.lora_send(message)
+    
 
 #############################################################################################
     async def invoke_sensor(self) -> None:
@@ -116,7 +136,8 @@ class DroneController:
             # asyncio.create_task(self.battery_watch.invoke_loop()),  # バッテリーハンドラのコルーチンが必要なら追加
             asyncio.create_task(self.compass_handler.invoke_loop()),
             # asyncio.create_task(self.flight_controller.invoke_loop()),  # フライトコントローラのコルーチンが必要なら追加
-            asyncio.create_task(self.logger_write())
+            asyncio.create_task(self.logger_write()),
+            asyncio.create_task(self.lora_write())
         ])
 
         # 全てのタスクが完了するのを待つ
@@ -178,7 +199,7 @@ class DroneController:
         await self.arm()
         print("taking off...")
         self.logger.write("taking off...")
-        await self.flight_controller.takeoff(10)
+        await self.flight_controller.takeoff(target_coordinates.altitude())
         print('reached')
         self.logger.write('reached')
         await self.flight_controller.hovering(5)

@@ -135,11 +135,10 @@ class FlightController:
     async def go_to_location(self, speed, target_coordinates: Coordinates):
         self.target_latitude = target_coordinates.latitude()
         self.target_longitude = target_coordinates.longitude()
-        self.target_altitude = target_coordinates.altitude()
+        #self.target_altitude = target_coordinates.altitude()
         self.AMSL = self.position_manager.adjusted_coordinates_AMSL()
         self.current_lidar_alt = self.position_manager.adjusted_altitude()
         
-        print('target AMSL alt',self.target_altitude)
         print('current AMSL',self.AMSL)
         print('current lidar',self.current_lidar_alt)
         
@@ -149,26 +148,26 @@ class FlightController:
         print('goto started')
         await self.drone.action.set_current_speed(speed)
         
-        while not self.if_goto_location_finished(self.target_latitude, self.target_longitude, self.target_altitude):
+        while not self.if_goto_location_finished(self.target_latitude, self.target_longitude):
             await asyncio.sleep(3)
             self.current_lidar_alt = self.position_manager.adjusted_altitude()
             
             if self.current_lidar_alt < 5:
                 print('altitude too low')
                 target_final_altitude += 1
-                print('target AMSL alt',self.target_altitude)
+                print('target AMSL alt',target_final_altitude)
                 await self.drone.action.goto_location(self.target_latitude, self.target_longitude, target_final_altitude, 0)
                 
             elif self.current_lidar_alt > 8:
                 print('altitude too high')
                 target_final_altitude -= 1
-                print('target AMSL alt',self.target_altitude)
+                print('target AMSL alt',target_final_altitude)
                 await self.drone.action.goto_location(self.target_latitude, self.target_longitude, target_final_altitude, 0)
 
         await self.stop_here()
         return
     
-    def if_goto_location_finished(self, target_latitude, target_longitude, target_altitude):
+    def if_goto_location_finished(self, target_latitude, target_longitude):
             #return abs(target_altitude - self.position_manager.adjusted_altitude()) <= 1.0 and \
                 #abs(target_latitude - self.position_manager.adjusted_coordinates_lat()) *  self.lat_unit <= 2.0 and \
                 #abs(target_longitude - self.position_manager.adjusted_coordinates_lon()) * self.lon_unit <= 2.0 
