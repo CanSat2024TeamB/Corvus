@@ -11,7 +11,7 @@ async def main():
     dronecontroller = DroneController()
     drone = dronecontroller.get_drone_instance()
     lora = Lora(drone)
-    await lora.lora_start()
+    #await lora.lora_start()
     await asyncio.sleep(5)
     await lora.lora_set_sync(72)
     await asyncio.sleep(5)
