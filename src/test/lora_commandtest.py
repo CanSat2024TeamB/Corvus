@@ -4,7 +4,9 @@ import time
 def send_and_receive(ser, data, wait_time=2):
     try:
         ser.write(data.encode('ascii'))  # データをASCIIエンコードして送信
+        print('sent')
         ser.flush()
+        print('wait start')
         time.sleep(wait_time)  # 受信するための待機時間を設定
         response = ser.read_all()
 
