@@ -3,7 +3,7 @@ from pathlib import Path
 
 sys.path.append(str(Path(__file__).parent.parent))
 
-from drone.gazebo_drone_controller import GazeboDroneController
+from drone.drone_controller import DroneController
 from mavsdk.offboard import (OffboardError, PositionNedYaw, VelocityNedYaw, VelocityBodyYawspeed)
 import asyncio
 
@@ -12,7 +12,7 @@ import datetime
 
 from threading import Thread, Condition
 
-drone_controller = GazeboDroneController(log = True, log_dir = "/Users/adminair/Documents/Sources/VSCode/Corvus/assets/log")
+drone_controller = DroneController()
 
 def record_alt():
     global drone_controller
@@ -32,11 +32,6 @@ async def run():
     logger.write("start sequence")
 
     await drone_controller.connect()
-    asyncio.create_task(drone_controller.invoke_sensor())
-
-    record_alt_thread = Thread(target = record_alt, daemon = True)
-    record_alt_thread.start()
-
     await drone_controller.arm()
 
     await asyncio.sleep(1)
@@ -44,12 +39,10 @@ async def run():
     print("drone taking off")
     logger.write("drone taking off")
     
-    await drone_controller.flight_controller.takeoff(3)
+    await drone_controller.flight_controller.takeoff(1)
     print("hovering...")
-    logger.write("hovering...")
     await drone_controller.flight_controller.hovering(3)
     print("end hovering")
-    logger.write("end hovering")
 
     drone = drone_controller.get_drone_instance()
 
@@ -71,18 +64,13 @@ async def run():
 
     await drone.offboard.set_position_ned(PositionNedYaw(0.0, 0.0, -1.5, 0))
     await asyncio.sleep(5)
-
-    print("hovering")
-    logger.write("hovering")
-    await drone.offboard.set_velocity_body(VelocityBodyYawspeed(0.0, 0.0, 0.0, 0.0))
-    await asyncio.sleep(2)
         
-    print("start turning")
-    logger.write("start turning")
+    print("start_turning")
+    logger.write("start_turning")
 
     await drone.offboard.set_velocity_body(VelocityBodyYawspeed(0, 0, 0, 20))
+    #await drone.offboard.set_position_ned(PositionNedYaw(5.0, 0.0, -2.0, 0.0))
     await asyncio.sleep(10)
-
     print("reached target")
     logger.write("reached target")
     
@@ -97,9 +85,7 @@ async def run():
 
     await drone.action.land()
 
-    await asyncio.sleep(10)
-    print("landed")
-    logger.write("landed")
-
 if __name__ == "__main__":
+    record_alt_thread = Thread(target = record_alt, daemon = True)
+    record_alt_thread.start()
     asyncio.run(run())
