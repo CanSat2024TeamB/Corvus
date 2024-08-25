@@ -23,10 +23,10 @@ class Lora:
             print(f"Error opening serial port: {e}")
             raise e
 
-        GPIO.output(self.rst, GPIO.LOW)
-        await asyncio.sleep(2)
-        GPIO.output(self.rst, GPIO.HIGH)
-        await asyncio.sleep(2)
+        #GPIO.output(self.rst, GPIO.LOW)
+        #await asyncio.sleep(2)
+        #GPIO.output(self.rst, GPIO.HIGH)
+        #await asyncio.sleep(2)
         print("Lora power on")
         self.is_on = True
 
