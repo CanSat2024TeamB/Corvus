@@ -132,7 +132,7 @@ class FlightController:
         return await self.drone.mission.is_mission_finished()
 
     ###################################################################################################
-    async def go_to_location(self, speed, target_coordinates: Coordinates):
+    async def go_to_location(self, speed, target_coordinates: Coordinates ,circle_radious):
         self.target_latitude = target_coordinates.latitude()
         self.target_longitude = target_coordinates.longitude()
         #self.target_altitude = target_coordinates.altitude()
@@ -148,8 +148,8 @@ class FlightController:
         print('goto started')
         await self.drone.action.set_current_speed(speed)
         
-        while not self.if_goto_location_finished(self.target_latitude, self.target_longitude):
-            await asyncio.sleep(3)
+        while not self.if_goto_location_finished(self.target_latitude, self.target_longitude, circle_radious):
+            await asyncio.sleep(5)
             self.current_lidar_alt = self.position_manager.adjusted_altitude()
             
             if self.current_lidar_alt < 5:
@@ -167,13 +167,10 @@ class FlightController:
         await self.stop_here()
         return
     
-    def if_goto_location_finished(self, target_latitude, target_longitude):
-            #return abs(target_altitude - self.position_manager.adjusted_altitude()) <= 1.0 and \
-                #abs(target_latitude - self.position_manager.adjusted_coordinates_lat()) *  self.lat_unit <= 2.0 and \
-                #abs(target_longitude - self.position_manager.adjusted_coordinates_lon()) * self.lon_unit <= 2.0 
-        
-            return abs(target_latitude - self.position_manager.adjusted_coordinates_lat()) *  self.lat_unit <= 1.0 and \
-                abs(target_longitude - self.position_manager.adjusted_coordinates_lon()) * self.lon_unit <= 1.0 
+    def if_goto_location_finished(self, target_latitude, target_longitude, circle_radious):
+            lat_dif = abs(target_latitude - self.position_manager.adjusted_coordinates_lat()) *  self.lat_unit 
+            lon_dif = abs(target_longitude - self.position_manager.adjusted_coordinates_lon()) * self.lon_unit
+            return lat_dif**2 + lon_dif**2 < circle_radious**2
 ##############################################################################################################
 
     async def precise_land(self) -> bool:
@@ -186,7 +183,7 @@ class FlightController:
                 print(self.detected_pos)
                 self.nondetected_counter += 1
                 if self.nondetected_counter == self.nondetected_counter_max:
-                    self.go_to_location(1.0, Coordinates(self.target_longitude,self.target_latitude,self.target_altitude))
+                    self.go_to_location(1.0, Coordinates(self.target_longitude,self.target_latitude,self.target_altitude), 1.0)
                     self.land()
                     return
         
