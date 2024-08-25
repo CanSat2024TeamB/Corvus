@@ -223,8 +223,8 @@ class FlightController:
         ADJUST_FACTOR = 0.1 #上下左右方向の補正係数
 
         print("checking camera connection...")
-        if not self.camera_handler.is_connected():
-            raise RuntimeError("Camera is not connected. Stopped the precies land sequence.")
+        #if not self.camera_handler.is_connected():
+        #    raise RuntimeError("Camera is not connected. Stopped the precies land sequence.")
         print("camaera connection checked")
 
         position = PositionNedYaw(0.0, 0.0, 0.0, 0.0)
@@ -295,13 +295,18 @@ class FlightController:
             time_start = time.perf_counter()
             while True: ####### コーンがみつからなかったときに近くを徘徊するコードがまだない
                 # await set_altitude(3)
-                pos = self.cone_detector.get_pos()
+                #pos = self.cone_detector.get_pos()
+                pos = [-2, -2]
+                await asyncio.sleep(0.1)
+                print("yaw", self.position_manager.yaw_deg())
 
                 if pos[0] >= -1:
                     await stop_rotation(self)
                     await asyncio.sleep(1)
 
-                    pos = self.cone_detector.get_pos()
+                    #pos = self.cone_detector.get_pos()
+                    pos = [0, 0]
+
                     if pos[0] >= -1:
                         print("cone detected")
                         print(f"cone pos: {pos}")
@@ -357,7 +362,7 @@ class FlightController:
             print("setting altitude 3 m")
             #await set_altitude(3)
             
-            self.cone_detector.start(PROB_THRESHOLD)
+            #self.cone_detector.start(PROB_THRESHOLD)
 
             await approach_cone(self)
 
