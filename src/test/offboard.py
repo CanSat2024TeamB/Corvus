@@ -3,7 +3,7 @@ from pathlib import Path
 
 sys.path.append(str(Path(__file__).parent.parent))
 
-from drone.drone_controller import DroneController
+from drone.gazebo_drone_controller import GazeboDroneController
 from mavsdk.offboard import (OffboardError, PositionNedYaw, VelocityNedYaw, VelocityBodyYawspeed)
 import asyncio
 
@@ -12,7 +12,7 @@ import datetime
 
 from threading import Thread, Condition
 
-drone_controller = DroneController()
+drone_controller = GazeboDroneController()
 
 def record_alt():
     global drone_controller
@@ -32,6 +32,7 @@ async def run():
     logger.write("start sequence")
 
     await drone_controller.connect()
+    asyncio.create_task(drone_controller.invoke_sensor())
     await drone_controller.arm()
 
     await asyncio.sleep(1)
@@ -39,7 +40,7 @@ async def run():
     print("drone taking off")
     logger.write("drone taking off")
     
-    await drone_controller.flight_controller.takeoff(1)
+    await drone_controller.flight_controller.takeoff(3)
     print("hovering...")
     await drone_controller.flight_controller.hovering(3)
     print("end hovering")
@@ -59,12 +60,18 @@ async def run():
     except OffboardError as error:
         print(error._result.result)
 
-    print("ascending 1.5 m")
-    logger.write("ascending 1.5 m")
+    # print("ascending 1.5 m")
+    # logger.write("ascending 1.5 m")
 
-    await drone.offboard.set_position_ned(PositionNedYaw(0.0, 0.0, -1.5, 0))
-    await asyncio.sleep(5)
-        
+    # await drone.offboard.set_position_ned(PositionNedYaw(0.0, 0.0, -1.5, 0))
+    # await asyncio.sleep(5)
+
+    # print("hovering")
+    # logger.write("hovering")
+
+    # await drone.offboard.set_velocity_body(VelocityBodyYawspeed(0.0, 0.0, 0.0, 0.0))
+    # await asyncio.sleep(2)
+
     print("start_turning")
     logger.write("start_turning")
 
