@@ -57,7 +57,8 @@ class Lora:
     async def send_and_receive(self, data, wait_time=2):
         try:
             # データを指定されたエンコード方式で送信
-            self.ser.write(data.encode('ascii'))  
+            message = data + self.CRLF
+            self.ser.write(message.encode('ascii'))  
             self.ser.flush()
             await asyncio.sleep(wait_time)  # 受信するための待機時間を設定
 
