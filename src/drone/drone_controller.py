@@ -215,7 +215,6 @@ class DroneController:
             print(e)
             await self.flight_controller.land()
         print("landed")
-        print("landed")
     
     async def sequence_test_goto_and_precise_land(self, speed, target_coordinates):
         print("taking off")

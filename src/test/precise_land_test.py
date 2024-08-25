@@ -4,10 +4,10 @@ from pathlib import Path
 sys.path.append(str(Path(__file__).parent.parent))
 
 import asyncio
-from drone.drone_controller import DroneController
+from drone.gazebo_drone_controller import GazeboDroneController
 
 async def main():
-    drone = DroneController()
+    drone = GazeboDroneController()
 
     await drone.connect()
     await drone.arm()
