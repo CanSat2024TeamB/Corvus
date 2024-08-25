@@ -307,7 +307,7 @@ class FlightController:
             
             time_start = time.perf_counter()
             while True: ####### コーンがみつからなかったときに近くを徘徊するコードがまだない
-                await set_altitude(3)
+                # await set_altitude(3)
                 pos = self.cone_detector.get_pos()
 
                 if pos[0] >= -1:
