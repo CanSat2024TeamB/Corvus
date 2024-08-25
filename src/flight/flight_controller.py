@@ -278,15 +278,9 @@ class FlightController:
             await add_velocity_body(self, multiply_velocity_body(normalized_delta_velocity, ADJUST_FACTOR))
 
         def calc_velocity_body_to_target(yaw_deg) -> VelocityBodyYawspeed:
-            """
-            get normalized VelocityBodyYawspeed from yaw_deg, down rate = 1 m/s
-            Parameter
-            ---------
-            yaw_deg: float
-                clock-wise deg angular of target measured from north (north -> 0, east -> 90)
-            """
             yaw_rad = yaw_deg * math.pi / 180
-            return VelocityBodyYawspeed(math.cos(yaw_rad), math.sin(yaw_rad), 1.0, 0.0)
+            #return VelocityBodyYawspeed(math.cos(yaw_rad), math.sin(yaw_rad), 1.0, 0.0)
+            return VelocityBodyYawspeed(1.0, 0, 1.0, 0.0)
         
         async def rotate_and_search_cone(self, rotate_rate: float) -> bool:
             search_time = 60 #この秒数見つからなかったら強制的に着陸
@@ -297,8 +291,9 @@ class FlightController:
                 # await set_altitude(3)
                 #pos = self.cone_detector.get_pos()
                 pos = [-2, -2]
-                await asyncio.sleep(0.1)
-                print("yaw", self.position_manager.yaw_deg())
+                time_now = time.perf_counter()
+                if time_now - time_start > 5:
+                    pos = [0, 0]
 
                 if pos[0] >= -1:
                     await stop_rotation(self)
@@ -329,7 +324,8 @@ class FlightController:
                 await set_velocity_body(self, multiply_velocity_body(calc_velocity_body_to_target(body_yaw_deg + CAMERA_YAW_DEG), DECENDING_SPEED))
 
                 while True:
-                    pos = self.cone_detector.get_pos()
+                    #pos = self.cone_detector.get_pos()
+                    pos = [0, 0]
                     if pos[0] >= -1:
                         print("cone detected while approaching cone")
                         print(f"pos: {pos}")
@@ -342,13 +338,14 @@ class FlightController:
                         await approach_cone(self)
                         return
                     
+                    print(self.position_manager.adjusted_altitude())
                     if self.position_manager.adjusted_altitude() < LAND_ALTITUDE:
                         print("got ready to land")
-                        set_velocity_body(self, VelocityBodyYawspeed(0.0, 0.0, 0.0, 0.0))
+                        #await set_velocity_body(self, VelocityBodyYawspeed(0.0, 0.0, 0.0, 0.0))
                         return
             else:
                 print("Could not find cone in the searching process.")
-                set_velocity_body(self, VelocityBodyYawspeed(0.0, 0.0, 0.0, 0.0))
+                #await set_velocity_body(self, VelocityBodyYawspeed(0.0, 0.0, 0.0, 0.0))
                 return
 
         print("start precise landing")
