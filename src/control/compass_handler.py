@@ -17,10 +17,10 @@ class CompassHandler:
  #############################################################以下がオープン
 
     async def invoke_loop(self) -> None:
-        attitude_euler = self.drone.telemetry.attitude_euler()
-        attitude_quaternion = self.drone.telemetry.attitude_quaternion()
-
         while True:
+            attitude_euler = self.drone.telemetry.attitude_euler()
+            attitude_quaternion = self.drone.telemetry.attitude_quaternion()
+            
             euler = await attitude_euler.__anext__()
             quaternion = await attitude_quaternion.__anext__()
             await self.update_attitude(euler, quaternion)

@@ -232,7 +232,7 @@ class FlightController:
         CAMERA_YAW_DEG = 0 #pixhawk正面からはかったカメラの指向方向 (deg, 右回り正)
         LAND_ALTITUDE = 0.25 #コーンに接近していってlandに移行する高度
         PROB_THRESHOLD = 0.2 #画像認識probabilityの閾値
-        DECENDING_SPEED = 1 #降下速度（2^0.5を乗じた値が降下速度）
+        DECENDING_SPEED = 0.5 #降下速度（2^0.5を乗じた値が降下速度）
         ADJUST_FACTOR = 0.1 #上下左右方向の補正係数
 
         print("checking camera connection...")
@@ -291,15 +291,9 @@ class FlightController:
             await add_velocity_body(self, multiply_velocity_body(normalized_delta_velocity, ADJUST_FACTOR))
 
         def calc_velocity_body_to_target(yaw_deg) -> VelocityBodyYawspeed:
-            """
-            get normalized VelocityBodyYawspeed from yaw_deg, down rate = 1 m/s
-            Parameter
-            ---------
-            yaw_deg: float
-                clock-wise deg angular of target measured from north (north -> 0, east -> 90)
-            """
             yaw_rad = yaw_deg * math.pi / 180
-            return VelocityBodyYawspeed(math.cos(yaw_rad), math.sin(yaw_rad), 1.0, 0.0)
+            #return VelocityBodyYawspeed(math.cos(yaw_rad), math.sin(yaw_rad), 1.0, 0.0)
+            return VelocityBodyYawspeed(1.0, 0.0, 1.0, 0.0)
         
         async def rotate_and_search_cone(self, rotate_rate: float) -> bool:
             search_time = 60 #この秒数見つからなかったら強制的に着陸
@@ -345,18 +339,18 @@ class FlightController:
                         await adjust_velocity(self, body_yaw_deg + CAMERA_YAW_DEG, pos)
                     else:
                         print("lost cone")
-                        set_velocity_body(self, VelocityBodyYawspeed(0.0, 0.0, 0.0, 0.0))
+                        await set_velocity_body(self, VelocityBodyYawspeed(0.0, 0.0, 0.0, 0.0))
                         print("restarting searching cone")
                         await approach_cone(self)
                         return
                     
                     if self.position_manager.adjusted_altitude() < LAND_ALTITUDE:
                         print("got ready to land")
-                        set_velocity_body(self, VelocityBodyYawspeed(0.0, 0.0, 0.0, 0.0))
+                        # await set_velocity_body(self, VelocityBodyYawspeed(0.0, 0.0, 0.0, 0.0))
                         return
             else:
                 print("Could not find cone in the searching process.")
-                set_velocity_body(self, VelocityBodyYawspeed(0.0, 0.0, 0.0, 0.0))
+                # await set_velocity_body(self, VelocityBodyYawspeed(0.0, 0.0, 0.0, 0.0))
                 return
 
         print("start precise landing")
