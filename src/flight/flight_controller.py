@@ -194,10 +194,13 @@ class FlightController:
         cone_y = self.detected_pos[1]
         beta =  self.theta[0] * cone_x * 0.5
         gamma = self.theta[1] * cone_y * 0.5
-        delta = self.calculate_delta_angle(self.target_latitude,self.target_longitude) 
+        delta = self.calculate_delta_angle(self.target_latitude,self.target_longitude)
+        print('delta') 
         self.current_lidar_alt = self.position_manager.adjusted_altitude()
         east_len_m = self.current_lidar_alt * math.tan(math.radians(self.alp + gamma)) * math.cos(math.radians(delta - beta))
+        print('east_len_m')
         north_len_m = self.current_lidar_alt * math.tan(math.radians(self.alp + gamma)) * math.sin(math.radians(delta - beta))
+        print('north_len_m')
         error_lon = east_len_m / self.lon_unit
         error_lat = north_len_m / self.lat_unit
         self.AMSL = self.position_manager.adjusted_coordinates_AMSL()
@@ -206,8 +209,10 @@ class FlightController:
                                               self.target_longitude + error_lon, 
                                               self.AMSL-self.current_lidar_alt, 0)
         await self.drone.action.set_current_speed(0.5)
+        print('last descending')
 
         while self.position_manager.adjusted_altitude() > 0.25:
+            print('still')
             await asyncio.sleep(0.2)
         await self.land()
 
@@ -235,9 +240,12 @@ class FlightController:
         beta =  self.theta[0] * cone_x * 0.5
         gamma = self.theta[1] * cone_y * 0.5
         delta = self.calculate_delta_angle(self.target_latitude,self.target_longitude) 
+        print('delta') 
         self.current_lidar_alt = self.position_manager.adjusted_altitude()
         east_len_m = self.current_lidar_alt * math.tan(math.radians(self.alp + gamma)) * math.cos(math.radians(delta - beta))
+        print('east_len_m')
         north_len_m = self.current_lidar_alt * math.tan(math.radians(self.alp + gamma)) * math.sin(math.radians(delta - beta))
+        print('north_len_m')
         error_lon = east_len_m / self.lon_unit
         error_lat = north_len_m / self.lat_unit
         self.AMSL = self.position_manager.adjusted_coordinates_AMSL()
