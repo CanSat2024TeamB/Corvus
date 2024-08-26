@@ -149,18 +149,18 @@ class FlightController:
         await self.drone.action.set_current_speed(speed)
         
         while not self.if_goto_location_finished(self.target_latitude, self.target_longitude, circle_radious):
-            await asyncio.sleep(5)
+            await asyncio.sleep(1)
             self.current_lidar_alt = self.position_manager.adjusted_altitude()
             
             if self.current_lidar_alt < 5:
                 print('altitude too low')
-                self.target_final_altitude += 1
+                self.target_final_altitude += 0.1
                 print('target AMSL alt',self.target_final_altitude)
                 await self.drone.action.goto_location(self.target_latitude, self.target_longitude,  self.target_final_altitude, 0)
                 
             elif self.current_lidar_alt > 8:
                 print('altitude too high')
-                self.target_final_altitude -= 1
+                self.target_final_altitude -= 0.1
                 print('target AMSL alt',self.target_final_altitude)
                 await self.drone.action.goto_location(self.target_latitude, self.target_longitude, self.target_final_altitude, 0)
 
@@ -173,11 +173,10 @@ class FlightController:
             return lat_dif**2 + lon_dif**2 < circle_radious**2
 ##############################################################################################################
 
-    async def precise_land(self) -> bool:
+    async def precise_land_slope(self) -> bool:
         if not self.camera_handler.is_connected():
-            print('cannot use camera')
-            self.go_to_location(1.0, Coordinates(self.target_longitude,self.target_latitude,self.target_altitude), 1.0)
-            self.land()
+            await self.go_to_location(1.0, Coordinates(self.target_longitude,self.target_latitude,self.target_altitude), 0.5)
+            await self.land()
             raise RuntimeError("Camera is not connected. Stopped the precies land sequence.")
      
         while self.detected_pos == [None,None]:
@@ -186,8 +185,8 @@ class FlightController:
                 print(self.detected_pos)
                 self.nondetected_counter += 1
                 if self.nondetected_counter == self.nondetected_counter_max:
-                    self.go_to_location(1.0, Coordinates(self.target_longitude,self.target_latitude,self.target_altitude), 1.0)
-                    self.land()
+                    await self.go_to_location(1.0, Coordinates(self.target_longitude,self.target_latitude,self.target_altitude), 0.5)
+                    await self.land()
                     return 
         
         self.nondetected_counter = 0
@@ -210,7 +209,41 @@ class FlightController:
 
         while self.position_manager.adjusted_altitude() > 0.25:
             await asyncio.sleep(0.2)
-        self.land()
+        await self.land()
+
+        return
+
+    async def precise_land_right_angle(self) -> bool:
+        if not self.camera_handler.is_connected():
+            await self.go_to_location(1.0, Coordinates(self.target_longitude,self.target_latitude,self.target_altitude), 0.5)
+            await self.land()
+            raise RuntimeError("Camera is not connected. Stopped the precies land sequence.")
+     
+        while self.detected_pos == [None,None]:
+                await asyncio.sleep(1)
+                self.detected_pos = self.cone_detector.capture_cone_position_and_save(str(Path(__file__).parent.parent.parent.joinpath(f"assets/log/img_{datetime.datetime.now().strftime('%Y-%m-%d_%H:%M:%S')}.jpg")), 0.3)
+                print(self.detected_pos)
+                self.nondetected_counter += 1
+                if self.nondetected_counter == self.nondetected_counter_max:
+                    await self.go_to_location(1.0, Coordinates(self.target_longitude,self.target_latitude,self.target_altitude), 0.5)
+                    await self.land()
+                    return 
+        
+        self.nondetected_counter = 0
+        cone_x = self.detected_pos[0]
+        cone_y = self.detected_pos[1]
+        beta =  self.theta[0] * cone_x * 0.5
+        gamma = self.theta[1] * cone_y * 0.5
+        delta = self.calculate_delta_angle(self.target_latitude,self.target_longitude) 
+        self.current_lidar_alt = self.position_manager.adjusted_altitude()
+        east_len_m = self.current_lidar_alt * math.tan(math.radians(self.alp + gamma)) * math.cos(math.radians(delta - beta))
+        north_len_m = self.current_lidar_alt * math.tan(math.radians(self.alp + gamma)) * math.sin(math.radians(delta - beta))
+        error_lon = east_len_m / self.lon_unit
+        error_lat = north_len_m / self.lat_unit
+        self.AMSL = self.position_manager.adjusted_coordinates_AMSL()
+
+        await self.go_to_location(0.5, Coordinates(self.target_latitude + error_lat, self.target_longitude + error_lon, self.AMSL), 0.5)
+        await self.land()
 
         return 
         

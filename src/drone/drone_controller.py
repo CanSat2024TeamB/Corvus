@@ -237,19 +237,32 @@ class DroneController:
             await self.flight_controller.land()
         print("landed")
     
-    async def sequence_test_goto_and_precise_land(self, speed, target_coordinates):
+    async def sequence_test_goto_and_precise_land_slope(self, speed, target_coordinates: Coordinates):
         print("taking off")
-        await self.flight_controller.takeoff(5)
+        await self.flight_controller.takeoff(target_coordinates.altitude())
         print("finished taking off")
-        await self.flight_controller.hovering(10)
+        await self.flight_controller.hovering(5)
         print('goto started')
-        await self.flight_controller.go_to_location(speed, target_coordinates)
-        print("start landing")
+        await self.flight_controller.go_to_location(speed, target_coordinates, 10)
+        print("start precise landing")
         try:
-            await self.flight_controller.precise_land()
+            await self.flight_controller.precise_land_slope()
         except RuntimeError as e:
             print(e)
-            await self.flight_controller.land()
+        print("landed")
+
+    async def sequence_test_goto_and_precise_land_right_angle(self, speed, target_coordinates: Coordinates):
+        print("taking off")
+        await self.flight_controller.takeoff(target_coordinates.altitude())
+        print("finished taking off")
+        await self.flight_controller.hovering(5)
+        print('goto started')
+        await self.flight_controller.go_to_location(speed, target_coordinates, 10)
+        print("start precise landing")
+        try:
+            await self.flight_controller.precise_land_right_angle()
+        except RuntimeError as e:
+            print(e)
         print("landed")
 
     async def capture_video_during_flight(self, speed, target_coordinates, output_path, video_length):
