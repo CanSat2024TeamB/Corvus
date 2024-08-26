@@ -15,8 +15,7 @@ async def main():
     #config_path: str = Path(__file__).resolve().parent.parent.joinpath("assets/config/config.ini")
     #config = ConfigManager(config_path)
     drone_controller = DroneController()
-    drone = drone_controller.get_drone_instance()
-    case = CaseHandler(drone)
+    case = CaseHandler(drone_controller)
     logger_ = drone_controller.logger
     
     await drone_controller.connect()
