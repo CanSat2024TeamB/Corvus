@@ -36,9 +36,9 @@ async def main():
     print("Settings saved.")
     await asyncio.sleep(5)
     print("Sending data...")
-    for i in range(10):
+    while True:
         await lora.lora_send(123456)
-        await asyncio.sleep(5)
+        await asyncio.sleep(20)
     print("Ending Lora...")
     lora.lora_end()
 
