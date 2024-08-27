@@ -142,7 +142,7 @@ class ConeDetector:
             result = cv2.moments(contours[max_index])
             x = result["m10"] / result["m00"]
             y = result["m01"] / result["m00"]
-            return [x, y]
+            return [x / width * 2 - 1, y / height * 2 - 1]
 
     
     def reader(self):
