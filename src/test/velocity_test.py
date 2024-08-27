@@ -21,7 +21,9 @@ async def main():
     await drone_controller.connect()
     while True:
         a = await case.ac_vel.get_velocity()
+        b = await case.ac_vel.get_acceleration()
         logger_.write(str(a))
+        logger_.write(str(b))
         await asyncio.sleep(0.01)
         
 
