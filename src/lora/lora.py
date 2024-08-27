@@ -42,6 +42,10 @@ class Lora:
         response = await self.send_and_receive(f'p2p set_sf {sf_num}')
         print('Response:', response)
 
+    async def lora_set_pwr(self, pwr_num):
+        response = await self.send_and_receive(f'p2p set_pwr {pwr_num} ')
+        print('Response:', response)
+
     async def lora_set_bw(self, bw_num):
         response = await self.send_and_receive(f'p2p set_bw {bw_num}')
         print('Response:', response)
