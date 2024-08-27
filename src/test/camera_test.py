@@ -46,20 +46,30 @@ def test_color_detection():
 
     while True:
         frame = camera_handler.capture_bgr()
+
+        start = time.perf_counter()
         pos = cone_detector.calc_color_center(frame)
+        end = time.perf_counter()
+
         print(pos)
+        print(f"time: {(end - start) * 1000} ms")
 
 def test_detection_using_color():
     cone_detector = ConeDetector(camera_handler)
     cone_detector.start(0.3)
 
-    start = time.perf_counter()
+    loop_start = time.perf_counter()
     while True:
+        start = time.perf_counter()
         pos = cone_detector.get_pos(use_color_assist = True)
+        end = time.perf_counter()
+
         print(pos)
+        print(f"time: {(end - start) * 1000} ms")
+        
         time.sleep(0.5)
         now = time.perf_counter()
-        if (now - start > 10):
+        if (now - loop_start > 10):
             break
     
     cone_detector.stop()
