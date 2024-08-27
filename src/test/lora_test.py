@@ -24,7 +24,7 @@ async def main():
     print("Frequency set.")
     await asyncio.sleep(5)
     print("Setting spreading factor...")
-    await lora.lora_set_sf(7)
+    await lora.lora_set_sf(12)
     print("Spreading factor set.")
     await asyncio.sleep(5)
     print("Setting bandwidth...")
@@ -36,9 +36,12 @@ async def main():
     print("Settings saved.")
     await asyncio.sleep(5)
     print("Sending data...")
+    count = 0
     while True:
+        count += 1
+        print(count)
         await lora.lora_send(123456)
-        await asyncio.sleep(20)
+        await asyncio.sleep(5)
     print("Ending Lora...")
     lora.lora_end()
 
