@@ -99,11 +99,51 @@ class ConeDetector:
         self.pos = [None, None]
         self.finished = False
     
-    def get_pos(self):
+    def get_pos(self, use_color_assist = False):
         self.condition.acquire()
         pos = self.pos
         self.condition.release()
-        return pos
+        if pos[0] is None and use_color_assist: # 機械学習による推論で物体推定ができなかった場合色情報をもとに推定を行う
+            color_pos = self.get_color_pos()
+            if color_pos[0] is not None:
+                print("found cone using color assist")
+                print("cone pos:", pos)
+            return color_pos
+        else:
+            return pos
+    
+    def get_color_pos(self):
+        self.condition.acquire()
+        frame = self.frame
+        self.condition.release()
+        if frame is None:
+            return [None, None]
+        
+        LOW_COLOR_1 = np.array([0, 100, 100])
+        HIGH_COLOR_1 = np.array([20, 255, 255])
+
+        LOW_COLOR_2 = np.array([160, 100, 100])
+        HIGH_COLOR_2 = np.array([180, 255, 255])
+
+        AREA_RATIO_THRESHOLD = 0.0002
+
+        height = frame.shape[0]
+        width = frame.shape[1]
+
+        hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+        ex_img = cv2.inRange(hsv, LOW_COLOR_1, HIGH_COLOR_1) + cv2.inRange(hsv, LOW_COLOR_2, HIGH_COLOR_2)
+        contours, hierarchy = cv2.findContours(ex_img, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+
+        areas = np.array(list(map, cv2.contourArea, contours))
+        if len(areas) == 0 or np.max(areas) / (height * width) < AREA_RATIO_THRESHOLD:
+            return [None, None]
+        else:
+            max_index = np.argmax(areas)
+            result = cv2.moments(contours[max_index])
+            x = result["m10"] / result["m00"]
+            y = result["m01"] / result["m00"]
+            return [x, y]
+
     
     def reader(self):
         while not self.finished:

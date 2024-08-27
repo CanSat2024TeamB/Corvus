@@ -350,19 +350,21 @@ class FlightController:
             time_start = time.perf_counter()
             while True: ####### コーンがみつからなかったときに近くを徘徊するコードがまだない
                 # await set_altitude(3)
-                pos = self.cone_detector.get_pos()
+                pos = self.cone_detector.get_pos(use_color_assist = True)
 
-                if pos[0] >= -1:
+                if pos[0] is not None:
+                    print("cone detected")
+                    print(f"cone pos: {pos}")
                     await stop_rotation(self)
                     await asyncio.sleep(1)
 
-                    pos = self.cone_detector.get_pos()
-                    if pos[0] >= -1:
-                        print("cone detected")
-                        print(f"cone pos: {pos}")
+                    pos = self.cone_detector.get_pos(use_color_assist = True)
+                    if pos[0] is not None:
+                        print("cone position confirmed")
+                        print(f"confirmed cone pos: {pos}")
+                        return True
                     else:
-                        await rotate_and_search_cone(self, rotate_rate / 2) # コーンを認識して止まった後、静止状態でもう一回とって認識できなかったらゆっくり回ってもう一回（推定のラグを考慮）
-                    return True
+                        return await rotate_and_search_cone(self, rotate_rate / 2) # コーンを認識して止まった後、静止状態でもう一回とって認識できなかったらゆっくり回ってもう一回（推定のラグを考慮）
 
                 time_now = time.perf_counter()
                 if time_now - time_start > search_time:
@@ -379,8 +381,8 @@ class FlightController:
                 await set_velocity_body(self, multiply_velocity_body(calc_velocity_body_to_target(body_yaw_deg + CAMERA_YAW_DEG), DECENDING_SPEED))
 
                 while True:
-                    pos = self.cone_detector.get_pos()
-                    if pos[0] >= -1:
+                    pos = self.cone_detector.get_pos(use_color_assist = True)
+                    if pos[0] is not None:
                         print("cone detected while approaching cone")
                         print(f"pos: {pos}")
                         body_yaw_deg = self.position_manager.yaw_deg()
@@ -389,8 +391,7 @@ class FlightController:
                         print("lost cone")
                         await set_velocity_body(self, VelocityBodyYawspeed(0.0, 0.0, 0.0, 0.0))
                         print("restarting searching cone")
-                        await approach_cone(self)
-                        return
+                        return await approach_cone(self)
                     
                     if self.position_manager.adjusted_altitude() < LAND_ALTITUDE:
                         print("got ready to land")
