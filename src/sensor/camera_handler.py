@@ -134,7 +134,7 @@ class ConeDetector:
         ex_img = cv2.inRange(hsv, LOW_COLOR_1, HIGH_COLOR_1) + cv2.inRange(hsv, LOW_COLOR_2, HIGH_COLOR_2)
         contours, hierarchy = cv2.findContours(ex_img, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
-        areas = np.array(list(map, cv2.contourArea, contours))
+        areas = np.array(list(map(cv2.contourArea, contours)))
         if len(areas) == 0 or np.max(areas) / (height * width) < AREA_RATIO_THRESHOLD:
             return [None, None]
         else:
