@@ -24,6 +24,7 @@ async def main():
         b = await case.ac_vel.get_acceleration()
         logger_.write(str(a))
         logger_.write(str(b))
+        print(str(b))
         await asyncio.sleep(0.01)
         
 
