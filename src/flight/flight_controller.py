@@ -144,7 +144,7 @@ class FlightController:
         
         print('target got')
         self.target_final_altitude = self.AMSL
-        await self.drone.action.goto_location(self.target_latitude, self.target_longitude, self.target_final_altitude, 0)
+        await self.drone.action.goto_location(self.target_latitude, self.target_longitude, self.target_final_altitude, self.calculate_yaw_angle())
         print('goto started')
         await self.drone.action.set_current_speed(speed)
         
@@ -156,13 +156,13 @@ class FlightController:
                 print('altitude too low')
                 self.target_final_altitude += 0.1
                 print('target AMSL alt',self.target_final_altitude)
-                await self.drone.action.goto_location(self.target_latitude, self.target_longitude,  self.target_final_altitude, 0)
+                await self.drone.action.goto_location(self.target_latitude, self.target_longitude,  self.target_final_altitude, self.calculate_yaw_angle())
                 
             elif self.current_lidar_alt > 8:
                 print('altitude too high')
                 self.target_final_altitude -= 0.1
                 print('target AMSL alt',self.target_final_altitude)
-                await self.drone.action.goto_location(self.target_latitude, self.target_longitude, self.target_final_altitude, 0)
+                await self.drone.action.goto_location(self.target_latitude, self.target_longitude, self.target_final_altitude, self.calculate_yaw_angle())
 
         await self.drone.action.set_current_speed(0)
         return
@@ -171,6 +171,13 @@ class FlightController:
             lat_dif = abs(target_latitude - self.position_manager.adjusted_coordinates_lat()) *  self.lat_unit 
             lon_dif = abs(target_longitude - self.position_manager.adjusted_coordinates_lon()) * self.lon_unit
             return lat_dif**2 + lon_dif**2 < circle_radious**2
+    
+    def calculate_yaw_angle(self):
+            lat_dist = (self.target_latitude - self.position_manager.adjusted_coordinates_lat()) *  self.lat_unit
+            lon_dist = (self.target_longitude - self.position_manager.adjusted_coordinates_lon()) * self.lon_unit
+            yaw_deg =  90.0 - math.degrees(math.atan2(lon_dist, lat_dist))
+            return yaw_deg
+
 ##############################################################################################################
 
     async def precise_land_slope(self) -> bool:
@@ -207,7 +214,7 @@ class FlightController:
 
         await self.drone.action.goto_location(self.target_latitude + error_lat,
                                               self.target_longitude + error_lon, 
-                                              self.AMSL-self.current_lidar_alt, 0)
+                                              self.AMSL-self.current_lidar_alt, self.calculate_yaw_angle())
         await self.drone.action.set_current_speed(0.5)
         print('last descending')
 
