@@ -110,7 +110,7 @@ class ConeDetector:
             color_pos = self.calc_color_center(frame)
             if color_pos[0] is not None:
                 print("found cone using color assist")
-                print("cone pos:", pos)
+                print("cone pos:", color_pos)
             return color_pos
         else:
             return pos
