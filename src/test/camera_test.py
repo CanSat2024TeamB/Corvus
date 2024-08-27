@@ -33,10 +33,28 @@ camera_handler = CameraHandler.get_instance()
 #         print("hi")
 #         time.sleep(0.1)
 
+def test_detection():
+    cone_detector = ConeDetector(camera_handler)
 
-cone_detector = ConeDetector(camera_handler)
+    for i in range(20):
+        print(i)
+        cone_detector.capture_cone_position_and_save(f"/home/admin/corvus/assets/log/img_{i}.png", 0.5)
+        time.sleep(1)
 
-for i in range(20):
-    print(i)
-    cone_detector.capture_cone_position_and_save(f"/home/admin/corvus/assets/log/img_{i}.png", 0.5)
-    time.sleep(1)
+def test_detection_using_color():
+    cone_detector = ConeDetector(camera_handler)
+    cone_detector.start(0.3)
+
+    start = time.perf_counter()
+    while True:
+        pos = cone_detector.get_pos(use_color_assist = True)
+        print(pos)
+        time.sleep(0.5)
+        now = time.perf_counter()
+        if (now - start > 10):
+            break
+    
+    cone_detector.stop()
+
+if __name__ == "__main__":
+    test_detection_using_color()
