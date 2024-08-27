@@ -104,7 +104,10 @@ class ConeDetector:
         pos = self.pos
         self.condition.release()
         if pos[0] is None and use_color_assist: # 機械学習による推論で物体推定ができなかった場合色情報をもとに推定を行う
-            color_pos = self.get_color_pos()
+            self.condition.acquire()
+            frame = self.frame
+            self.condition.release()
+            color_pos = self.calc_color_center(frame)
             if color_pos[0] is not None:
                 print("found cone using color assist")
                 print("cone pos:", pos)
@@ -112,10 +115,7 @@ class ConeDetector:
         else:
             return pos
     
-    def get_color_pos(self):
-        self.condition.acquire()
-        frame = self.frame
-        self.condition.release()
+    def calc_color_center(self, frame):
         if frame is None:
             return [None, None]
         
