@@ -238,6 +238,11 @@ class DroneController:
         print("landed")
     
     async def sequence_test_goto_and_precise_land_slope(self, speed, target_coordinates: Coordinates):
+        print("arming")
+        self.logger.write("arming")
+        await self.arm()
+        print("taking off...")
+        self.logger.write("taking off...")
         print("taking off")
         await self.flight_controller.takeoff(target_coordinates.altitude())
         print("finished taking off")
@@ -252,6 +257,11 @@ class DroneController:
         print("landed")
 
     async def sequence_test_goto_and_precise_land_right_angle(self, speed, target_coordinates: Coordinates):
+        print("arming")
+        self.logger.write("arming")
+        await self.arm()
+        print("taking off...")
+        self.logger.write("taking off...")
         print("taking off")
         await self.flight_controller.takeoff(target_coordinates.altitude())
         print("finished taking off")
