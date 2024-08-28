@@ -14,6 +14,10 @@ async def main():
     # config = ConfigManager(config_path)
     drone = DroneController()
     await drone.connect()
+
+    lora = drone.get_lora_instance()
+    await lora.lora_start()
+    await asyncio.sleep(5)
     
     # `invoke_sensor`の呼び出し
     asyncio.create_task(drone.invoke_sensor())
