@@ -167,7 +167,7 @@ class DroneController:
 ####################################################################################################
     
     async def sequence_test_hovering(self):
-        await self.flight_controller.takeoff(1)
+        await self.flight_controller.takeoff(3)
         print('reached start hovering')
         self.logger.write('reached start hovering')
         await self.flight_controller.hovering(10)
