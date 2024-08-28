@@ -208,7 +208,7 @@ class DroneController:
         await self.flight_controller.go_to_location(speed, target_coordinates, 10.0)
         print('goto finished start hovering')
         self.logger.write('goto finished start hovering')
-        await self.flight_controller.hovering(5)
+        await self.flight_controller.hovering(20)
         print('hovering finished start landing')
         self.logger.write('hovering finished start landing')
         await self.flight_controller.land()
