@@ -126,6 +126,10 @@ class DroneController:
             await self.lora.lora_send(message)
             await asyncio.sleep(30)
     
+    async def lidar_test(self):
+        while True:
+            print(self.position_manager.adjusted_altitude())
+            await asyncio.sleep(0.5)
 
 #############################################################################################
     async def invoke_sensor(self) -> None:
@@ -138,6 +142,14 @@ class DroneController:
             # asyncio.create_task(self.flight_controller.invoke_loop()),  # フライトコントローラのコルーチンが必要なら追加
             asyncio.create_task(self.logger_write()),
             asyncio.create_task(self.lora_write())
+        ])
+
+    async def lidar_test_loop(self) -> None:
+        # すべてのタスクをリストに追加
+        self.tasks.extend([
+            asyncio.create_task(self.lidar_handler.invoke_loop()),
+            asyncio.create_task(self.compass_handler.invoke_loop()),
+            asyncio.create_task(self.lidar_test())
         ])
 
         # 全てのタスクが完了するのを待つ
