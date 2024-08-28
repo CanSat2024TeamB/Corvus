@@ -115,8 +115,9 @@ class DroneController:
     async def lora_write(self):
         while True:
             #message_4 = str(self.position_manager.adjusted_altitude())
-            message_5 = str(self.position_manager.adjusted_coordinates_lon())
-            message_6 = str(self.position_manager.adjusted_coordinates_lat())
+            message_5 = str(round(self.position_manager.adjusted_coordinates_lon(), 4))
+            message_6 = str(round(self.position_manager.adjusted_coordinates_lat(), 4))
+
             #message_4 = str(self.ac_vel.get_velocity())
             #message_5 = str(self.battery_watch.remaining_percent())
             #message_6 = str(self.battery_watch.voltage_v())

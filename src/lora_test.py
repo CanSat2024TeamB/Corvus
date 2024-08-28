@@ -41,7 +41,7 @@ async def main():
     while True:
         count += 1
         print(count)
-        await lora.lora_send(123456)
+        await lora.lora_send('140.0000 35.0000')
         await asyncio.sleep(5)
     print("Ending Lora...")
     lora.lora_end()
