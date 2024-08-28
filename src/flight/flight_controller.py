@@ -342,8 +342,8 @@ class FlightController:
             normalized_delta_velocity = VelocityBodyYawspeed(pos[0] * (-1 * math.sin(yaw_rad)), pos[0] * math.cos(yaw_rad), pos[1], 0.0)
             await add_velocity_body(self, multiply_velocity_body(normalized_delta_velocity, ADJUST_FACTOR))
 
-        def calc_velocity_body_to_target(yaw_deg) -> VelocityBodyYawspeed:
-            yaw_rad = yaw_deg * math.pi / 180
+        def calc_velocity_body_to_target(self) -> VelocityBodyYawspeed:
+            #yaw_rad = yaw_deg * math.pi / 180
             #return VelocityBodyYawspeed(math.cos(yaw_rad), math.sin(yaw_rad), 1.0, 0.0)
             return VelocityBodyYawspeed(1.0, 0.0, 1.0, 0.0)
         
@@ -377,20 +377,18 @@ class FlightController:
         async def approach_cone(self):
             found_cone = await rotate_and_search_cone(self, 10)
             if found_cone:
-                body_yaw_deg = self.position_manager.yaw_deg()
                 nonlocal CAMERA_YAW_DEG
                 nonlocal LAND_ALTITUDE
                 nonlocal DECENDING_SPEED
 
-                await set_velocity_body(self, multiply_velocity_body(calc_velocity_body_to_target(body_yaw_deg + CAMERA_YAW_DEG), DECENDING_SPEED))
+                await set_velocity_body(self, multiply_velocity_body(calc_velocity_body_to_target(self), DECENDING_SPEED))
 
                 while True:
                     pos = self.cone_detector.get_pos(use_color_assist = True)
                     if pos[0] is not None:
                         print("cone detected while approaching cone")
                         print(f"pos: {pos}")
-                        body_yaw_deg = self.position_manager.yaw_deg()
-                        await adjust_velocity(self, body_yaw_deg + CAMERA_YAW_DEG, pos)
+                        await adjust_velocity(self, CAMERA_YAW_DEG, pos)
                     else:
                         print("lost cone")
                         await set_velocity_body(self, VelocityBodyYawspeed(0.0, 0.0, 0.0, 0.0))
