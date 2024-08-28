@@ -362,6 +362,8 @@ class FlightController:
                     await stop_rotation(self)
                     await asyncio.sleep(1)
 
+                    return True ## 一旦２回チェックしないようにした
+
                     pos = self.cone_detector.get_pos(use_color_assist = True)
                     if pos[0] is not None:
                         print("cone position confirmed")
