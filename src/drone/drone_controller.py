@@ -144,6 +144,9 @@ class DroneController:
             asyncio.create_task(self.lora_write())
         ])
 
+        # 全てのタスクが完了するのを待つ
+        await asyncio.sleep(float('inf'))
+
     async def lidar_test_loop(self) -> None:
         # すべてのタスクをリストに追加
         self.tasks.extend([

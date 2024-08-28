@@ -6,6 +6,7 @@ import asyncio
 async def main():
     dronecontroller = DroneController()
     asyncio.create_task(dronecontroller.lidar_test_loop())
+    await asyncio.sleep(float('inf'))
 
 if __name__ == "__main__":
     asyncio.run(main())
