@@ -188,7 +188,7 @@ class DroneController:
                 await self.flight_controller.hovering(5)
                 print(' hovering finished start landing')
                 self.logger.write('hovering finished start landing')
-                await self.flight_controller.land()n
+                await self.flight_controller.land()
                 print("landed")
                 self.logger.write("landed")
                 break
