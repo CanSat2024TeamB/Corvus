@@ -163,8 +163,8 @@ class FlightController:
                 self.target_final_altitude -= 0.1
                 print('target AMSL alt',self.target_final_altitude)
                 await self.drone.action.goto_location(self.target_latitude, self.target_longitude, self.target_final_altitude, self.calculate_yaw_angle())
-
-        await self.drone.action.set_current_speed(0)
+        print('goto finished')
+        await self.drone.action.set_current_speed(0.001)
         return
     
     def if_goto_location_finished(self, target_latitude, target_longitude, circle_radious):
@@ -176,19 +176,21 @@ class FlightController:
             lat_dist = (self.target_latitude - self.position_manager.adjusted_coordinates_lat()) *  self.lat_unit
             lon_dist = (self.target_longitude - self.position_manager.adjusted_coordinates_lon()) * self.lon_unit
             yaw_deg =  90.0 - math.degrees(math.atan2(lon_dist, lat_dist))
+            print(yaw_deg)
             return yaw_deg
 
 ##############################################################################################################
 
     async def precise_land_slope(self) -> bool:
         if not self.camera_handler.is_connected():
-            await self.go_to_location(1.0, Coordinates(self.target_longitude,self.target_latitude,self.target_altitude), 0.5)
+            await self.go_to_location(1.0, Coordinates(self.target_longitude,self.target_latitude,self.target_altitude), 1.0)
             await self.land()
             raise RuntimeError("Camera is not connected. Stopped the precies land sequence.")
      
         while self.detected_pos == [None,None]:
                 await asyncio.sleep(1)
                 self.detected_pos = self.cone_detector.capture_cone_position_and_save(str(Path(__file__).parent.parent.parent.joinpath(f"assets/log/img_{datetime.datetime.now().strftime('%Y-%m-%d_%H:%M:%S')}.jpg")), 0.3)
+                #self.detected_pos = self.cone_detector.get_pos(use_color_assist = True)
                 print(self.detected_pos)
                 self.nondetected_counter += 1
                 if self.nondetected_counter == self.nondetected_counter_max:
@@ -235,6 +237,8 @@ class FlightController:
                 await asyncio.sleep(1)
                 self.detected_pos = self.cone_detector.capture_cone_position_and_save(str(Path(__file__).parent.parent.parent.joinpath(f"assets/log/img_{datetime.datetime.now().strftime('%Y-%m-%d_%H:%M:%S')}.jpg")), 0.3)
                 print(self.detected_pos)
+                #self.detected_pos = self.cone_detector.get_pos(use_color_assist = True)
+                #print(self.detected_pos)
                 self.nondetected_counter += 1
                 if self.nondetected_counter == self.nondetected_counter_max:
                     await self.go_to_location(1.0, Coordinates(self.target_longitude,self.target_latitude,self.target_altitude), 0.5)
@@ -338,8 +342,8 @@ class FlightController:
             normalized_delta_velocity = VelocityBodyYawspeed(pos[0] * (-1 * math.sin(yaw_rad)), pos[0] * math.cos(yaw_rad), pos[1], 0.0)
             await add_velocity_body(self, multiply_velocity_body(normalized_delta_velocity, ADJUST_FACTOR))
 
-        def calc_velocity_body_to_target(yaw_deg) -> VelocityBodyYawspeed:
-            yaw_rad = yaw_deg * math.pi / 180
+        def calc_velocity_body_to_target(self) -> VelocityBodyYawspeed:
+            #yaw_rad = yaw_deg * math.pi / 180
             #return VelocityBodyYawspeed(math.cos(yaw_rad), math.sin(yaw_rad), 1.0, 0.0)
             return VelocityBodyYawspeed(1.0, 0.0, 1.0, 0.0)
         
@@ -358,6 +362,8 @@ class FlightController:
                     await stop_rotation(self)
                     await asyncio.sleep(1)
 
+                    return True ## 一旦２回チェックしないようにした
+
                     pos = self.cone_detector.get_pos(use_color_assist = True)
                     if pos[0] is not None:
                         print("cone position confirmed")
@@ -371,22 +377,20 @@ class FlightController:
                     return False
                 
         async def approach_cone(self):
-            found_cone = await rotate_and_search_cone(self, 20)
+            found_cone = await rotate_and_search_cone(self, 10)
             if found_cone:
-                body_yaw_deg = self.position_manager.yaw_deg()
                 nonlocal CAMERA_YAW_DEG
                 nonlocal LAND_ALTITUDE
                 nonlocal DECENDING_SPEED
 
-                await set_velocity_body(self, multiply_velocity_body(calc_velocity_body_to_target(body_yaw_deg + CAMERA_YAW_DEG), DECENDING_SPEED))
+                await set_velocity_body(self, multiply_velocity_body(calc_velocity_body_to_target(self), DECENDING_SPEED))
 
                 while True:
                     pos = self.cone_detector.get_pos(use_color_assist = True)
                     if pos[0] is not None:
                         print("cone detected while approaching cone")
                         print(f"pos: {pos}")
-                        body_yaw_deg = self.position_manager.yaw_deg()
-                        await adjust_velocity(self, body_yaw_deg + CAMERA_YAW_DEG, pos)
+                        await adjust_velocity(self, CAMERA_YAW_DEG, pos)
                     else:
                         print("lost cone")
                         await set_velocity_body(self, VelocityBodyYawspeed(0.0, 0.0, 0.0, 0.0))

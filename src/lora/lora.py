@@ -54,15 +54,17 @@ class Lora:
         response = await self.send_and_receive('p2p save')
         print('Response:', response)
 
-    async def lora_send(self,message):
-        response = await self.send_and_receive(f'p2p tx {message}')
+    async def lora_send(self, message):
+        # 文字列をASCIIエンコードしてから、16進数の文字列に変換
+        encoded_message = message.encode('ascii').hex()
+        response = await self.send_and_receive(f'p2p tx {encoded_message}')
         print('Response:', response)
 
     async def send_and_receive(self, data, wait_time=2):
         try:
             # データを指定されたエンコード方式で送信
             message = data + self.CRLF
-            self.ser.write(message.encode('ascii'))  
+            self.ser.write(message.encode('ascii'))
             self.ser.flush()
             await asyncio.sleep(wait_time)  # 受信するための待機時間を設定
 
@@ -73,7 +75,7 @@ class Lora:
         except serial.SerialException as e:
             print(f"通信エラー: {e}")
             return ""
-
+        
     def lora_end(self):
         if self.is_on:
             self.ser.close()  # シリアルポートを閉じる

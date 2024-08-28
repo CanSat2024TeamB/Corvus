@@ -114,18 +114,23 @@ class DroneController:
 
     async def lora_write(self):
         while True:
-            await asyncio.sleep(30)
-            message_4 = str(self.position_manager.adjusted_altitude())
-            message_5 = str(self.position_manager.adjusted_coordinates_lon())
-            message_6 = str(self.position_manager.adjusted_coordinates_lat())
+            #message_4 = str(self.position_manager.adjusted_altitude())
+            message_5 = str(round(self.position_manager.adjusted_coordinates_lon(), 4))
+            message_6 = str(round(self.position_manager.adjusted_coordinates_lat(), 4))
+
             #message_4 = str(self.ac_vel.get_velocity())
             #message_5 = str(self.battery_watch.remaining_percent())
             #message_6 = str(self.battery_watch.voltage_v())
             #message_7 = str(self.battery_watch.temperature_degc())
             
-            message = ' '.join([message_4, message_5, message_6])
+            message = ' '.join([message_5, message_6])
             await self.lora.lora_send(message)
+            await asyncio.sleep(30)
     
+    async def lidar_test(self):
+        while True:
+            print(self.position_manager.adjusted_altitude())
+            await asyncio.sleep(0.5)
 
 #############################################################################################
     async def invoke_sensor(self) -> None:
@@ -138,6 +143,17 @@ class DroneController:
             # asyncio.create_task(self.flight_controller.invoke_loop()),  # フライトコントローラのコルーチンが必要なら追加
             asyncio.create_task(self.logger_write()),
             asyncio.create_task(self.lora_write())
+        ])
+
+        # 全てのタスクが完了するのを待つ
+        await asyncio.sleep(float('inf'))
+
+    async def lidar_test_loop(self) -> None:
+        # すべてのタスクをリストに追加
+        self.tasks.extend([
+            asyncio.create_task(self.lidar_handler.invoke_loop()),
+            asyncio.create_task(self.compass_handler.invoke_loop()),
+            asyncio.create_task(self.lidar_test())
         ])
 
         # 全てのタスクが完了するのを待つ
@@ -167,7 +183,7 @@ class DroneController:
 ####################################################################################################
     
     async def sequence_test_hovering(self):
-        await self.flight_controller.takeoff(1)
+        await self.flight_controller.takeoff(3)
         print('reached start hovering')
         self.logger.write('reached start hovering')
         await self.flight_controller.hovering(10)
@@ -205,10 +221,10 @@ class DroneController:
         await self.flight_controller.hovering(5)
         print('goto started')
         self.logger.write('goto started')
-        await self.flight_controller.go_to_location(speed, target_coordinates, 2.0)
+        await self.flight_controller.go_to_location(speed, target_coordinates, 10.0)
         print('goto finished start hovering')
         self.logger.write('goto finished start hovering')
-        await self.flight_controller.hovering(5)
+        await self.flight_controller.hovering(20)
         print('hovering finished start landing')
         self.logger.write('hovering finished start landing')
         await self.flight_controller.land()
@@ -243,7 +259,6 @@ class DroneController:
         await self.arm()
         print("taking off...")
         self.logger.write("taking off...")
-        print("taking off")
         await self.flight_controller.takeoff(target_coordinates.altitude())
         print("finished taking off")
         await self.flight_controller.hovering(5)
@@ -262,12 +277,11 @@ class DroneController:
         await self.arm()
         print("taking off...")
         self.logger.write("taking off...")
-        print("taking off")
         await self.flight_controller.takeoff(target_coordinates.altitude())
         print("finished taking off")
         await self.flight_controller.hovering(5)
         print('goto started')
-        await self.flight_controller.go_to_location(speed, target_coordinates, 10)
+        await self.flight_controller.go_to_location(speed, target_coordinates, 8)
         print("start precise landing")
         try:
             await self.flight_controller.precise_land_right_angle()

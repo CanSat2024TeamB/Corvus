@@ -14,15 +14,19 @@ async def main():
     # config = ConfigManager(config_path)
     drone = DroneController()
     await drone.connect()
+
+    lora = drone.get_lora_instance()
+    await lora.lora_start()
+    await asyncio.sleep(5)
     
     # `invoke_sensor`の呼び出し
     asyncio.create_task(drone.invoke_sensor())
 
     # すぐに`invoke_sensor`タスクを開始する
-    await asyncio.sleep(1)
+    await asyncio.sleep(5)
 
     speed = 1.0
-    target_coordinates = Coordinates(139.887315934, 35.766577116, 5)
+    target_coordinates = Coordinates(139.887303071, 35.766569538, 5)
 
     # `add_sequence_task`の呼び出し
     await drone.add_sequence_task(drone.sequence_test_goto_and_precise_land_right_angle(speed, target_coordinates))
