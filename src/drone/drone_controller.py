@@ -114,7 +114,7 @@ class DroneController:
 
     async def lora_write(self):
         while True:
-            message_4 = str(self.position_manager.adjusted_altitude())
+            #message_4 = str(self.position_manager.adjusted_altitude())
             message_5 = str(self.position_manager.adjusted_coordinates_lon())
             message_6 = str(self.position_manager.adjusted_coordinates_lat())
             #message_4 = str(self.ac_vel.get_velocity())
@@ -122,7 +122,7 @@ class DroneController:
             #message_6 = str(self.battery_watch.voltage_v())
             #message_7 = str(self.battery_watch.temperature_degc())
             
-            message = ' '.join([message_4, message_5, message_6])
+            message = ' '.join([message_5, message_6])
             await self.lora.lora_send(message)
             await asyncio.sleep(30)
     
