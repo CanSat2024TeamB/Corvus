@@ -226,7 +226,7 @@ class DroneController:
     
     async def sequence_test_precise_land(self):
         print("taking off")
-        await self.flight_controller.takeoff(1)
+        await self.flight_controller.takeoff(5)
         print("finished taking off")
         await self.flight_controller.hovering(10)
         print("start landing")
