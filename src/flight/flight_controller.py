@@ -163,7 +163,7 @@ class FlightController:
                 self.target_final_altitude -= 0.1
                 print('target AMSL alt',self.target_final_altitude)
                 await self.drone.action.goto_location(self.target_latitude, self.target_longitude, self.target_final_altitude, self.calculate_yaw_angle())
-
+        print('goto finished')
         await self.drone.action.set_current_speed(0.001)
         return
     
