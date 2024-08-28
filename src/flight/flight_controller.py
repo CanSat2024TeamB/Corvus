@@ -236,6 +236,7 @@ class FlightController:
         while self.detected_pos == [None,None]:
                 await asyncio.sleep(1)
                 #self.detected_pos = self.cone_detector.capture_cone_position_and_save(str(Path(__file__).parent.parent.parent.joinpath(f"assets/log/img_{datetime.datetime.now().strftime('%Y-%m-%d_%H:%M:%S')}.jpg")), 0.3)
+                #print(self.detected_pos)
                 self.detected_pos = self.cone_detector.get_pos(use_color_assist = True)
                 print(self.detected_pos)
                 self.nondetected_counter += 1
