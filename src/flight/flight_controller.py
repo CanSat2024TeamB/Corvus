@@ -176,6 +176,7 @@ class FlightController:
             lat_dist = (self.target_latitude - self.position_manager.adjusted_coordinates_lat()) *  self.lat_unit
             lon_dist = (self.target_longitude - self.position_manager.adjusted_coordinates_lon()) * self.lon_unit
             yaw_deg =  90.0 - math.degrees(math.atan2(lon_dist, lat_dist))
+            print(yaw_deg)
             return yaw_deg
 
 ##############################################################################################################
@@ -188,8 +189,8 @@ class FlightController:
      
         while self.detected_pos == [None,None]:
                 await asyncio.sleep(1)
-                self.detected_pos = self.cone_detector.capture_cone_position_and_save(str(Path(__file__).parent.parent.parent.joinpath(f"assets/log/img_{datetime.datetime.now().strftime('%Y-%m-%d_%H:%M:%S')}.jpg")), 0.3)
-                #self.detected_pos = self.cone_detector.get_pos(use_color_assist = True)
+                #self.detected_pos = self.cone_detector.capture_cone_position_and_save(str(Path(__file__).parent.parent.parent.joinpath(f"assets/log/img_{datetime.datetime.now().strftime('%Y-%m-%d_%H:%M:%S')}.jpg")), 0.3)
+                self.detected_pos = self.cone_detector.get_pos(use_color_assist = True)
                 print(self.detected_pos)
                 self.nondetected_counter += 1
                 if self.nondetected_counter == self.nondetected_counter_max:
@@ -234,7 +235,8 @@ class FlightController:
      
         while self.detected_pos == [None,None]:
                 await asyncio.sleep(1)
-                self.detected_pos = self.cone_detector.capture_cone_position_and_save(str(Path(__file__).parent.parent.parent.joinpath(f"assets/log/img_{datetime.datetime.now().strftime('%Y-%m-%d_%H:%M:%S')}.jpg")), 0.3)
+                #self.detected_pos = self.cone_detector.capture_cone_position_and_save(str(Path(__file__).parent.parent.parent.joinpath(f"assets/log/img_{datetime.datetime.now().strftime('%Y-%m-%d_%H:%M:%S')}.jpg")), 0.3)
+                self.detected_pos = self.cone_detector.get_pos(use_color_assist = True)
                 print(self.detected_pos)
                 self.nondetected_counter += 1
                 if self.nondetected_counter == self.nondetected_counter_max:
