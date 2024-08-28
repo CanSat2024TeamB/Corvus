@@ -289,16 +289,37 @@ class DroneController:
             print(e)
         print("landed")
 
+    async def sequence_test_precise_land_using_color(self, speed, target_coordinates: Coordinates):
+        print("arming")
+        self.logger.write("arming")
+        await self.arm()
+        print("taking off...")
+        self.logger.write("taking off...")
+        await self.flight_controller.takeoff(target_coordinates.altitude())
+        print("finished taking off")
+        await self.flight_controller.hovering(5)
+        print('goto started')
+        await self.flight_controller.go_to_location(speed, target_coordinates, 0.5)
+        print("start precise landing")
+        await self.flight_controller.offboard_land_using_color()
+        print('end')
+
     async def capture_video_during_flight(self, speed, target_coordinates, output_path, video_length):
+        print("arming")
+        self.logger.write("arming")
+        await self.arm()
+        print("taking off...")
+        self.logger.write("taking off...")
         await self.flight_controller.takeoff(5)
+        print("finished taking off")
+        await self.flight_controller.go_to_location(speed, target_coordinates, 0.5)
         camera_handler = CameraHandler.get_instance()
         if camera_handler.is_connected():
             print(f"start capturing {video_length} s video")
             camera_handler.capture_video(output_path, video_length)
         else:
             print("Camera is not connected.")
-        await self.flight_controller.go_to_location(speed, target_coordinates)
-        await self.flight_controller.hovering(5)
+        await self.flight_controller.hovering(20)
         await self.flight_controller.land()
 
 ###########################################################################################################    
