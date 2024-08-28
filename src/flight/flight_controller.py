@@ -374,7 +374,7 @@ class FlightController:
                     return False
                 
         async def approach_cone(self):
-            found_cone = await rotate_and_search_cone(self, 20)
+            found_cone = await rotate_and_search_cone(self, 10)
             if found_cone:
                 body_yaw_deg = self.position_manager.yaw_deg()
                 nonlocal CAMERA_YAW_DEG
