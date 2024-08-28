@@ -188,7 +188,7 @@ class DroneController:
                 await self.flight_controller.hovering(5)
                 print(' hovering finished start landing')
                 self.logger.write('hovering finished start landing')
-                await self.flight_controller.land()
+                await self.flight_controller.land()n
                 print("landed")
                 self.logger.write("landed")
                 break
@@ -205,7 +205,7 @@ class DroneController:
         await self.flight_controller.hovering(5)
         print('goto started')
         self.logger.write('goto started')
-        await self.flight_controller.go_to_location(speed, target_coordinates, 2.0)
+        await self.flight_controller.go_to_location(speed, target_coordinates, 10.0)
         print('goto finished start hovering')
         self.logger.write('goto finished start hovering')
         await self.flight_controller.hovering(5)
