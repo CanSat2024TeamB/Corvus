@@ -55,7 +55,8 @@ class Lora:
         print('Response:', response)
 
     async def lora_send(self,message):
-        response = await self.send_and_receive(f'p2p tx {message}')
+        encoded_message = message.encode('ascii')
+        response = await self.send_and_receive(f'p2p tx {encoded_message}')
         print('Response:', response)
 
     async def send_and_receive(self, data, wait_time=2):
