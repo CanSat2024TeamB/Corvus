@@ -183,7 +183,7 @@ class FlightController:
 
     async def precise_land_slope(self) -> bool:
         if not self.camera_handler.is_connected():
-            await self.go_to_location(1.0, Coordinates(self.target_longitude,self.target_latitude,self.target_altitude), 0.5)
+            await self.go_to_location(1.0, Coordinates(self.target_longitude,self.target_latitude,self.target_altitude), 1.0)
             await self.land()
             raise RuntimeError("Camera is not connected. Stopped the precies land sequence.")
      
