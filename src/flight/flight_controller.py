@@ -432,6 +432,85 @@ class FlightController:
         except OffboardError as error:
             print(f"Starting offboard controll failed, {error._result.result}")
             return False
+        
+    async def offboard_land_using_color(self):
+        CAMERA_YAW_DEG = 0 #pixhawk正面からはかったカメラの指向方向 (deg, 右回り正)
+        LAND_ALTITUDE = 1 #コーンに接近していってlandに移行する高度
+        DECENDING_SPEED = 0.2 #降下速度
+        ADJUST_FACTOR = 0.1 #上下左右方向の補正係数
+
+        print("checking camera connection...")
+        if not self.camera_handler.is_connected():
+            raise RuntimeError("Camera is not connected. Stopped the precies land sequence.")
+        print("camaera connection checked")
+
+        velocity_body = VelocityBodyYawspeed(0.0, 0.0, 0.0, 0.0)
+
+        async def set_velocity_body(self, new_velocity_body: VelocityBodyYawspeed):
+            nonlocal velocity_body
+            velocity_body = new_velocity_body
+            await self.drone.offboard.set_velocity_body(velocity_body)
+
+        async def add_velocity_body(self, delta_velocity: VelocityBodyYawspeed):
+            nonlocal velocity_body
+            velocity_body = VelocityBodyYawspeed(velocity_body.forward_m_s + delta_velocity.forward_m_s, velocity_body.right_m_s + delta_velocity.right_m_s, velocity_body.down_m_s + delta_velocity.down_m_s, velocity_body.yawspeed_deg_s + delta_velocity.yawspeed_deg_s)
+            await self.drone.offboard.set_velocity_body(velocity_body)
+        
+        def multiply_velocity_body(velocity_body: VelocityBodyYawspeed, f: float) -> VelocityBodyYawspeed:
+            return VelocityBodyYawspeed(velocity_body.forward_m_s * f, velocity_body.right_m_s * f, velocity_body.down_m_s * f, velocity_body.yawspeed_deg_s)
+
+        async def adjust_velocity(self, pos):
+            nonlocal ADJUST_FACTOR
+            nonlocal CAMERA_YAW_DEG
+            camera_yaw_rad = CAMERA_YAW_DEG * math.pi / 180
+            normalized_delta_velocity = VelocityBodyYawspeed(pos[0] * math.cos(camera_yaw_rad) - pos[1] * math.sin(camera_yaw_rad), pos[0] * math.sin(camera_yaw_rad) + pos[1] * math.cos(camera_yaw_rad), 0.0, 0.0)
+            await add_velocity_body(self, multiply_velocity_body(normalized_delta_velocity, ADJUST_FACTOR))
+
+        print("start precise landing")
+        await set_velocity_body(self, velocity_body)
+    
+        print("starting offboard landing...")
+        try:
+            await self.drone.offboard.start()
+        except OffboardError as error:
+            print(f"Starting offboard controll failed, {error._result.result}")
+            return False
+
+        image = self.camera_handler.capture_bgr()
+        pos = self.cone_detector.calc_color_center(image)
+        self.cone_detector.draw_circle_and_save(image, pos[0], pos[1], f"/home/admin/corvus/assets/log/color_detect_{datetime.datetime.now().strftime('%Y-%m-%d_%H:%M:%S')}.png")
+
+        if pos[0] is not None:
+            velocity = VelocityBodyYawspeed(0, 0, 1.0, 0)
+            await set_velocity_body(self, multiply_velocity_body(velocity, DECENDING_SPEED))
+
+            while True:
+                image = self.camera_handler.capture_bgr()
+                pos = self.cone_detector.calc_color_center(image)
+                self.cone_detector.draw_circle_and_save(image, pos[0], pos[1], f"/home/admin/corvus/assets/log/color_detect_{datetime.datetime.now().strftime('%Y-%m-%d_%H:%M:%S')}.png")
+                
+                if pos[0] is not None:
+                    print("cone detected while approaching cone")
+                    print(f"pos: {pos}")
+                    await adjust_velocity(self, pos)
+                else:
+                    print("lost cone")
+                    await set_velocity_body(self, VelocityBodyYawspeed(0.0, 0.0, 0.0, 0.0))
+                    print("landing forcibly")
+                    break
+                
+                if self.position_manager.adjusted_altitude() < LAND_ALTITUDE:
+                    print("got ready to land")
+                    break
+        else:
+            print("Could not find cone in the searching process.")
+            print("landing forcibly")
+
+        await self.drone.offboard.stop()
+        print("finished drone offboard control")
+
+        await self.land()
+        return True
 
     async def rotate_yaw(self, yaw):
         await self.drone.action.set_current_speed(0.1)
