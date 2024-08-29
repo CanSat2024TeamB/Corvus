@@ -125,7 +125,7 @@ class ConeDetector:
         LOW_COLOR_2 = np.array([160, 100, 100])
         HIGH_COLOR_2 = np.array([180, 255, 255])
 
-        AREA_RATIO_THRESHOLD = 0.0002
+        AREA_RATIO_THRESHOLD = 0.000002  ####最初0.002
 
         height = frame.shape[0]
         width = frame.shape[1]
