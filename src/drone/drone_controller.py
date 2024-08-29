@@ -319,7 +319,7 @@ class DroneController:
             camera_handler.capture_video(output_path, video_length)
         else:
             print("Camera is not connected.")
-        await self.flight_controller.hovering(20)
+        await self.flight_controller.hovering(video_length)
         await self.flight_controller.land()
 
 ###########################################################################################################    
