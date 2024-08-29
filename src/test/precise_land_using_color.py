@@ -26,7 +26,7 @@ async def main():
     await asyncio.sleep(5)
 
     speed = 3.0
-    target_coordinates = Coordinates(139.887303071, 35.766569538, 5)
+    target_coordinates = Coordinates(139.887311364, 35.766587931, 5)
 
     # `add_sequence_task`の呼び出し
     await drone.add_sequence_task(drone.sequence_test_precise_land_using_color(speed, target_coordinates))

@@ -21,8 +21,8 @@ async def main():
     # すぐに`invoke_sensor`タスクを開始する
     await asyncio.sleep(1)
 
-    speed = 1.0
-    target_coordinates = Coordinates(139.887303071, 35.766569538, 5.0)
+    speed = 3.0
+    target_coordinates = Coordinates(139.887311364, 35.766587931, 5.0)
 
     # `add_sequence_task`の呼び出し
     await drone.add_sequence_task(drone.sequence_test_goto(speed, target_coordinates))
