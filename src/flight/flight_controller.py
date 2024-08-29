@@ -477,7 +477,7 @@ class FlightController:
             return False
         
         count = 0
-
+        pos = [None, None]
         while count < 10 & pos[0] == None:
             count += 1
             image = self.camera_handler.capture_bgr()
