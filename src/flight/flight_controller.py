@@ -475,10 +475,15 @@ class FlightController:
         except OffboardError as error:
             print(f"Starting offboard controll failed, {error._result.result}")
             return False
+        
+        count = 0
 
-        image = self.camera_handler.capture_bgr()
-        pos = self.cone_detector.calc_color_center(image)
-        self.cone_detector.draw_circle_and_save(image, pos[0], pos[1], f"/home/admin/corvus/assets/log/color_detect_{datetime.datetime.now().strftime('%Y-%m-%d_%H:%M:%S')}.png")
+        while count < 10 & pos[0] == None:
+            count += 1
+            image = self.camera_handler.capture_bgr()
+            pos = self.cone_detector.calc_color_center(image)
+            self.cone_detector.draw_circle_and_save(image, pos[0], pos[1], f"/home/admin/corvus/assets/log/color_detect_{datetime.datetime.now().strftime('%Y-%m-%d_%H:%M:%S')}.png")
+            await asyncio.sleep(1)
 
         if pos[0] is not None:
             velocity = VelocityBodyYawspeed(0, 0, 1.0, 0)
