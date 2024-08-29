@@ -43,13 +43,16 @@ class FlightController:
         take_off_max_time = 0
         await self.drone.action.set_takeoff_altitude(takeoff_altitude*2)
         await self.drone.action.takeoff()
+    
         while self.position_manager.adjusted_altitude() <= takeoff_altitude:
             await asyncio.sleep(0.1)
             take_off_max_time += 0.1
             if take_off_max_time > 20:
                 print('take off max time')
                 break
-        return True
+        await asyncio.sleep(1)
+        if self.position_manager.adjusted_altitude() >= 3:    
+            return True
 
     async def hovering(self, time: float) -> bool:
         await self.drone.action.hold()
@@ -132,7 +135,7 @@ class FlightController:
         return await self.drone.mission.is_mission_finished()
 
     ###################################################################################################
-    async def go_to_location(self, speed, target_coordinates: Coordinates ,circle_radious):
+    async def go_to_location(self, speed, target_coordinates: Coordinates ,circle_radious, YAW_NORTH = False):
         self.target_latitude = target_coordinates.latitude()
         self.target_longitude = target_coordinates.longitude()
         #self.target_altitude = target_coordinates.altitude()
@@ -144,7 +147,13 @@ class FlightController:
         
         print('target got')
         self.target_final_altitude = self.AMSL
-        await self.drone.action.goto_location(self.target_latitude, self.target_longitude, self.target_final_altitude, self.calculate_yaw_angle())
+
+        if YAW_NORTH == True:
+            self.yaw_deg = 0
+        else:
+            self.yaw_deg = self.calculate_yaw_angle()
+            
+        await self.drone.action.goto_location(self.target_latitude, self.target_longitude, self.target_final_altitude, self.yaw_deg)
         print('goto started')
         await self.drone.action.set_current_speed(speed)
         
@@ -156,13 +165,25 @@ class FlightController:
                 print('altitude too low')
                 self.target_final_altitude += 0.1
                 print('target AMSL alt',self.target_final_altitude)
-                await self.drone.action.goto_location(self.target_latitude, self.target_longitude,  self.target_final_altitude, self.calculate_yaw_angle())
+
+                if YAW_NORTH == True:
+                    self.yaw_deg = 0
+                else:
+                    self.yaw_deg = self.calculate_yaw_angle()
+
+                await self.drone.action.goto_location(self.target_latitude, self.target_longitude,  self.target_final_altitude, self.yaw_deg)
                 
             elif self.current_lidar_alt > 8:
                 print('altitude too high')
                 self.target_final_altitude -= 0.1
                 print('target AMSL alt',self.target_final_altitude)
-                await self.drone.action.goto_location(self.target_latitude, self.target_longitude, self.target_final_altitude, self.calculate_yaw_angle())
+
+                if YAW_NORTH == True:
+                    self.yaw_deg = 0
+                else:
+                    self.yaw_deg = self.calculate_yaw_angle()
+
+                await self.drone.action.goto_location(self.target_latitude, self.target_longitude, self.target_final_altitude, self.yaw_deg)
         print('goto finished')
         await self.drone.action.set_current_speed(0.001)
         return
