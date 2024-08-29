@@ -478,7 +478,7 @@ class FlightController:
         
         count = 0
         pos = [None, None]
-        while count < 10 & pos[0] == None:
+        while count < 10 and pos[0] is None:  # `&` を `and` に修正
             count += 1
             image = self.camera_handler.capture_bgr()
             pos = self.cone_detector.calc_color_center(image)
