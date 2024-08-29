@@ -152,7 +152,7 @@ class FlightController:
             self.yaw_deg = 0
         else:
             self.yaw_deg = self.calculate_yaw_angle()
-            
+
         await self.drone.action.goto_location(self.target_latitude, self.target_longitude, self.target_final_altitude, self.yaw_deg)
         print('goto started')
         await self.drone.action.set_current_speed(speed)
@@ -383,7 +383,7 @@ class FlightController:
                     await stop_rotation(self)
                     await asyncio.sleep(1)
 
-                    return True ## 一旦２回チェックしないようにした
+                    #return True ## 一旦２回チェックしないようにした
 
                     pos = self.cone_detector.get_pos(use_color_assist = True)
                     if pos[0] is not None:
