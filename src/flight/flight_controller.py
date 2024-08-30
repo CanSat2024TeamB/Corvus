@@ -4,6 +4,7 @@ from mavsdk.mission import (MissionItem, MissionPlan)
 from mavsdk.offboard import (Attitude, PositionNedYaw, VelocityBodyYawspeed, OffboardError)
 from pathlib import Path
 import math
+import numpy as np
 
 import time
 import datetime
@@ -31,7 +32,7 @@ class FlightController:
         self.nondetected_counter = 0
         self.nondetected_counter_max = 10
         self.alp = 45 ## カメラ取り付け角
-        self.theta = [54, 41] ##カメラ視野角
+        self.theta = [54.2993633956, 42.0750220508] ##カメラ視野角
         self.lat_unit = 110945.467 #m 緯度一度の長さ　八千代
         self.lon_unit = 90428.693 #m　経度一度の長さ　八千代
 
@@ -275,9 +276,9 @@ class FlightController:
         print('delta') 
         self.current_lidar_alt = self.position_manager.adjusted_altitude()
         east_len_m = self.current_lidar_alt * math.tan(math.radians(self.alp + gamma)) * math.cos(math.radians(delta - beta))
-        print('east_len_m')
+        print(east_len_m)
         north_len_m = self.current_lidar_alt * math.tan(math.radians(self.alp + gamma)) * math.sin(math.radians(delta - beta))
-        print('north_len_m')
+        print(north_len_m)
         error_lon = east_len_m / self.lon_unit
         error_lat = north_len_m / self.lat_unit
         self.AMSL = self.position_manager.adjusted_coordinates_AMSL()
@@ -286,6 +287,72 @@ class FlightController:
         await self.land()
 
         return 
+    
+    async def precise_land_right_angle_calc_confirm_test(self,delta):
+        if not self.camera_handler.is_connected():
+            print('camera cannot use')
+            return
+     
+        while self.detected_pos == [None,None]:
+                await asyncio.sleep(1)
+                self.detected_pos = self.cone_detector.capture_cone_position_and_save(str(Path(__file__).parent.parent.parent.joinpath(f"assets/log/img_{datetime.datetime.now().strftime('%Y-%m-%d_%H:%M:%S')}.jpg")), 0.3)
+                print(self.detected_pos)
+                #self.detected_pos = self.cone_detector.get_pos(use_color_assist = True)
+                #print(self.detected_pos)
+                self.nondetected_counter += 1
+                if self.nondetected_counter == self.nondetected_counter_max:
+                    print('cannot detect 10 times')
+                    return 
+        
+        self.nondetected_counter = 0
+        cone_x = self.detected_pos[0]
+        cone_y = self.detected_pos[1]
+        beta =  self.theta[0] * cone_x * 0.5
+        gamma = self.theta[1] * cone_y * 0.5 
+        self.current_lidar_alt = self.position_manager.adjusted_altitude()
+        east_len_m = self.current_lidar_alt * math.tan(math.radians(self.alp + gamma)) * math.cos(math.radians(delta - beta))
+        print(east_len_m)
+        north_len_m = self.current_lidar_alt * math.tan(math.radians(self.alp + gamma)) * math.sin(math.radians(delta - beta))
+        print(north_len_m)
+        return 
+    
+    async def precise_land_vertical_calc_test(self):
+        if not self.camera_handler.is_connected():
+            print('camera cannot use')
+            return
+     
+        while self.detected_pos == [None,None]:
+            await asyncio.sleep(1)
+            image = self.camera_handler.capture_rgb()
+            self.detected_pos = self.cone_detector.calc_color_center(image)
+            print(self.detected_pos)
+            self.cone_detector.draw_circle_and_save(
+                image, 
+                self.detected_pos[0], 
+                self.detected_pos[1], 
+                f"/home/admin/corvus/assets/log/color_detect_{datetime.datetime.now().strftime('%Y-%m-%d_%H:%M:%S')}.png"
+            )
+            #self.detected_pos = self.cone_detector.get_pos(use_color_assist = True)
+            #print(self.detected_pos)
+            self.nondetected_counter += 1
+            if self.nondetected_counter == self.nondetected_counter_max:
+                print('cannot detect 10 times')
+                return
+                
+        self.nondetected_counter = 0
+        cone_x = self.detected_pos[0]
+        cone_y = self.detected_pos[1]
+        self.current_lidar_alt = self.position_manager.adjusted_altitude()
+        yaw_deg = self.position_manager.yaw_deg()
+        r = np.array([[cone_x*self.current_lidar_alt*math.tan(math.radians(self.theta[0]))],
+                          [cone_y*self.current_lidar_alt*math.tan(math.radians(self.theta[1]))]]) #機体軸における、目標地点との差(ｍ)
+        rotate = np.array([[math.cos(math.radians(yaw_deg)), -math.sin(math.radians(yaw_deg))],
+                               [math.sin(math.radians(yaw_deg)), math.cos(math.radians(yaw_deg))]])
+        r_e = np.dot(rotate,r).flatten() #地面固定座標系における、目標地点との差(ｍ)
+        print(f"north:{r_e[0]}, east:{r_e[1]}")
+        return
+
+
         
 
     def calculate_delta_angle(self,target_latitude, target_longitude):
