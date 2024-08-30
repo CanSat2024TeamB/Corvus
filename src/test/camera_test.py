@@ -33,7 +33,7 @@ camera_handler = CameraHandler.get_instance()
 #         print("hi")
 #         time.sleep(0.1)
 
-def test_detection():
+def test_detection(): ##画像認識だけ？
     cone_detector = ConeDetector(camera_handler)
 
     for i in range(20):
@@ -41,18 +41,21 @@ def test_detection():
         cone_detector.capture_cone_position_and_save(f"/home/admin/corvus/assets/log/img_{i}.png", 0.5)
         time.sleep(1)
 
-def test_color_detection():
+def test_color_detection(): ###色認識だけ？
     cone_detector = ConeDetector(camera_handler)
-
-    while True:
-        frame = camera_handler.capture_bgr()
-
-        start = time.perf_counter()
-        pos = cone_detector.calc_color_center(frame)
-        end = time.perf_counter()
-
-        print(pos)
-        print(f"time: {(end - start) * 1000} ms")
+    count = 0
+    pos = [None, None]
+    while count < 10 and pos[0] is None:
+        count += 1
+        image = camera_handler.capture_bgr()
+        pos = cone_detector.calc_color_center(image)
+        cone_detector.draw_circle_and_save(
+            image, 
+            pos[0], 
+            pos[1], 
+            f"/home/admin/corvus/assets/log/color_detect_{datetime.datetime.now().strftime('%Y-%m-%d_%H:%M:%S')}.png"
+        )
+        time.sleep(1)
 
 def test_detection_using_color():
     cone_detector = ConeDetector(camera_handler)
