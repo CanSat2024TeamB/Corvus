@@ -159,6 +159,27 @@ class DroneController:
         # 全てのタスクが完了するのを待つ
         await asyncio.sleep(float('inf'))
 
+    async def camera_calc_test_loop1(self) -> None:
+        # すべてのタスクをリストに追加
+        self.tasks.extend([
+            asyncio.create_task(self.lidar_handler.invoke_loop()),
+            asyncio.create_task(self.compass_handler.invoke_loop())
+        ])
+
+        # 全てのタスクが完了するのを待つ
+        await asyncio.sleep(float('inf'))
+
+    async def camera_calc_test_loop2(self) -> None:
+        # すべてのタスクをリストに追加
+        self.tasks.extend([
+            asyncio.create_task(self.lidar_handler.invoke_loop()),
+            asyncio.create_task(self.compass_handler.invoke_loop()),
+            asyncio.create_task(self.gps_handler.invoke_loop())
+        ])
+
+        # 全てのタスクが完了するのを待つ
+        await asyncio.sleep(float('inf'))
+
     async def add_sequence_task(self, coro):
         if not hasattr(self, 'tasks'):
             self.tasks = []
@@ -239,7 +260,7 @@ class DroneController:
             await asyncio.sleep(1)
             if self.battery_watch.remaining_percent()<35:
                 await self.flight_controller.land()
-    
+######################################################################################################################    
     async def sequence_test_precise_land(self):
         print("taking off")
         await self.flight_controller.takeoff(5)
@@ -252,7 +273,7 @@ class DroneController:
             print(e)
             await self.flight_controller.land()
         print("landed")
-    
+#########################################################################################################################    
     async def sequence_test_goto_and_precise_land_slope(self, speed, target_coordinates: Coordinates):
         print("arming")
         self.logger.write("arming")
@@ -270,7 +291,7 @@ class DroneController:
         except RuntimeError as e:
             print(e)
         print("landed")
-
+###############################################################################################################################
     async def sequence_test_goto_and_precise_land_right_angle(self, speed, target_coordinates: Coordinates):
         print("arming")
         self.logger.write("arming")
@@ -289,6 +310,29 @@ class DroneController:
             print(e)
         print("landed")
 
+    async def sequence_test_goto_and_precise_land_right_angle_calc_test(self):
+        await self.flight_controller.precise_land_right_angle_calc_confirm_test()
+#####################################################################################################################################
+    async def sequence_test_precise_land_vertical(self, speed, target_coordinates: Coordinates):
+        print("arming")
+        self.logger.write("arming")
+        await self.arm()
+        print("taking off...")
+        self.logger.write("taking off...")
+        await self.flight_controller.takeoff(target_coordinates.altitude())
+        print("finished taking off")
+        await self.flight_controller.hovering(5)
+        print('goto started')
+        await self.flight_controller.go_to_location(speed, target_coordinates, 0.5)
+        print("start precise landing")
+        await self.flight_controller.precise_land_vertical()
+        print('end')
+
+    async def precise_land_vertical_calc_test(self):
+        await self.flight_controller.precise_land_vertical_calc_test()
+
+#########################################################################################################################################
+
     async def sequence_test_precise_land_using_color(self, speed, target_coordinates: Coordinates):
         print("arming")
         self.logger.write("arming")
@@ -303,7 +347,7 @@ class DroneController:
         print("start precise landing")
         await self.flight_controller.offboard_land_using_color()
         print('end')
-
+#########################################################################################################################
     async def capture_video_during_flight(self, speed, target_coordinates, output_path, video_length):
         print("arming")
         self.logger.write("arming")
