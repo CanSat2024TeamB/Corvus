@@ -123,7 +123,7 @@ class DroneController:
             #message_6 = str(self.battery_watch.voltage_v())
             #message_7 = str(self.battery_watch.temperature_degc())
             
-            message = ' '.join([message_5, message_6])
+            message = ' '.join([message_6, message_5])
             await self.lora.lora_send(message)
             await asyncio.sleep(30)
     

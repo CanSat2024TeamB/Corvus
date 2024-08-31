@@ -248,7 +248,7 @@ class FlightController:
         await self.land()
 
         return
-
+################################################################################################################################################
     async def precise_land_right_angle(self) -> bool:
         if not self.camera_handler.is_connected():
             await self.go_to_location(1.0, Coordinates(self.target_longitude,self.target_latitude,self.target_altitude), 0.5)
@@ -286,8 +286,19 @@ class FlightController:
         await self.go_to_location(0.5, Coordinates(self.target_latitude + error_lat, self.target_longitude + error_lon, self.AMSL), 0.5)
         await self.land()
 
-        return 
+        return
     
+    def calculate_delta_angle(self,target_latitude, target_longitude):
+        current_lat = self.position_manager.adjusted_coordinates_lat()
+        current_lon = self.position_manager.adjusted_coordinates_lon()
+
+        d_lat = target_latitude - current_lat
+        d_lon = target_longitude - current_lon
+
+        x = self.lon_unit * d_lon
+        y = self.lat_unit * d_lat
+        return math.degrees(math.atan2(x, y)) ##-180~180
+        
     async def precise_land_right_angle_calc_confirm_test(self,delta):
         if not self.camera_handler.is_connected():
             print('camera cannot use')
@@ -315,7 +326,7 @@ class FlightController:
         north_len_m = self.current_lidar_alt * math.tan(math.radians(self.alp + gamma)) * math.sin(math.radians(delta - beta))
         print(north_len_m)
         return 
-    
+######################################################################################################################################################    
     async def precise_land_vertical_calc_test(self):
         if not self.camera_handler.is_connected():
             print('camera cannot use')
@@ -352,19 +363,6 @@ class FlightController:
         print(f"north:{r_e[0]}, east:{r_e[1]}")
         return
 
-
-        
-
-    def calculate_delta_angle(self,target_latitude, target_longitude):
-        current_lat = self.position_manager.adjusted_coordinates_lat()
-        current_lon = self.position_manager.adjusted_coordinates_lon()
-
-        d_lat = target_latitude - current_lat
-        d_lon = target_longitude - current_lon
-
-        x = self.lon_unit * d_lon
-        y = self.lat_unit * d_lat
-        return math.degrees(math.atan2(x, y)) ##-180~180
 
     #########################################################################################################
 
