@@ -184,41 +184,47 @@ class ConeDetector:
     def stop(self):
         self.finished = True
 
-    def capture_cone_position(self, conf = IOU_THRESHOLD):
+    def capture_cone_position(self, conf = IOU_THRESHOLD, use_color_assist = False):
         image = self.camera_handler.capture_bgr()
 
         if not image is None:
             result = cone_detector.get_pos(image, conf)
             if result[0] >= -1:
                 return [result[0], result[1]]
+            elif use_color_assist:
+                return self.calc_color_center(image)
             else:
                 return [None, None]
         else:
             return [None, None]
 
-    def capture_cone_position_and_save(self, output_path, conf = IOU_THRESHOLD):
+    def capture_cone_position_and_save(self, output_path, conf = IOU_THRESHOLD, use_color_assist = False):
         image = self.camera_handler.capture_bgr()
 
         if not image is None:
             result = cone_detector.get_pos(image, conf)
-            image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+
             if result[0] >= -1:
-                self.draw_circle_and_save(image, result[0], result[1], output_path)
-                return result
+                color = (255, 255, 255)
+            elif use_color_assist:
+                result = self.calc_color_center(image)
+                color = (0, 255, 255)
             else:
-                cv2.imwrite(output_path, image)
-                return [None, None]
+                result = [None, None]
+
+            self.draw_circle_and_save(image, result[0], result[1], output_path, color)
+            return result
         else:
             return [None, None]
     
-    def draw_circle_and_save(self, image, normalized_x, normalized_y, output_path):
+    def draw_circle_and_save(self, image, normalized_x, normalized_y, output_path, color = (255, 255, 255)):
         height = image.shape[0]
         width = image.shape[1]
         result = image
         if not (normalized_x is None or normalized_y is None):
             x = int((normalized_x + 1) / 2 * width)
             y = int((-normalized_y + 1) / 2 * height)
-            result = cv2.circle(image, (x, y), 25, (255, 255, 255), thickness = 5)
+            result = cv2.circle(image, (x, y), 25, color, thickness = 5)
         cv2.imwrite(output_path, result)
         return result
 

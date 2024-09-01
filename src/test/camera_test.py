@@ -82,5 +82,12 @@ def test_detection_using_color():
     
     cone_detector.stop()
 
+def test_detection_using_color2():
+    cone_detector = ConeDetector(camera_handler)
+    for i in range(10):
+        pos = cone_detector.capture_cone_position_and_save(f"/home/admin/corvus/assets/log/{i}.png", 0.3, True)
+        print(i)
+        print(pos)
+
 if __name__ == "__main__":
-    test_color_detection()
+    test_detection_using_color2()
