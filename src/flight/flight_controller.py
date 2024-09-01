@@ -337,7 +337,7 @@ class FlightController:
      
         while self.detected_pos == [None,None]:
             await asyncio.sleep(1)
-            image = self.camera_handler.capture_rgb()
+            image = self.camera_handler.capture_bgr()
             self.detected_pos = self.cone_detector.calc_color_center(image)
             print(self.detected_pos)
             self.cone_detector.draw_circle_and_save(
@@ -386,7 +386,7 @@ class FlightController:
      
         while self.detected_pos == [None,None]:
             await asyncio.sleep(1)
-            image = self.camera_handler.capture_rgb()
+            image = self.camera_handler.capture_bgr()
             self.detected_pos = self.cone_detector.calc_color_center(image)
             print(self.detected_pos)
             self.cone_detector.draw_circle_and_save(
@@ -425,7 +425,7 @@ class FlightController:
         CAMERA_YAW_DEG = 0 #pixhawk正面からはかったカメラの指向方向 (deg, 右回り正)
         LAND_ALTITUDE = 0.25 #コーンに接近していってlandに移行する高度
         PROB_THRESHOLD = 0.2 #画像認識probabilityの閾値
-        DECENDING_SPEED = 0.5 #降下速度（2^0.5を乗じた値が降下速度）
+        DECENDING_SPEED = 0.5 #降下速度
         ADJUST_FACTOR = 0.1 #上下左右方向の補正係数
 
         print("checking camera connection...")
@@ -483,10 +483,12 @@ class FlightController:
             normalized_delta_velocity = VelocityBodyYawspeed(pos[0] * (-1 * math.sin(yaw_rad)), pos[0] * math.cos(yaw_rad), pos[1], 0.0)
             await add_velocity_body(self, multiply_velocity_body(normalized_delta_velocity, ADJUST_FACTOR))
 
-        def calc_velocity_body_to_target(self) -> VelocityBodyYawspeed:
-            #yaw_rad = yaw_deg * math.pi / 180
-            #return VelocityBodyYawspeed(math.cos(yaw_rad), math.sin(yaw_rad), 1.0, 0.0)
-            return VelocityBodyYawspeed(1.0, 0.0, 1.0, 0.0)
+        def calc_velocity_body_to_target(self, pos) -> VelocityBodyYawspeed:
+            nonlocal CAMERA_YAW_DEG
+            front_vec = math.sin(math.radians(45 + pos[1] * self.theta[1] / 2)) * math.cos(math.radians(CAMERA_YAW_DEG + pos[0] * self.theta[0] / 2))
+            right_vec = math.sin(math.radians(45 + pos[1] * self.theta[1] / 2)) * math.sin(math.radians(CAMERA_YAW_DEG + pos[0] * self.theta[0] / 2))
+            down_vec = math.cos(math.radians(45 + pos[1] * self.theta[1] / 2))
+            return VelocityBodyYawspeed(front_vec, right_vec, down_vec, 0.0)
         
         async def rotate_and_search_cone(self, rotate_rate: float) -> bool:
             search_time = 60 #この秒数見つからなかったら強制的に着陸
@@ -516,20 +518,37 @@ class FlightController:
                     return False
                 
         async def approach_cone(self):
-            found_cone = await rotate_and_search_cone(self, 20)
+            found_cone = await rotate_and_search_cone(self, 30)
             if found_cone:
                 nonlocal CAMERA_YAW_DEG
                 nonlocal LAND_ALTITUDE
                 nonlocal DECENDING_SPEED
 
-                await set_velocity_body(self, multiply_velocity_body(calc_velocity_body_to_target(self), DECENDING_SPEED))
+                # await set_velocity_body(self, multiply_velocity_body(calc_velocity_body_to_target(self), DECENDING_SPEED))
+
+                # while True:
+                #     pos = self.cone_detector.capture_cone_position(PROB_THRESHOLD, use_color_assist = True)
+                #     if pos[0] is not None:
+                #         print("cone detected while approaching cone")
+                #         print(f"pos: {pos}")
+                #         await adjust_velocity(self, CAMERA_YAW_DEG, pos)
+                #     else:
+                #         print("lost cone")
+                #         await set_velocity_body(self, VelocityBodyYawspeed(0.0, 0.0, 0.0, 0.0))
+                #         print("restarting searching cone")
+                #         return await approach_cone(self)
+                    
+                #     if self.position_manager.adjusted_altitude() < LAND_ALTITUDE:
+                #         print("got ready to land")
+                #         # await set_velocity_body(self, VelocityBodyYawspeed(0.0, 0.0, 0.0, 0.0))
+                #         return
 
                 while True:
                     pos = self.cone_detector.capture_cone_position(PROB_THRESHOLD, use_color_assist = True)
                     if pos[0] is not None:
                         print("cone detected while approaching cone")
                         print(f"pos: {pos}")
-                        await adjust_velocity(self, CAMERA_YAW_DEG, pos)
+                        await set_velocity_body(self, multiply_velocity_body(calc_velocity_body_to_target(self, pos), DECENDING_SPEED))
                     else:
                         print("lost cone")
                         await set_velocity_body(self, VelocityBodyYawspeed(0.0, 0.0, 0.0, 0.0))
@@ -540,6 +559,7 @@ class FlightController:
                         print("got ready to land")
                         # await set_velocity_body(self, VelocityBodyYawspeed(0.0, 0.0, 0.0, 0.0))
                         return
+                    
             else:
                 print("Could not find cone in the searching process.")
                 # await set_velocity_body(self, VelocityBodyYawspeed(0.0, 0.0, 0.0, 0.0))
