@@ -412,8 +412,8 @@ class FlightController:
                           [cone_y*self.current_lidar_alt*math.tan(math.radians(self.theta[1])*0.5)]]) #機体軸における、目標地点との差(ｍ)
         print(f"x:{r[0]}, y:{r[1]}")
         print(f"Yaw:{yaw_deg}")
-        rotate = np.array([[math.cos(math.radians(yaw_deg)), -math.sin(math.radians(yaw_deg))],
-                               [math.sin(math.radians(yaw_deg)), math.cos(math.radians(yaw_deg))]])
+        rotate = np.array([[math.cos(math.radians(yaw_deg)), math.sin(math.radians(yaw_deg))],
+                               [-math.sin(math.radians(yaw_deg)), math.cos(math.radians(yaw_deg))]])
         r_e = np.dot(rotate,r).flatten() #地面固定座標系における、目標地点との差(ｍ)
         print(f"north:{r_e[0]}, east:{r_e[1]}")
         return
