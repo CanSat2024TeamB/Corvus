@@ -97,6 +97,7 @@ class ConeDetector:
 
         self.frame = None
         self.pos = [None, None]
+        self.started = False
         self.finished = False
     
     def get_pos(self, use_color_assist = False):
@@ -113,7 +114,7 @@ class ConeDetector:
             if color_pos[0] is not None:
                 print("found cone using color assist")
                 print("cone pos:", color_pos)
-                
+
             return color_pos
         else:
             return pos
@@ -178,6 +179,9 @@ class ConeDetector:
             self.condition.release()
 
     def start(self, conf = IOU_THRESHOLD):
+        if self.started:
+            return
+        
         reader_thread = threading.Thread(target = self.reader, daemon = True)
         detector_thread = threading.Thread(target = self.detector, args = (conf,), daemon = True)
 
@@ -186,6 +190,7 @@ class ConeDetector:
     
     def stop(self):
         self.finished = True
+        self.started = False
 
     def capture_cone_position(self, conf = IOU_THRESHOLD, use_color_assist = False):
         image = self.camera_handler.capture_bgr()
