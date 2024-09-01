@@ -87,10 +87,15 @@ def test_detection_using_color2():
     cone_detector = ConeDetector(camera_handler)
     i = 0
     while True:
+        start = time.perf_counter()
         pos = cone_detector.capture_cone_position(0.3, True)
-        print(i)
+        end = time.perf_counter()
+
+        print(f"{i}: {(end - start) * 1000} ms")
         print(pos)
         i += 1
+
+        time.sleep(1)
 
 if __name__ == "__main__":
     test_detection_using_color2()
