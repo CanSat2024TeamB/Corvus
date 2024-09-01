@@ -66,21 +66,20 @@ def test_detection_using_color():
     cone_detector = ConeDetector(camera_handler)
     cone_detector.start(0.3)
 
+    pos_prev = [None, None]
     loop_start = time.perf_counter()
-    while True:
-        start = time.perf_counter()
-        pos = cone_detector.get_pos(use_color_assist = True)
-        end = time.perf_counter()
 
-        print(pos)
-        print(f"time: {(end - start) * 1000} ms")
-        
-        time.sleep(0.5)
+    while True:
+        pos = cone_detector.get_pos(use_color_assist = True)
+        if pos_prev[0] is None:
+            if pos[0] is None:
+                continue
+        elif pos_prev[0] is not None:
+            if pos[0] is not None and pos[0] == pos_prev[0]:
+                continue
         now = time.perf_counter()
-        if (now - loop_start > 10):
-            break
-    
-    cone_detector.stop()
+        print(f"{(now - loop_start) * 1000} ms")
+        print(pos)
 
 def test_detection_using_color2():
     cone_detector = ConeDetector(camera_handler)
