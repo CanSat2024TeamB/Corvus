@@ -8,6 +8,8 @@ import datetime
 from pathlib import Path
 from sensor.camera_handler import CameraHandler, ConeDetector
 
+import cv2
+
 camera_handler = CameraHandler.get_instance()
 
 # try:
@@ -32,6 +34,12 @@ camera_handler = CameraHandler.get_instance()
 #         f.write(f"{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S %f')} {pos}\n")
 #         print("hi")
 #         time.sleep(0.1)
+
+def test_camera():
+    image_bgr = camera_handler.capture_bgr()
+    image_rgb = camera_handler.capture_rgb()
+    cv2.imwrite("bgr.png", image_bgr)
+    cv2.imwrite("rgb.png", image_rgb)
 
 def test_detection(): ##画像認識だけ？
     cone_detector = ConeDetector(camera_handler)
@@ -80,4 +88,4 @@ def test_detection_using_color():
     cone_detector.stop()
 
 if __name__ == "__main__":
-    test_color_detection()
+    test_camera()
