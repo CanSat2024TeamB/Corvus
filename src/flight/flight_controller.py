@@ -406,6 +406,7 @@ class FlightController:
         cone_x = self.detected_pos[0]
         cone_y = self.detected_pos[1]
         self.current_lidar_alt = self.position_manager.adjusted_altitude()
+        print(self.current_lidar_alt)
         yaw_deg = self.position_manager.yaw_deg()
         r = np.array([[cone_x*self.current_lidar_alt*math.tan(math.radians(self.theta[0])*0.5)],
                           [cone_y*self.current_lidar_alt*math.tan(math.radians(self.theta[1])*0.5)]]) #機体軸における、目標地点との差(ｍ)
