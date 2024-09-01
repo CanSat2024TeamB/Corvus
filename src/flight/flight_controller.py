@@ -370,9 +370,9 @@ class FlightController:
         rotate = np.array([[math.cos(math.radians(yaw_deg)), -math.sin(math.radians(yaw_deg))],
                                [math.sin(math.radians(yaw_deg)), math.cos(math.radians(yaw_deg))]])
         r_e = np.dot(rotate,r).flatten() #地面固定座標系における、目標地点との差(ｍ)
-        print(f"north:{r_e[0]}, east:{r_e[1]}")
-        error_lon = r_e[1] / self.lon_unit
-        error_lat = r_e[0] / self.lat_unit
+        print(f"east:{r_e[0]}, north:{r_e[1]}")
+        error_lon = r_e[0] / self.lon_unit
+        error_lat = r_e[1] / self.lat_unit
         self.current_AMSL = self.position_manager.adjusted_coordinates_AMSL()
 
         await self.go_to_location(0.5, Coordinates(self.target_latitude + error_lat, self.target_longitude + error_lon, self.current_AMSL), 0.1)
@@ -415,7 +415,7 @@ class FlightController:
         rotate = np.array([[math.cos(math.radians(yaw_deg)), math.sin(math.radians(yaw_deg))],
                                [-math.sin(math.radians(yaw_deg)), math.cos(math.radians(yaw_deg))]])
         r_e = np.dot(rotate,r).flatten() #地面固定座標系における、目標地点との差(ｍ)
-        print(f"north:{r_e[0]}, east:{r_e[1]}")
+        print(f"east:{r_e[0]}, north:{r_e[1]}")
         return
 
 
