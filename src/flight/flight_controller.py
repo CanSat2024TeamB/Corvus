@@ -332,6 +332,7 @@ class FlightController:
     async def precise_land_vertical(self):
         if not self.camera_handler.is_connected():
             print('camera cannot use')
+            await self.land()
             return
      
         while self.detected_pos == [None,None]:
@@ -350,6 +351,7 @@ class FlightController:
             self.nondetected_counter += 1
             if self.nondetected_counter == self.nondetected_counter_max:
                 print('cannot detect 10 times')
+                await self.land()
                 return
                 
         self.nondetected_counter = 0
