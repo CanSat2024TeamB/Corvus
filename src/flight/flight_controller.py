@@ -496,8 +496,8 @@ class FlightController:
             
             time_start = time.perf_counter()
             while True: ####### コーンがみつからなかったときに近くを徘徊するコードがまだない
-                # await set_altitude(3)
-                pos = self.cone_detector.capture_cone_position(PROB_THRESHOLD, use_color_assist = True)
+                #pos = self.cone_detector.capture_cone_position(PROB_THRESHOLD, use_color_assist = True)
+                pos = self.cone_detector.capture_cone_position_and_save(f"/home/admin/corvus/assets/log/detect_{datetime.datetime.now().strftime('%Y-%m-%d_%H:%M:%S')}.png", PROB_THRESHOLD, use_color_assist = True)
 
                 if pos[0] is not None:
                     print("cone detected")
@@ -505,7 +505,9 @@ class FlightController:
                     await stop_rotation(self)
                     await asyncio.sleep(1)
 
-                    pos = self.capture_cone_position(PROB_THRESHOLD, use_color_assist = True)
+                    #pos = self.capture_cone_position(PROB_THRESHOLD, use_color_assist = True)
+                    pos = self.cone_detector.capture_cone_position_and_save(f"/home/admin/corvus/assets/log/detect_{datetime.datetime.now().strftime('%Y-%m-%d_%H:%M:%S')}.png", PROB_THRESHOLD, use_color_assist = True)
+
                     if pos[0] is not None:
                         print("cone position confirmed")
                         print(f"confirmed cone pos: {pos}")
@@ -527,7 +529,9 @@ class FlightController:
                 # await set_velocity_body(self, multiply_velocity_body(calc_velocity_body_to_target(self), DECENDING_SPEED))
 
                 # while True:
-                #     pos = self.cone_detector.capture_cone_position(PROB_THRESHOLD, use_color_assist = True)
+                #     #pos = self.cone_detector.capture_cone_position(PROB_THRESHOLD, use_color_assist = True)
+                #     pos = self.cone_detector.capture_cone_position_and_save(f"/home/admin/corvus/assets/log/detect_{datetime.datetime.now().strftime('%Y-%m-%d_%H:%M:%S')}.png", PROB_THRESHOLD, use_color_assist = True)
+                #
                 #     if pos[0] is not None:
                 #         print("cone detected while approaching cone")
                 #         print(f"pos: {pos}")
@@ -544,16 +548,25 @@ class FlightController:
                 #         return
 
                 while True:
-                    pos = self.cone_detector.capture_cone_position(PROB_THRESHOLD, use_color_assist = True)
+                    #pos = self.cone_detector.capture_cone_position(PROB_THRESHOLD, use_color_assist = True)
+                    pos = self.cone_detector.capture_cone_position_and_save(f"/home/admin/corvus/assets/log/detect_{datetime.datetime.now().strftime('%Y-%m-%d_%H:%M:%S')}.png", PROB_THRESHOLD, use_color_assist = True)
+
                     if pos[0] is not None:
                         print("cone detected while approaching cone")
                         print(f"pos: {pos}")
                         await set_velocity_body(self, multiply_velocity_body(calc_velocity_body_to_target(self, pos), DECENDING_SPEED))
                     else:
-                        print("lost cone")
-                        await set_velocity_body(self, VelocityBodyYawspeed(0.0, 0.0, 0.0, 0.0))
-                        print("restarting searching cone")
-                        return await approach_cone(self)
+                        MISS_TOLERANCE = 1
+                        for i in range(MISS_TOLERANCE):
+                            pos = self.cone_detector.capture_cone_position_and_save(f"/home/admin/corvus/assets/log/detect_{datetime.datetime.now().strftime('%Y-%m-%d_%H:%M:%S')}.png", PROB_THRESHOLD, use_color_assist = True)
+                            if pos[0] is not None:
+                                break
+                        
+                        if pos[0] is None:
+                            print("lost cone")
+                            await set_velocity_body(self, VelocityBodyYawspeed(0.0, 0.0, 0.0, 0.0))
+                            print("restarting searching cone")
+                            return await approach_cone(self)
                     
                     if self.position_manager.adjusted_altitude() < LAND_ALTITUDE:
                         print("got ready to land")
