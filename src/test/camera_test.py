@@ -67,7 +67,7 @@ def test_detection_using_color():
     cone_detector.start(0.3)
 
     pos_prev = [None, None]
-    loop_start = time.perf_counter()
+    start = time.perf_counter()
 
     while True:
         pos = cone_detector.get_pos(use_color_assist = True)
@@ -78,15 +78,19 @@ def test_detection_using_color():
             if pos[0] is not None and pos[0] == pos_prev[0]:
                 continue
         now = time.perf_counter()
-        print(f"{(now - loop_start) * 1000} ms")
+        print(f"{(now - start) * 1000} ms")
         print(pos)
+        start = time.perf_counter()
+        pos_prev = pos
 
 def test_detection_using_color2():
     cone_detector = ConeDetector(camera_handler)
-    for i in range(10):
-        pos = cone_detector.capture_cone_position_and_save(f"/home/admin/corvus/assets/log/{i}.png", 0.3, True)
+    i = 0
+    while True:
+        pos = cone_detector.capture_cone_position(0.3, True)
         print(i)
         print(pos)
+        i += 1
 
 if __name__ == "__main__":
     test_detection_using_color2()

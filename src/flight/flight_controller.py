@@ -495,7 +495,7 @@ class FlightController:
             time_start = time.perf_counter()
             while True: ####### コーンがみつからなかったときに近くを徘徊するコードがまだない
                 # await set_altitude(3)
-                pos = self.cone_detector.get_pos(use_color_assist = True)
+                pos = self.cone_detector.capture_cone_position(PROB_THRESHOLD, use_color_assist = True)
 
                 if pos[0] is not None:
                     print("cone detected")
@@ -503,9 +503,7 @@ class FlightController:
                     await stop_rotation(self)
                     await asyncio.sleep(1)
 
-                    #return True ## 一旦２回チェックしないようにした
-
-                    pos = self.cone_detector.get_pos(use_color_assist = True)
+                    pos = self.capture_cone_position(PROB_THRESHOLD, use_color_assist = True)
                     if pos[0] is not None:
                         print("cone position confirmed")
                         print(f"confirmed cone pos: {pos}")
@@ -518,7 +516,7 @@ class FlightController:
                     return False
                 
         async def approach_cone(self):
-            found_cone = await rotate_and_search_cone(self, 10)
+            found_cone = await rotate_and_search_cone(self, 20)
             if found_cone:
                 nonlocal CAMERA_YAW_DEG
                 nonlocal LAND_ALTITUDE
@@ -527,7 +525,7 @@ class FlightController:
                 await set_velocity_body(self, multiply_velocity_body(calc_velocity_body_to_target(self), DECENDING_SPEED))
 
                 while True:
-                    pos = self.cone_detector.get_pos(use_color_assist = True)
+                    pos = self.cone_detector.capture_cone_position(PROB_THRESHOLD, use_color_assist = True)
                     if pos[0] is not None:
                         print("cone detected while approaching cone")
                         print(f"pos: {pos}")
@@ -558,12 +556,12 @@ class FlightController:
             #print("setting altitude 3 m")
             #await set_altitude(3)
             
-            self.cone_detector.start(PROB_THRESHOLD)
+            #self.cone_detector.start(PROB_THRESHOLD)
 
             await approach_cone(self)
 
-            await self.cone_detector.stop()
-            print("stopped cone detector loop")
+            #await self.cone_detector.stop()
+            #print("stopped cone detector loop")
             await self.drone.offboard.stop()
             print("finished drone offboard control")
 
@@ -575,7 +573,8 @@ class FlightController:
             return False
 ##########################################################################################################################        
     async def offboard_land_using_color(self):
-        CAMERA_YAW_DEG = 0 #pixhawk正面からはかったカメラの指向方向 (deg, 右回り正)
+        CAMERA_YAW_DEG = 180 #pixhawk正面からはかったカメラの指向方向 (deg, 右回り正)
+        PROB_THRESHOLD = 0.2
         LAND_ALTITUDE = 1 #コーンに接近していってlandに移行する高度
         DECENDING_SPEED = 0.2 #降下速度
         ADJUST_FACTOR = 0.1 #上下左右方向の補正係数
@@ -616,14 +615,14 @@ class FlightController:
         except OffboardError as error:
             print(f"Starting offboard controll failed, {error._result.result}")
             return False
-        
-        count = 0
+
         pos = [None, None]
-        while count < 10 and pos[0] is None:  
-            count += 1
+        for i in range(10):
             image = self.camera_handler.capture_bgr()
             pos = self.cone_detector.calc_color_center(image)
             self.cone_detector.draw_circle_and_save(image, pos[0], pos[1], f"/home/admin/corvus/assets/log/color_detect_{datetime.datetime.now().strftime('%Y-%m-%d_%H:%M:%S')}.png")
+            if pos[0] is not None:
+                break
             await asyncio.sleep(1)
 
         if pos[0] is not None:
