@@ -351,6 +351,12 @@ class FlightController:
             self.nondetected_counter += 1
             if self.nondetected_counter == self.nondetected_counter_max:
                 print('cannot detect 10 times')
+                await self.descend(-1.0)
+                self.nondetected_counter = 0
+                continue
+
+            if self.position_manager.adjusted_altitude() > 12.0:
+                print('cannot found')
                 await self.land()
                 return
                 
@@ -663,7 +669,7 @@ class FlightController:
         print('rotate')
         await self.drone.action.goto_location(self.target_latitude, self.target_longitude, self.target_final_altitude, self.yaw_deg)
 
-    async def decend(self,descend_m):
+    async def descend(self,descend_m):
         await self.drone.action.set_current_speed(0.5)
         self.target_latitude = self.position_manager.adjusted_coordinates_lat()
         self.target_longitude = self.position_manager.adjusted_coordinates_lon()
@@ -673,7 +679,7 @@ class FlightController:
 
         print('descend')
         await self.drone.action.goto_location(self.target_latitude, self.target_longitude, self.target_final_altitude, self.yaw_deg)
-        while abs(self.current_lidar_alt-self.position_manager.adjusted_altitude()) > 0.5:
+        while abs(self.current_lidar_alt-self.position_manager.adjusted_altitude()) < abs(descend_m):
             await asyncio.sleep(0.2)
         return
 
