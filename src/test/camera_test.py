@@ -53,18 +53,13 @@ def test_color_detection(): ###色認識だけ？
     cone_detector = ConeDetector(camera_handler)
     count = 0
     pos = [None, None]
-    while count < 10 and pos[0] is None:
+    while count < 10:
         count += 1
         image = camera_handler.capture_bgr()
         pos = cone_detector.calc_color_center(image)
         print(count)
         print(pos)
-        cone_detector.draw_circle_and_save(
-            image, 
-            pos[0], 
-            pos[1], 
-            f"/home/admin/corvus/assets/log/color_detect_{datetime.datetime.now().strftime('%Y-%m-%d_%H:%M:%S')}.png"
-        )
+        cone_detector.draw_circle_and_save(image, pos[0], pos[1], f"/home/admin/corvus/assets/log/color_detect_{datetime.datetime.now().strftime('%Y-%m-%d_%H:%M:%S')}.png")
         time.sleep(1)
 
 def test_detection_using_color():
