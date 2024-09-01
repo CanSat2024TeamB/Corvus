@@ -25,7 +25,7 @@ class CameraHandler:
 
         try:
             self.camera = Picamera2()
-            config = self.camera.create_preview_configuration({ "format": "BGR888" })
+            config = self.camera.create_preview_configuration({ "format": "RGB888" })
             self.camera.configure(config)
             self.camera.start()
         except Exception as e:
@@ -63,7 +63,7 @@ class CameraHandler:
         return cv2.rotate(image, cv2.ROTATE_180) # カメラの取り付け上下が逆になってることを考慮
     
     def capture_and_save(self, path = "image.jpg"):
-        image = self.capture_rgb()
+        image = self.capture_bgr()
         cv2.imwrite(path, image)
     
     def capture_video(self, output_path, length = 10):

@@ -55,7 +55,7 @@ def test_color_detection(): ###色認識だけ？
     pos = [None, None]
     while count < 10 and pos[0] is None:
         count += 1
-        image = camera_handler.capture_rgb()
+        image = camera_handler.capture_bgr()
         pos = cone_detector.calc_color_center(image)
         print(count)
         print(pos)
@@ -88,4 +88,4 @@ def test_detection_using_color():
     cone_detector.stop()
 
 if __name__ == "__main__":
-    test_camera()
+    test_color_detection()
