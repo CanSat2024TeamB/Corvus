@@ -253,7 +253,7 @@ class FlightController:
 ################################################################################################################################################
     async def precise_land_right_angle(self) -> bool:
         if not self.camera_handler.is_connected():
-            await self.go_to_location(1.0, Coordinates(self.target_longitude,self.target_latitude,self.target_final_altitude), 0.5)
+            await self.go_to_location(1.0, Coordinates(self.target_longitude,self.target_latitude,self.target_final_altitude), 0.1)
             await self.land()
             raise RuntimeError("Camera is not connected. Stopped the precies land sequence.")
      
@@ -265,7 +265,7 @@ class FlightController:
                 #print(self.detected_pos)
                 self.nondetected_counter += 1
                 if self.nondetected_counter == self.nondetected_counter_max:
-                    await self.go_to_location(1.0, Coordinates(self.target_longitude,self.target_latitude,self.target_final_altitude), 0.5)
+                    await self.go_to_location(1.0, Coordinates(self.target_longitude,self.target_latitude,self.target_final_altitude), 0.1)
                     await self.land()
                     return 
         
@@ -285,7 +285,7 @@ class FlightController:
         error_lat = north_len_m / self.lat_unit
         self.current_AMSL = self.position_manager.adjusted_coordinates_AMSL()
 
-        await self.go_to_location(0.5, Coordinates(self.target_latitude + error_lat, self.target_longitude + error_lon, self.current_AMSL), 0.5)
+        await self.go_to_location(0.5, Coordinates(self.target_latitude + error_lat, self.target_longitude + error_lon, self.current_AMSL), 0.1)
         await self.land()
 
         return
@@ -369,7 +369,7 @@ class FlightController:
         error_lat = r_e[0] / self.lat_unit
         self.current_AMSL = self.position_manager.adjusted_coordinates_AMSL()
 
-        await self.go_to_location(0.5, Coordinates(self.target_latitude + error_lat, self.target_longitude + error_lon, self.current_AMSL), 0.5)
+        await self.go_to_location(0.5, Coordinates(self.target_latitude + error_lat, self.target_longitude + error_lon, self.current_AMSL), 0.1)
         await self.land()
     
     
