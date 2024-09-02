@@ -265,7 +265,7 @@ class DroneController:
         print("taking off")
         await self.flight_controller.takeoff(5)
         print("finished taking off")
-        await self.flight_controller.hovering(10)
+        await self.flight_controller.hovering(5)
         print("start landing")
         try:
             await self.flight_controller.offboard_precise_land()
