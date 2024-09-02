@@ -3,6 +3,7 @@ from pathlib import Path
 
 sys.path.append(str(Path(__file__).parent.parent))
 
+import asyncio
 import time
 import datetime
 from pathlib import Path
@@ -97,5 +98,22 @@ def test_detection_using_color2():
 
         time.sleep(1)
 
+def test_camera_load():
+    async def count():
+        i = 0
+        while True:
+            print(i)
+            await asyncio.sleep(0.05)
+    
+    asyncio.create_task(count())
+
+    time.sleep(3)
+
+    cone_detector = ConeDetector(camera_handler)
+    while True:
+        pos = cone_detector.capture_cone_position(0.3, True)
+        print(pos)
+    
+
 if __name__ == "__main__":
-    test_detection_using_color2()
+    test_camera_load()
