@@ -285,7 +285,7 @@ class FlightController:
         error_lat = north_len_m / self.lat_unit
         self.current_AMSL = self.position_manager.adjusted_coordinates_AMSL()
 
-        await self.go_to_location(0.5, Coordinates(self.target_latitude + error_lat, self.target_longitude + error_lon, self.current_AMSL), 0.1)
+        await self.go_to_location(0.5, Coordinates(self.target_longitude + error_lon, self.target_latitude + error_lat, self.current_AMSL), 0.1)
         await self.land()
 
         return
@@ -375,7 +375,7 @@ class FlightController:
         error_lat = r_e[1] / self.lat_unit
         self.current_AMSL = self.position_manager.adjusted_coordinates_AMSL()
 
-        await self.go_to_location(0.5, Coordinates(self.target_latitude + error_lat, self.target_longitude + error_lon, self.current_AMSL), 0.1)
+        await self.go_to_location(0.5, Coordinates(self.target_longitude + error_lon, self.target_latitude + error_lat, self.current_AMSL), 0.1)
         await self.land()
     
     
