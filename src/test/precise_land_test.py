@@ -5,6 +5,7 @@ sys.path.append(str(Path(__file__).parent.parent))
 
 import asyncio
 from drone.drone_controller import DroneController
+import logger.flight_log as flight_log
 
 async def main():
     drone = DroneController()
@@ -12,6 +13,8 @@ async def main():
     await drone.connect()
     await drone.arm()
     asyncio.create_task(drone.invoke_sensor())
+
+    flight_log.start(drone.get_logger_instance(), drone.get_position_manager_instance())
 
     # 5秒待機してから新しいタスクを追加
     await asyncio.sleep(5)
