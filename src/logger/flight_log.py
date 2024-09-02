@@ -12,6 +12,7 @@ def flight_logger(logger: Logger, position_manager: PositionManager):
         longitude = position_manager.adjusted_coordinates_lon()
         latitude = position_manager.adjusted_coordinates_lat()
         yaw_deg = position_manager.yaw_deg()
+        print(f"alt: {altitude}, long: {longitude}, lat: {latitude}, yaw: {yaw_deg}")
         logger.write(f"alt: {altitude}, long: {longitude}, lat: {latitude}, yaw: {yaw_deg}")
 
         time.sleep(0.1)
