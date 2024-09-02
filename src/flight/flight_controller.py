@@ -609,8 +609,8 @@ class FlightController:
         CAMERA_YAW_DEG = 0 #pixhawk正面からはかったカメラの指向方向 (deg, 右回り正)
         PROB_THRESHOLD = 0.2
         LAND_ALTITUDE = 1 #コーンに接近していってlandに移行する高度
-        DECENDING_SPEED = 0.2 #降下速度
-        ADJUST_FACTOR = 0.1 #上下左右方向の補正係数
+        DECENDING_SPEED = 0.5 #降下速度
+        ADJUST_FACTOR = 0.2 #上下左右方向の補正係数
 
         print("checking camera connection...")
         if not self.camera_handler.is_connected():
@@ -632,6 +632,15 @@ class FlightController:
         def multiply_velocity_body(velocity_body: VelocityBodyYawspeed, f: float) -> VelocityBodyYawspeed:
             return VelocityBodyYawspeed(velocity_body.forward_m_s * f, velocity_body.right_m_s * f, velocity_body.down_m_s * f, velocity_body.yawspeed_deg_s)
 
+        def calc_velocity_body_to_target(self, pos) -> VelocityBodyYawspeed:
+            nonlocal CAMERA_YAW_DEG
+            nonlocal DECENDING_SPEED
+            nonlocal ADJUST_FACTOR
+            front = pos[1] * ADJUST_FACTOR
+            right = pos[0] * ADJUST_FACTOR
+            velocity = VelocityBodyYawspeed(front, right, DECENDING_SPEED, 0)
+            return velocity
+        
         async def adjust_velocity(self, pos):
             nonlocal ADJUST_FACTOR
             nonlocal CAMERA_YAW_DEG
@@ -659,14 +668,13 @@ class FlightController:
             await asyncio.sleep(1)
 
         if pos[0] is not None:
-            velocity = VelocityBodyYawspeed(0, 0, 1.0, 0)
-            await set_velocity_body(self, multiply_velocity_body(velocity, DECENDING_SPEED))
-
             while True:
                 image = self.camera_handler.capture_bgr()
                 pos = self.cone_detector.calc_color_center(image)
                 self.cone_detector.draw_circle_and_save(image, pos[0], pos[1], f"/home/admin/corvus/assets/log/color_detect_{datetime.datetime.now().strftime('%Y-%m-%d_%H:%M:%S')}.png")
-                
+
+                await set_velocity_body(self, calc_velocity_body_to_target(self, pos))
+
                 if pos[0] is not None:
                     print("cone detected while approaching cone")
                     print(f"pos: {pos}")
