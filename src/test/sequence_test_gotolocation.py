@@ -22,7 +22,7 @@ async def main():
     await asyncio.sleep(1)
 
     speed = 3.0
-    target_coordinates = Coordinates(139.887311364, 35.766587931, 5.0)
+    target_coordinates = Coordinates(140.10804658799998, 35.770481484, 5.0)
 
     # `add_sequence_task`の呼び出し
     await drone.add_sequence_task(drone.sequence_test_goto(speed, target_coordinates))
