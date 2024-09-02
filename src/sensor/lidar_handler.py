@@ -6,8 +6,8 @@ class LiDARHandler:
         self.altitude: float = -1.0
 
     def update_altitude(self, altitude: float) -> None:
-        print("lidar updated")
-        self.drone.get_logger_instance().write("lidar updated")
+        print("lidar updated", altitude)
+        self.drone.get_logger_instance().write("lidar updated", altitude)
         self.altitude = altitude
         return
 ###################################################以下オープンにする    
