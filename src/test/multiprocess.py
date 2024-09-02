@@ -25,7 +25,7 @@ def multiprocess():
         time.sleep(0.1)
     process.join()
 
-def capturer(cone_detector: ConeDetector, arr: Array):
+def capturer(cone_detector: ConeDetector, arr):
     while True:
         pos = cone_detector.capture_cone_position(0.3, True)
         arr[0] = pos[0]
@@ -41,7 +41,7 @@ def camera():
 
     i = 0
     while True:
-        print(i, pos)
+        print(i, pos[0], pos[1])
         i += 1
         time.sleep(0.05)
 
