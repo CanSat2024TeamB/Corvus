@@ -7,6 +7,7 @@ import asyncio
 import time
 import datetime
 from pathlib import Path
+from threading import Thread
 from sensor.camera_handler import CameraHandler, ConeDetector
 
 import cv2
@@ -106,12 +107,32 @@ async def test_camera_load():
             i += 1
             await asyncio.sleep(0.05)
     
-    task = asyncio.create_task(count())
-    await task
+    asyncio.create_task(count())
 
-    time.sleep(3)
-
+    print("sleeping...")
+    await asyncio.sleep(3)
     print("starting...")
+    cone_detector = ConeDetector(camera_handler)
+    while True:
+        pos = cone_detector.capture_cone_position(0.3, True)
+        print(pos)
+        await asyncio.sleep(0.01)
+
+def test_camera_load2():
+    async def count():
+        i = 0
+        while True:
+            print(i)
+            i += 1
+            await asyncio.sleep(0.05)
+    
+    thread = Thread(target=count, daemon=True)
+    thread.start()
+
+    print("sleeping...")
+    time.sleep(3)
+    print("starting...")
+
     cone_detector = ConeDetector(camera_handler)
     while True:
         pos = cone_detector.capture_cone_position(0.3, True)
@@ -119,4 +140,4 @@ async def test_camera_load():
     
 
 if __name__ == "__main__":
-    asyncio.run(test_camera_load())
+    asyncio.run(test_camera_load2())
