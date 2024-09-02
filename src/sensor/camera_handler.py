@@ -9,6 +9,7 @@ from picamera2.encoders import H264Encoder
 from picamera2.outputs import FfmpegOutput
 import cv2
 import numpy as np
+from multiprocessing import Process, Value, Array
 import threading
 import cone_detector
 import time
@@ -89,35 +90,53 @@ class CameraHandler:
 
 class ConeDetector:
     IOU_THRESHOLD = 0.1
-    condition = threading.Condition()
 
     def __init__(self, camera_handler, model_path: str = Path(__file__).parent.parent.parent.joinpath("assets/model/cone_ncnn_model_v9_320_opt"), imgsz = 320):
         self.camera_handler: CameraHandler = camera_handler
         cone_detector.load_model(str(model_path), imgsz)
 
-        self.frame = None
-        self.pos = [None, None]
+        self.pos = Array("f", 2)
         self.started = False
-        self.finished = False
+        self.finished = Value("b", 0) # 0 is not finished, else is finished
     
     def get_pos(self, use_color_assist = False):
-        self.condition.acquire()
-        pos = self.pos
-        self.condition.release()
+        pos_temp = self.pos
+        if pos_temp[0] < -1:
+            pos = [None, None]
+        else:
+            pos = [pos_temp[0], pos_temp[1]]
 
         if pos[0] is None and use_color_assist: # 機械学習による推論で物体推定ができなかった場合色情報をもとに推定を行う
-            self.condition.acquire()
-            frame = self.frame
-            self.condition.release()
-
+            frame = self.camera_handler.capture_bgr()
             color_pos = self.calc_color_center(frame)
             if color_pos[0] is not None:
                 print("found cone using color assist")
-                print("cone pos:", color_pos)
-
             return color_pos
         else:
             return pos
+        
+    def detector(self, camera_handler: CameraHandler, conf, arr, finished):
+        while finished.value == 0:
+            try:
+                frame = camera_handler.capture_bgr()
+            except Exception as e:
+                print(e)
+                frame = np.zeros((camera_handler.get_height, camera_handler.get_width, 3))
+
+            pos = cone_detector.get_pos(frame, conf)
+            arr[0] = pos[0]
+            arr[1] = pos[1]
+
+    def start(self, conf = IOU_THRESHOLD):
+        if self.started:
+            return
+        detector_process = Process(target = self.detector, args = (self.camera_handler, conf, self.pos, self.finished), daemon = True)
+        detector_process.start()
+        self.started = True
+    
+    def stop(self):
+        self.finished.value = 1
+        self.started = False
     
     def calc_color_center(self, frame):
         if frame is None:
@@ -147,50 +166,6 @@ class ConeDetector:
             x = result["m10"] / result["m00"]
             y = result["m01"] / result["m00"]
             return [x / width * 2 - 1, 1 - y / height * 2]
-
-    
-    def reader(self):
-        while not self.finished:
-            try:
-                frame = self.camera_handler.capture_bgr()
-            except Exception as e:
-                print(e)
-                frame = np.zeros((self.camera_handler.get_height, self.camera_handler.get_width, 3))
-            self.condition.acquire()
-            self.frame = frame
-            self.condition.notify()
-            self.condition.release()
-    
-    def detector(self, conf = IOU_THRESHOLD):
-        while not self.finished:
-            self.condition.acquire()
-            if self.frame is None:
-                self.condition.wait()
-            frame = self.frame
-            self.condition.release()
-
-            pos = cone_detector.get_pos(frame, conf)
-            
-            self.condition.acquire()
-            if pos[0] < -1:
-                self.pos = [None, None]
-            else:
-                self.pos = pos
-            self.condition.release()
-
-    def start(self, conf = IOU_THRESHOLD):
-        if self.started:
-            return
-        
-        reader_thread = threading.Thread(target = self.reader, daemon = True)
-        detector_thread = threading.Thread(target = self.detector, args = (conf,), daemon = True)
-
-        reader_thread.start()
-        detector_thread.start()
-    
-    def stop(self):
-        self.finished = True
-        self.started = False
 
     def capture_cone_position(self, conf = IOU_THRESHOLD, use_color_assist = False):
         image = self.camera_handler.capture_bgr()
