@@ -606,7 +606,7 @@ class FlightController:
             return False
 ##########################################################################################################################        
     async def offboard_land_using_color(self):
-        CAMERA_YAW_DEG = 180 #pixhawk正面からはかったカメラの指向方向 (deg, 右回り正)
+        CAMERA_YAW_DEG = 0 #pixhawk正面からはかったカメラの指向方向 (deg, 右回り正)
         PROB_THRESHOLD = 0.2
         LAND_ALTITUDE = 1 #コーンに接近していってlandに移行する高度
         DECENDING_SPEED = 0.2 #降下速度
