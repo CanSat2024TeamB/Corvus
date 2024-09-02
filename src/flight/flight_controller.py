@@ -614,7 +614,7 @@ class FlightController:
         PROB_THRESHOLD = 0.2
         LAND_ALTITUDE = 1 #コーンに接近していってlandに移行する高度
         DECENDING_SPEED = 0.5 #降下速度
-        ADJUST_FACTOR = 0.2 #上下左右方向の補正係数
+        ADJUST_FACTOR = 1.2 #上下左右方向の補正係数(1.0が無補正、値を大きくすると左右方向の補正が強くなる)
 
         print("checking camera connection...")
         if not self.camera_handler.is_connected():
@@ -638,12 +638,11 @@ class FlightController:
 
         def calc_velocity_body_to_target(self, pos) -> VelocityBodyYawspeed:
             nonlocal CAMERA_YAW_DEG
-            nonlocal DECENDING_SPEED
             nonlocal ADJUST_FACTOR
-            front = pos[1] * ADJUST_FACTOR
-            right = pos[0] * ADJUST_FACTOR
-            velocity = VelocityBodyYawspeed(front, right, DECENDING_SPEED, 0)
-            return velocity
+            front_vec = math.sin(math.radians(pos[1] * self.theta[1] / 2))
+            right_vec = math.sin(math.radians(pos[0] * self.theta[0] / 2))
+            down_vec = math.cos(math.radians(pos[0] * self.theta[0] / 2)) * math.cos(math.radians(pos[1] * self.theta[1] / 2))
+            return VelocityBodyYawspeed(front_vec * ADJUST_FACTOR, right_vec * ADJUST_FACTOR, down_vec, 0.0)
         
         async def adjust_velocity(self, pos):
             nonlocal ADJUST_FACTOR
@@ -677,7 +676,7 @@ class FlightController:
                 pos = self.cone_detector.calc_color_center(image)
                 self.cone_detector.draw_circle_and_save(image, pos[0], pos[1], f"/home/admin/corvus/assets/log/color_detect_{datetime.datetime.now().strftime('%Y-%m-%d_%H:%M:%S')}.png")
 
-                await set_velocity_body(self, calc_velocity_body_to_target(self, pos))
+                await set_velocity_body(self, multiply_velocity_body(calc_velocity_body_to_target(self, pos), DECENDING_SPEED))
 
                 if pos[0] is not None:
                     print("cone detected while approaching cone")
