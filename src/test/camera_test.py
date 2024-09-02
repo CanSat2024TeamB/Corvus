@@ -98,14 +98,15 @@ def test_detection_using_color2():
 
         time.sleep(1)
 
-def test_camera_load():
+async def test_camera_load():
     async def count():
         i = 0
         while True:
             print(i)
             await asyncio.sleep(0.05)
     
-    asyncio.create_task(count())
+    task = asyncio.create_task(count())
+    await task
 
     time.sleep(3)
 
@@ -116,4 +117,4 @@ def test_camera_load():
     
 
 if __name__ == "__main__":
-    test_camera_load()
+    asyncio.run(test_camera_load())
