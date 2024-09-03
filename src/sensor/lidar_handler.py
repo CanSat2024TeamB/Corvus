@@ -2,11 +2,9 @@ import asyncio
 
 import multiprocessing
 
-from drone.drone_controller import DroneController
-
 class LiDARHandler:
     def __init__(self, drone):
-        self.drone : DroneController = drone
+        self.drone = drone
         self.altitude = multiprocessing.Value("f", -1.0)
 
     def update_altitude(self, altitude: float) -> None:
