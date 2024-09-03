@@ -45,6 +45,12 @@ class CameraHandler:
             self._unique_instance = self.__internal_new__()
         return self._unique_instance
     
+    def get_camera(self):
+        return self.camera
+    
+    def set_camera(self, camera):
+        self.camera = camera
+    
     def get_width(self):
         return self.width
     
@@ -115,7 +121,9 @@ class ConeDetector:
         else:
             return pos
         
-    def detector(self, camera_handler: CameraHandler, conf, arr, finished):
+    def detector(self, camera_handler: CameraHandler, camera: Picamera2, conf, arr, finished):
+        camera_handler.set_camera(camera)
+        
         while finished.value == 0:
             try:
                 frame = camera_handler.capture_bgr()
@@ -130,7 +138,7 @@ class ConeDetector:
     def start(self, conf = IOU_THRESHOLD):
         if self.started:
             return
-        detector_process = Process(target = self.detector, args = (self.camera_handler, conf, self.pos, self.finished), daemon = True)
+        detector_process = Process(target = self.detector, args = (self.camera_handler, self.camera_handler.get_camera(), conf, self.pos, self.finished), daemon = True)
         detector_process.start()
         self.started = True
     
