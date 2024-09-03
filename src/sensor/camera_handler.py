@@ -42,13 +42,8 @@ class CameraHandler:
     @classmethod
     def get_instance(self):
         if self._unique_instance is None:
-            instance = self.__internal_new__()
-            self._unique_instance = Queue(1)
-            self._unique_instance.put(instance)
-
-        instance = self._unique_instance.get()
-        self._unique_instance.put(instance)
-        return instance
+            self._unique_instance = self.__internal_new__()
+        return self._unique_instance
     
     def get_camera(self):
         return self.camera
