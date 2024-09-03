@@ -20,7 +20,7 @@ async def main():
     await drone.connect()
     
     # センサーを起動
-    asyncio.create_task(drone.invoke_sensor())
+    drone.invoke_sensor()
 
     # 少し待機して位置情報を取得
     await asyncio.sleep(5)

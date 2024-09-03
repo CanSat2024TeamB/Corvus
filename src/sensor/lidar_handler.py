@@ -1,16 +1,17 @@
 import asyncio
 
+import multiprocessing
+
 from drone.drone_controller import DroneController
 
 class LiDARHandler:
     def __init__(self, drone):
         self.drone : DroneController = drone
-        self.altitude: float = -1.0
+        self.altitude = multiprocessing.Value("f", -1.0)
 
     def update_altitude(self, altitude: float) -> None:
         print("lidar updated", altitude)
-        #self.drone.get_logger_instance().write("lidar updated", altitude)
-        self.altitude = altitude
+        self.altitude.value = altitude
         return
 ###################################################以下オープンにする    
     async def invoke_loop(self) -> None:

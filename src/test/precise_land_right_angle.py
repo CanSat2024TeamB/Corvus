@@ -20,7 +20,7 @@ async def main():
     await asyncio.sleep(5)
     
     # `invoke_sensor`の呼び出し
-    asyncio.create_task(drone.invoke_sensor())
+    drone.invoke_sensor()
 
     # すぐに`invoke_sensor`タスクを開始する
     await asyncio.sleep(5)

@@ -1,6 +1,8 @@
 import asyncio
 from mavsdk import System
 
+import multiprocessing
+
 from sensor.lidar_handler import LiDARHandler
 from control.coordinates import Coordinates
 from control.battery import Battery_watch
@@ -133,20 +135,23 @@ class DroneController:
             await asyncio.sleep(0.5)
 
 #############################################################################################
-    async def invoke_sensor(self) -> None:
-        # すべてのタスクをリストに追加
-        self.tasks.extend([
-            asyncio.create_task(self.lidar_handler.invoke_loop()),
-            asyncio.create_task(self.gps_handler.invoke_loop()),
-            # asyncio.create_task(self.battery_watch.invoke_loop()),  # バッテリーハンドラのコルーチンが必要なら追加
-            asyncio.create_task(self.compass_handler.invoke_loop()),
-            # asyncio.create_task(self.flight_controller.invoke_loop()),  # フライトコントローラのコルーチンが必要なら追加
-            asyncio.create_task(self.logger_write()),
-            asyncio.create_task(self.lora_write())
-        ])
-
-        # 全てのタスクが完了するのを待つ
-        await asyncio.sleep(float('inf'))
+    def invoke(self) -> None:
+        async def _invoke():
+            task = [
+                asyncio.create_task(self.lidar_handler.invoke_loop()),
+                asyncio.create_task(self.gps_handler.invoke_loop()),
+                # asyncio.create_task(self.battery_watch.invoke_loop()),  # バッテリーハンドラのコルーチンが必要なら追加
+                asyncio.create_task(self.compass_handler.invoke_loop()),
+                # asyncio.create_task(self.flight_controller.invoke_loop()),  # フライトコントローラのコルーチンが必要なら追加
+                asyncio.create_task(self.logger_write()),
+                asyncio.create_task(self.lora_write())
+            ]
+            await asyncio.gather(*task)
+        asyncio.run(_invoke())
+    
+    def invoke_sensor(self) -> None:
+        process = multiprocessing.Process(target=self.invoke, daemon=True)
+        process.start()
 
     async def lidar_test_loop(self) -> None:
         # すべてのタスクをリストに追加
@@ -188,18 +193,6 @@ class DroneController:
         new_task = asyncio.create_task(coro)
         self.tasks.append(new_task)
         print('added task')
-    
-    async def exe_sequence_task(self, coro):
-        if not hasattr(self, 'tasks'):
-            self.tasks = []
-
-        # 新しいタスクを追加
-        new_task = asyncio.create_task(coro)
-        self.tasks.append(new_task)
-        print('added task')
-
-        for task in self.tasks:
-            await task
         
 ####################################################################################################
     

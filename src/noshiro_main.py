@@ -78,7 +78,7 @@ async def main():
 
     #config_path: str = Path(__file__).resolve().parent.parent.joinpath("assets/config/config.ini")
     #config = ConfigManager(config_path)
-    asyncio.create_task(drone.invoke_sensor())
+    drone.invoke_sensor()
     #await drone.arm()
     await asyncio.sleep(5)
 

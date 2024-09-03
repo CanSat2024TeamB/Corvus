@@ -32,7 +32,7 @@ async def run():
     logger.write("start sequence")
 
     await drone_controller.connect()
-    asyncio.create_task(drone_controller.invoke_sensor())
+    drone_controller.invoke_sensor()
 
     record_alt_thread = Thread(target = record_alt, daemon = True)
     record_alt_thread.start()

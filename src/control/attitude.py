@@ -1,12 +1,12 @@
 class Attitude: 
-    def __init__(self):
-        self.roll: float = 0.0
-        self.pitch: float = 0.0
-        self.yaw: float = 0.0
-        self.qw: float = 1.0
-        self.qx: float = 0.0
-        self.qy: float = 0.0
-        self.qz: float = 0.0
+    def __init__(self, roll_deg = 0.0, pitch_deg = 0.0, yaw_deg = 0.0, qw = 1.0, qx = 0.0, qy = 0.0, qz = 0.0):
+        self.roll: float = roll_deg
+        self.pitch: float = pitch_deg
+        self.yaw: float = yaw_deg
+        self.qw: float = qw
+        self.qx: float = qx
+        self.qy: float = qy
+        self.qz: float = qz
 
     def get_roll(self) -> float:
         return self.roll

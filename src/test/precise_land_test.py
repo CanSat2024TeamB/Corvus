@@ -12,7 +12,7 @@ async def main():
 
     await drone.connect()
     await drone.arm()
-    asyncio.create_task(drone.invoke_sensor())
+    drone.invoke_sensor()
 
     flight_log.start(drone.get_logger_instance(), drone.get_position_manager_instance())
 

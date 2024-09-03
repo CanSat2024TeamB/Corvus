@@ -738,11 +738,11 @@ class FlightController:
                                    absolute_altitude_m=altitude)
 
     
-    def update_is_in_air(self, is_in_air: bool) -> None:
-        self.is_in_air = is_in_air
-        return
+    # def update_is_in_air(self, is_in_air: bool) -> None:
+    #     self.is_in_air = is_in_air
+    #     return
     
-    async def invoke_loop(self) -> None:
-        async for is_in_air in self.drone.telemetry.in_air():
-            self.update_is_in_air(is_in_air)
-            await asyncio.sleep(1)
+    # async def invoke_loop(self) -> None:
+    #     async for is_in_air in self.drone.telemetry.in_air():
+    #         self.update_is_in_air(is_in_air)
+    #         await asyncio.sleep(1)
