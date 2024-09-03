@@ -121,9 +121,8 @@ class ConeDetector:
         else:
             return pos
         
-    def detector(self, cone_detector_queue: Queue, conf, arr, finished):
-        cone_detector: ConeDetector = cone_detector_queue.get()
-        camera_handler: CameraHandler = cone_detector.camera_handler
+    def detector(self, camera_queue: Queue, conf, arr, finished):
+        camera_handler = camera_queue.get()
         while finished.value == 0:
             try:
                 frame = camera_handler.capture_bgr()
@@ -138,9 +137,9 @@ class ConeDetector:
     def start(self, conf = IOU_THRESHOLD):
         if self.started:
             return
-        cone_detector_queue = Queue(1)
-        cone_detector_queue.put(self)
-        detector_process = Process(target = self.detector, args = (cone_detector_queue, conf, self.pos, self.finished, ), daemon = True)
+        camera_queue = Queue(1)
+        camera_queue.put(self.camera_handler)
+        detector_process = Process(target = self.detector, args = (camera_queue, conf, self.pos, self.finished, ), daemon = True)
         detector_process.start()
         self.started = True
     
