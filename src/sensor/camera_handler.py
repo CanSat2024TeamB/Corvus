@@ -121,24 +121,23 @@ class ConeDetector:
         else:
             return pos
         
-    def detector(self, camera_handler: CameraHandler, camera: Picamera2, conf, arr, finished):
-        camera_handler.set_camera(camera)
-        
+    def detector(self, camera_handler: CameraHandler, conf, arr, finished):
         while finished.value == 0:
-            try:
-                frame = camera_handler.capture_bgr()
-            except Exception as e:
-                print(e)
-                frame = np.zeros((camera_handler.get_height, camera_handler.get_width, 3))
+            # try:
+            #     frame = camera_handler.capture_bgr()
+            # except Exception as e:
+            #     print(e)
+            #     frame = np.zeros((camera_handler.get_height, camera_handler.get_width, 3))
 
-            pos = cone_detector.get_pos(frame, conf)
+            # pos = cone_detector.get_pos(frame, conf)
+            pos = self.capture_cone_position(conf, True)
             arr[0] = pos[0]
             arr[1] = pos[1]
 
     def start(self, conf = IOU_THRESHOLD):
         if self.started:
             return
-        detector_process = Process(target = self.detector, args = (self.camera_handler, self.camera_handler.get_camera(), conf, self.pos, self.finished), daemon = True)
+        detector_process = Process(target = self.detector, args = (self.camera_handler, conf, self.pos, self.finished), daemon = True)
         detector_process.start()
         self.started = True
     
