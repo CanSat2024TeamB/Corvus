@@ -9,7 +9,7 @@ from picamera2.encoders import H264Encoder
 from picamera2.outputs import FfmpegOutput
 import cv2
 import numpy as np
-from multiprocessing import Process, Value, Array
+from multiprocessing import Process, Queue, Value, Array
 import threading
 import cone_detector
 import time
@@ -42,8 +42,13 @@ class CameraHandler:
     @classmethod
     def get_instance(self):
         if self._unique_instance is None:
-            self._unique_instance = self.__internal_new__()
-        return self._unique_instance
+            instance = self.__internal_new__()
+            self._unique_instance = Queue(1)
+            self._unique_instance.put(instance)
+
+        instance = self._unique_instance.get()
+        self._unique_instance.put(instance)
+        return instance
     
     def get_camera(self):
         return self.camera
@@ -121,7 +126,8 @@ class ConeDetector:
         else:
             return pos
         
-    def detector(self, camera_handler: CameraHandler, conf, arr, finished):
+    def detector(self, conf, arr, finished):
+        camera_handler = CameraHandler.get_instance()
         while finished.value == 0:
             try:
                 frame = camera_handler.capture_bgr()
@@ -136,7 +142,7 @@ class ConeDetector:
     def start(self, conf = IOU_THRESHOLD):
         if self.started:
             return
-        detector_process = Process(target = self.detector, args = (self.camera_handler, conf, self.pos, self.finished), daemon = True)
+        detector_process = Process(target = self.detector, args = (conf, self.pos, self.finished), daemon = True)
         detector_process.start()
         self.started = True
     

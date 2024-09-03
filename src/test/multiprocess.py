@@ -41,7 +41,8 @@ def capturer(arr):
 
 def camera():
     pos = Array("f", 2)
-
+    camera_handler = CameraHandler.get_instance()
+    
     process = Process(target=capturer, args=(pos,), daemon=True)
     process.start()
 
@@ -62,4 +63,4 @@ def camera2():
         time.sleep(0.1)
 
 if __name__ == "__main__":
-    camera()
+    camera2()
