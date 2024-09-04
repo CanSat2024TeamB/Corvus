@@ -2,8 +2,8 @@ import asyncio
 
 class LiDARHandler:
     def __init__(self, drone):
-        self.drone : drone
-        self.altitude: float = -1.0
+        self.drone = drone
+        self.altitude = -1.0
 
     def update_altitude(self, altitude: float) -> None:
         print("lidar updated", altitude)
