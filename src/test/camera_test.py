@@ -10,8 +10,6 @@ from sensor.camera_handler import CameraHandler, ConeDetector
 
 import cv2
 
-camera_handler = CameraHandler.get_instance()
-
 # try:
 #     if not camera_handler.is_connected():
 #         raise RuntimeError("Camera is not connected. Stopped the precies land sequence.")
@@ -36,12 +34,14 @@ camera_handler = CameraHandler.get_instance()
 #         time.sleep(0.1)
 
 def test_camera():
+    camera_handler = CameraHandler.get_instance()
     image_bgr = camera_handler.capture_bgr()
     image_rgb = camera_handler.capture_rgb()
     cv2.imwrite("bgr.png", image_bgr)
     cv2.imwrite("rgb.png", image_rgb)
 
 def test_detection(): ##画像認識だけ？
+    camera_handler = CameraHandler.get_instance()
     cone_detector = ConeDetector(camera_handler)
 
     for i in range(20):
@@ -50,6 +50,7 @@ def test_detection(): ##画像認識だけ？
         time.sleep(1)
 
 def test_color_detection(): ###色認識だけ？
+    camera_handler = CameraHandler.get_instance()
     cone_detector = ConeDetector(camera_handler)
     count = 0
     pos = [None, None]
@@ -63,7 +64,7 @@ def test_color_detection(): ###色認識だけ？
         time.sleep(1)
 
 def test_detection_using_color():
-    cone_detector = ConeDetector(camera_handler)
+    cone_detector = ConeDetector()
     cone_detector.start(0.3, True)
 
     pos_prev = [None, None]
@@ -84,6 +85,7 @@ def test_detection_using_color():
         pos_prev = pos
 
 def test_detection_using_color2():
+    camera_handler = CameraHandler.get_instance()
     cone_detector = ConeDetector(camera_handler)
     i = 0
     while True:

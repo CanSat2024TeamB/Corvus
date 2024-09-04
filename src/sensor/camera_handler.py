@@ -92,8 +92,7 @@ class CameraHandler:
 class ConeDetector:
     IOU_THRESHOLD = 0.1
 
-    def __init__(self, camera_handler, model_path: str = Path(__file__).parent.parent.parent.joinpath("assets/model/cone_ncnn_model_v9_320_opt"), imgsz = 320):
-        self.camera_handler: CameraHandler = camera_handler
+    def __init__(self, model_path: str = Path(__file__).parent.parent.parent.joinpath("assets/model/cone_ncnn_model_v9_320_opt"), imgsz = 320):
         cone_detector.load_model(str(model_path), imgsz)
 
         self.frame = None
@@ -142,9 +141,10 @@ class ConeDetector:
             return [x / width * 2 - 1, 1 - y / height * 2]
     
     def detector(self, conf = IOU_THRESHOLD, use_color_assist = False):
+        camera_handler = CameraHandler.get_instance()
         while self.finished.value == 0:
             print("capturing...")
-            frame = self.camera_handler.capture_bgr()
+            frame = camera_handler.capture_bgr()
             print("captured")
 
             pos = cone_detector.get_pos(frame, conf)
