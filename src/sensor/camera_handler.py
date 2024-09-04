@@ -97,24 +97,20 @@ class ConeDetector:
         cone_detector.load_model(str(model_path), imgsz)
 
         self.frame = None
-        self.pos = [None, None]
+        self.pos = multiprocessing.Array("f", 2)
+        self.pos[0] = -2
+        self.pos[1] = -2
         self.started = False
-        self.finished = False
+        self.finished = multiprocessing.Value("b", 0)
     
-    def get_pos(self, use_color_assist = False):
-        pos = self.pos
-
-        if pos[0] is None and use_color_assist: # 機械学習による推論で物体推定ができなかった場合色情報をもとに推定を行う
-            frame = self.frame
-
-            color_pos = self.calc_color_center(frame)
-            if color_pos[0] is not None:
-                print("found cone using color assist")
-                print("cone pos:", color_pos)
-
-            return color_pos
-        else:
-            return pos
+    def get_pos(self):
+        pos = [None, None]
+        pos[0] = self.pos[0]
+        pos[1] = self.pos[1]
+        if pos[0] < -1:
+            pos = [None, None]
+        
+        return pos
     
     def calc_color_center(self, frame):
         if frame is None:
@@ -145,27 +141,35 @@ class ConeDetector:
             y = result["m01"] / result["m00"]
             return [x / width * 2 - 1, 1 - y / height * 2]
     
-    def detector(self, conf = IOU_THRESHOLD):
-        while not self.finished:
+    def detector(self, conf = IOU_THRESHOLD, use_color_assist = False):
+        while self.finished.value == 0:
             print("capturing...")
             frame = self.camera_handler.capture_bgr()
             print("captured")
-            pos = cone_detector.get_pos(frame, conf)
-            if pos[0] < -1:
-                self.pos = [None, None]
-            else:
-                self.pos = pos
 
-    def start(self, conf = IOU_THRESHOLD):
+            pos = cone_detector.get_pos(frame, conf)
+
+            if pos[0] is None and use_color_assist: # 機械学習による推論で物体推定ができなかった場合色情報をもとに推定を行う
+                color_pos = self.calc_color_center(frame)
+                if color_pos[0] is not None:
+                    print("found cone using color assist")
+                pos = color_pos
+
+            self.pos[0] = pos[0]
+            self.pos[1] = pos[1]
+
+        self.finished.value = 0
+
+    def start(self, conf = IOU_THRESHOLD, use_color_assist = False):
         if self.started:
             return
         
-        process = multiprocessing.Process(target = self.detector, args = (conf,), daemon = True)
+        process = multiprocessing.Process(target = self.detector, args = (conf, use_color_assist,), daemon = True)
         process.start()
         self.started = True
     
     def stop(self):
-        self.finished = True
+        self.finished.value = 1
         self.started = False
 
     def capture_cone_position(self, conf = IOU_THRESHOLD, use_color_assist = False):

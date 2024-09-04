@@ -64,13 +64,13 @@ def test_color_detection(): ###色認識だけ？
 
 def test_detection_using_color():
     cone_detector = ConeDetector(camera_handler)
-    cone_detector.start(0.3)
+    cone_detector.start(0.3, True)
 
     pos_prev = [None, None]
     start = time.perf_counter()
 
     while True:
-        pos = cone_detector.get_pos(use_color_assist = True)
+        pos = cone_detector.get_pos()
         if pos_prev[0] is None:
             if pos[0] is None:
                 continue
