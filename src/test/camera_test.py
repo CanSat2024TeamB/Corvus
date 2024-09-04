@@ -81,7 +81,11 @@ def invoke(finished, arr):
             arr[0] = pos[0]
             arr[1] = pos[1]
 
-def test_detection_using_color():
+async def test_detection_using_color():
+    print("sleeping...")
+    await asyncio.sleep(3)
+    print("awaked")
+
     finished = multiprocessing.Value("b", 0)
     arr = multiprocessing.Array("f", 2)
     process = multiprocessing.Process(target=invoke, args=(finished, arr,), daemon=True)
@@ -132,17 +136,9 @@ async def counter():
 
 async def test():
     count_task = asyncio.create_task(counter())
-    await count_task
-    print("sleeping...")
-    await asyncio.sleep(3)
-    print("awaked")
     task = (asyncio.create_task(test_detection_using_color()))
+    await count_task
     await task
-
-    try:
-        await asyncio.Future()
-    except asyncio.CancelledError:
-        print("Main loop cancelled")
 
 if __name__ == "__main__":
     asyncio.run(test())
