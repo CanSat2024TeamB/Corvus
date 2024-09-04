@@ -35,7 +35,7 @@ class PressureHandler:
             self.error_count += 1
             if self.error_count >= self.max_errors:
                 self.CANUSEPRESSURE = False
-            return None
+            return 0
         
         
     def ave_pressure(self):
