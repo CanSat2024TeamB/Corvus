@@ -94,7 +94,8 @@ async def test_detection_using_color():
     pos_prev = [None, None]
     start = time.perf_counter()
 
-    while True:
+    for i in range(200):
+        await asyncio.sleep(0.1)
         pos = [None, None]
         if arr[0] >= -1:
             pos[0] = arr[0]
@@ -111,6 +112,8 @@ async def test_detection_using_color():
         print(pos)
         start = time.perf_counter()
         pos_prev = pos
+    
+    finished.value = 1
 
 def test_detection_using_color2():
     camera_handler = CameraHandler.get_instance()
