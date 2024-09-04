@@ -136,6 +136,8 @@ async def counter():
         print(i)
         i += 1
         await asyncio.sleep(0.05)
+        if i > 600:
+            break
 
 async def test():
     count_task = asyncio.create_task(counter())
