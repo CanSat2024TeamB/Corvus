@@ -143,6 +143,8 @@ class FlightController:
         #self.target_altitude = target_coordinates.altitude()
         self.current_AMSL = self.position_manager.adjusted_coordinates_AMSL()
         self.current_lidar_alt = self.position_manager.adjusted_altitude()
+
+        self.set_interval_waypoint(10) ##ゴール10m手前に目標地点を設置 不要ならコメントアウト
         
         print('current AMSL',self.current_AMSL)
         print('current lidar',self.current_lidar_alt)
@@ -201,6 +203,12 @@ class FlightController:
             yaw_deg =  90.0 - math.degrees(math.atan2(lon_dist, lat_dist))
             print(yaw_deg)
             return yaw_deg
+    
+    def set_interval_waypoint(self, radious_m):
+            phi = self.calculate_yaw_angle()
+            self.target_latitude -= radious_m * math.cos(math.radians(phi))/self.lat_unit
+            self.target_latitude -= radious_m * math.sin(math.radians(phi))/self.lat_unit
+            return
 
 ##############################################################################################################
 
