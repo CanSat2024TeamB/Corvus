@@ -65,7 +65,7 @@ def test_color_detection(): ###色認識だけ？
         cone_detector.draw_circle_and_save(image, pos[0], pos[1], f"/home/admin/corvus/assets/log/color_detect_{datetime.datetime.now().strftime('%Y-%m-%d_%H:%M:%S')}.png")
         time.sleep(1)
 
-def start(finished, arr):
+def invoke(finished, arr):
     camera_handler = CameraHandler.get_instance()
     cone_detector = ConeDetector(camera_handler)
     while finished.value == 0:
@@ -77,7 +77,7 @@ def start(finished, arr):
 def test_detection_using_color():
     finished = multiprocessing.Value("b", 0)
     arr = multiprocessing.Array("f", 2)
-    process = multiprocessing.Process(target=start, args=(finished, pos,), daemon=True)
+    process = multiprocessing.Process(target=invoke, args=(finished, pos,), daemon=True)
     process.start()
 
     pos_prev = [None, None]
