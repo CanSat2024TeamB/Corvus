@@ -144,7 +144,7 @@ class FlightController:
         self.current_AMSL = self.position_manager.adjusted_coordinates_AMSL()
         self.current_lidar_alt = self.position_manager.adjusted_altitude()
 
-        self.set_interval_waypoint(10) ##ゴール10m手前に目標地点を設置 不要ならコメントアウト
+        #self.set_interval_waypoint(10) ##ゴール10m手前に目標地点を設置 不要ならコメントアウト
         
         print('current AMSL',self.current_AMSL)
         print('current lidar',self.current_lidar_alt)
@@ -580,7 +580,6 @@ class FlightController:
                             print("restarting searching cone")
                             return await approach_cone(self)
                     
-                    await asyncio.sleep(0.1)
                     print(f"lidar value: {self.position_manager.adjusted_altitude()}")
                     if self.position_manager.adjusted_altitude() < LAND_ALTITUDE:
                         print("got ready to land")
@@ -624,7 +623,7 @@ class FlightController:
         PROB_THRESHOLD = 0.2
         LAND_ALTITUDE = 1 #コーンに接近していってlandに移行する高度
         DECENDING_SPEED = 0.5 #降下速度
-        ADJUST_FACTOR = 1.2 #上下左右方向の補正係数(1.0が無補正、値を大きくすると左右方向の補正が強くなる)
+        ADJUST_FACTOR = 2.0 #上下左右方向の補正係数(1.0が無補正、値を大きくすると左右方向の補正が強くなる)
 
         print("checking camera connection...")
         if not self.camera_handler.is_connected():
