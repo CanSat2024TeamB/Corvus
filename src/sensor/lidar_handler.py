@@ -1,13 +1,15 @@
 import asyncio
-from mavsdk import System
+
+import multiprocessing
 
 class LiDARHandler:
     def __init__(self, drone):
-        self.drone: System = drone
-        self.altitude: float = -1.0
+        self.drone = drone
+        self.altitude = multiprocessing.Value("f", -1.0)
 
     def update_altitude(self, altitude: float) -> None:
-        self.altitude = altitude
+        print("lidar updated", altitude)
+        self.altitude.value = altitude
         return
 ###################################################以下オープンにする    
     async def invoke_loop(self) -> None:

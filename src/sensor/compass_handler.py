@@ -1,18 +1,27 @@
 import asyncio
-import mavsdk 
+import mavsdk
+
+import multiprocessing
+
 from control.attitude import Attitude
 
 class CompassHandler:
     def __init__(self, drone):
         self.drone = drone
-        self.attitude = Attitude()
+        self.roll_deg = multiprocessing.Value("f", 0.0)
+        self.pitch_deg = multiprocessing.Value("f", 0.0)
+        self.yaw_deg = multiprocessing.Value("f", 0.0)
+        self.quaternion = multiprocessing.Array("f", 4)
 
     async def update_attitude(self, euler, quaternion) -> None:
         """Update the attitude with the latest sensor data"""
-        self.attitude.set_roll(euler.roll_deg)
-        self.attitude.set_pitch(euler.pitch_deg)
-        self.attitude.set_yaw(euler.yaw_deg)
-        self.attitude.set_quaternion(quaternion.w, quaternion.x, quaternion.y, quaternion.z)
+        self.roll_deg.value = euler.roll_deg
+        self.pitch_deg.value = euler.pitch_deg
+        self.yaw_deg.value = euler.yaw_deg
+        self.quaternion[0] = quaternion.w
+        self.quaternion[1] = quaternion.x
+        self.quaternion[2] = quaternion.y
+        self.quaternion[3] = quaternion.z
         return
  #############################################################以下がオープン
 
@@ -28,7 +37,5 @@ class CompassHandler:
 
 
     def compass_attitude(self) -> Attitude:
-        return self.attitude
-    
-
+        return Attitude(self.roll_deg.value, self.pitch_deg.value, self.yaw_deg.value, self.quaternion[0], self.quaternion[1], self.quaternion[2], self.quaternion[3])
     
