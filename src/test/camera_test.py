@@ -10,6 +10,7 @@ from sensor.camera_handler import CameraHandler, ConeDetector
 
 import cv2
 
+import asyncio
 import multiprocessing
 
 # try:
@@ -69,7 +70,10 @@ def invoke(finished, arr):
     camera_handler = CameraHandler.get_instance()
     cone_detector = ConeDetector(camera_handler)
     while finished.value == 0:
+        start = time.perf_counter()
         pos = cone_detector.capture_cone_position(0.3, True)
+        end = time.perf_counter()
+        print("detect time:", (end - start) * 1000, "ms")
         if pos[0] is None:
             arr[0] = -2
             arr[1] = -2
@@ -119,5 +123,20 @@ def test_detection_using_color2():
 
         time.sleep(1)
 
+async def counter():
+    i = 0
+    while True:
+        print(i)
+        i += 1
+        await asyncio.sleep(0.05)
+
+async def test():
+    asyncio.create_task(counter())
+    print("sleeping...")
+    await asyncio.sleep(3)
+    print("awaked")
+    asyncio.create_task(test_detection_using_color())
+    asyncio.sleep(float('inf'))
+
 if __name__ == "__main__":
-    test_detection_using_color()
+    asyncio.run(test())
