@@ -141,8 +141,12 @@ async def test():
     print("sleeping...")
     await asyncio.sleep(3)
     print("awaked")
-    task.extend(asyncio.create_task(test_detection_using_color()))
-    asyncio.sleep(float('inf'))
+    task.append(asyncio.create_task(test_detection_using_color()))
+
+    try:
+        await asyncio.Future()
+    except asyncio.CancelledError:
+        print("Main loop cancelled")
 
 if __name__ == "__main__":
     asyncio.run(test())
