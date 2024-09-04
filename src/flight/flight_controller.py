@@ -580,6 +580,7 @@ class FlightController:
                             print("restarting searching cone")
                             return await approach_cone(self)
                     
+                    await asyncio.sleep(0.1)
                     print(f"lidar value: {self.position_manager.adjusted_altitude()}")
                     if self.position_manager.adjusted_altitude() < LAND_ALTITUDE:
                         print("got ready to land")
