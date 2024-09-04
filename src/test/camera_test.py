@@ -71,13 +71,16 @@ def invoke(finished, arr):
     while finished.value == 0:
         pos = cone_detector.capture_cone_position(0.3, True)
         if pos[0] is None:
-            pos[0] = -2
-            pos[1] = -2
+            arr[0] = -2
+            arr[1] = -2
+        else:
+            arr[0] = pos[0]
+            arr[1] = pos[1]
 
 def test_detection_using_color():
     finished = multiprocessing.Value("b", 0)
     arr = multiprocessing.Array("f", 2)
-    process = multiprocessing.Process(target=invoke, args=(finished, pos,), daemon=True)
+    process = multiprocessing.Process(target=invoke, args=(finished, arr,), daemon=True)
     process.start()
 
     pos_prev = [None, None]
