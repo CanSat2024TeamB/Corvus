@@ -302,7 +302,7 @@ class DroneController:
         print("finished taking off")
         await self.flight_controller.hovering(5)
         print('goto started')
-        await self.flight_controller.go_to_location(speed, target_coordinates, 15)
+        await self.flight_controller.go_to_location(speed, target_coordinates, 0.1)
         print("start precise landing")
         try:
             await self.flight_controller.precise_land_right_angle()
@@ -343,7 +343,7 @@ class DroneController:
         print("finished taking off")
         await self.flight_controller.hovering(5)
         print('goto started')
-        await self.flight_controller.go_to_location(speed, target_coordinates, 1)
+        await self.flight_controller.go_to_location(speed, target_coordinates, 0.1)
         print("start precise landing")
         await self.flight_controller.offboard_land_using_color()
         print('end')
