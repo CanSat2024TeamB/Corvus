@@ -4,26 +4,22 @@ from pathlib import Path
 sys.path.append(str(Path(__file__).parent.parent))
 
 import asyncio
+import multiprocessing
 from control.coordinates import Coordinates
 from pathlib import Path
 from config.config_manager import ConfigManager
 from drone.drone_controller import DroneController
 
 async def main():
-    # config_path: str = Path(__file__).resolve().parent.parent.joinpath("assets/config/config.ini")
-    # config = ConfigManager(config_path)
     drone = DroneController()
     await drone.connect()
 
     lora = drone.get_lora_instance()
     await lora.lora_start()
     await asyncio.sleep(5)
-    
-    # `invoke_sensor`の呼び出し
-    asyncio.create_task(drone.invoke_sensor())
 
-    # すぐに`invoke_sensor`タスクを開始する
-    await asyncio.sleep(1)
+    # `invoke_sensor`の呼び出し
+    drone.invoke_sensor()
 
     speed = 3.0
     target_coordinates = Coordinates(140.10804658799998, 35.770481484, 5.0)
