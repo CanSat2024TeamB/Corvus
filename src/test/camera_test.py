@@ -10,6 +10,8 @@ from sensor.camera_handler import CameraHandler, ConeDetector
 
 import cv2
 
+import multiprocessing
+
 # try:
 #     if not camera_handler.is_connected():
 #         raise RuntimeError("Camera is not connected. Stopped the precies land sequence.")
@@ -63,15 +65,30 @@ def test_color_detection(): ###色認識だけ？
         cone_detector.draw_circle_and_save(image, pos[0], pos[1], f"/home/admin/corvus/assets/log/color_detect_{datetime.datetime.now().strftime('%Y-%m-%d_%H:%M:%S')}.png")
         time.sleep(1)
 
+def start(finished, arr):
+    camera_handler = CameraHandler.get_instance()
+    cone_detector = ConeDetector(camera_handler)
+    while finished.value == 0:
+        pos = cone_detector.capture_cone_position(0.3, True)
+        if pos[0] is None:
+            pos[0] = -2
+            pos[1] = -2
+
 def test_detection_using_color():
-    cone_detector = ConeDetector()
-    cone_detector.start(0.3, True)
+    finished = multiprocessing.Value("b", 0)
+    arr = multiprocessing.Array("f", 2)
+    process = multiprocessing.Process(target=start, args=(finished, pos,), daemon=True)
+    process.start()
 
     pos_prev = [None, None]
     start = time.perf_counter()
 
     while True:
-        pos = cone_detector.get_pos()
+        pos = [None, None]
+        if arr[0] >= -1:
+            pos[0] = arr[0]
+            pos[1] = arr[1]
+        
         if pos_prev[0] is None:
             if pos[0] is None:
                 continue
@@ -100,4 +117,4 @@ def test_detection_using_color2():
         time.sleep(1)
 
 if __name__ == "__main__":
-    test_detection_using_color2()
+    test_detection_using_color()

@@ -92,9 +92,9 @@ class CameraHandler:
 class ConeDetector:
     IOU_THRESHOLD = 0.1
 
-    def __init__(self, model_path: str = Path(__file__).parent.parent.parent.joinpath("assets/model/cone_ncnn_model_v9_320_opt"), imgsz = 320):
+    def __init__(self, camera_handler: CameraHandler, model_path: str = Path(__file__).parent.parent.parent.joinpath("assets/model/cone_ncnn_model_v9_320_opt"), imgsz = 320):
         cone_detector.load_model(str(model_path), imgsz)
-
+        self.camera_handler = camera_handler
         self.frame = None
         self.pos = multiprocessing.Array("f", 2)
         self.pos[0] = -2
@@ -141,13 +141,13 @@ class ConeDetector:
             return [x / width * 2 - 1, 1 - y / height * 2]
     
     def detector(self, conf = IOU_THRESHOLD, use_color_assist = False):
-        camera_handler = CameraHandler.get_instance()
         while self.finished.value == 0:
             print("capturing...")
-            frame = camera_handler.capture_bgr()
+            frame = self.camera_handler.capture_bgr()
             print("captured")
 
             pos = cone_detector.get_pos(frame, conf)
+            print("hello")
 
             if pos[0] is None and use_color_assist: # 機械学習による推論で物体推定ができなかった場合色情報をもとに推定を行う
                 color_pos = self.calc_color_center(frame)
@@ -215,6 +215,7 @@ class ConeDetector:
             result = cv2.circle(image, (x, y), 25, color, thickness = 5)
         cv2.imwrite(output_path, result)
         return result
+
 
 # def test1():
 #     camera_handler = CameraHandler()
