@@ -123,6 +123,8 @@ def test_detection_using_color2():
 
         time.sleep(1)
 
+task = []
+
 async def counter():
     i = 0
     while True:
@@ -130,12 +132,16 @@ async def counter():
         i += 1
         await asyncio.sleep(0.05)
 
+async def invoke_counter():
+    task.extend(asyncio.create_task(counter()))
+    await asyncio.sleep(float('inf'))
+
 async def test():
-    asyncio.create_task(counter())
+    asyncio.create_task(invoke_counter())
     print("sleeping...")
     await asyncio.sleep(3)
     print("awaked")
-    asyncio.create_task(test_detection_using_color())
+    task.extend(asyncio.create_task(test_detection_using_color()))
     asyncio.sleep(float('inf'))
 
 if __name__ == "__main__":
