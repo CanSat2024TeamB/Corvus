@@ -10,6 +10,9 @@ async def main():
     drone = DroneController()
 
     await drone.connect()
+    lora = drone.get_lora_instance()
+    await lora.lora_start()
+    await asyncio.sleep(5)
     await drone.arm()
     drone.invoke_sensor()
 
