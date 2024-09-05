@@ -114,6 +114,7 @@ class DroneController:
 
     async def lora_write(self):
         while True:
+            await asyncio.sleep(5)
             #message_4 = str(self.position_manager.adjusted_altitude())
             message_5 = str(round(self.position_manager.adjusted_coordinates_lon(), 4))
             message_6 = str(round(self.position_manager.adjusted_coordinates_lat(), 4))
@@ -125,7 +126,7 @@ class DroneController:
             
             message = ' '.join([message_6, message_5])
             await self.lora.lora_send(message)
-            await asyncio.sleep(30)
+            await asyncio.sleep(25)
     
     async def lidar_test(self):
         while True:
