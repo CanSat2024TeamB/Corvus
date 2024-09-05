@@ -380,8 +380,8 @@ class FlightController:
         yaw_deg = self.position_manager.yaw_deg()
         r = np.array([[cone_x*self.current_lidar_alt*math.tan(math.radians(self.theta[0]))],
                           [cone_y*self.current_lidar_alt*math.tan(math.radians(self.theta[1]))]]) #機体軸における、目標地点との差(ｍ)
-        rotate = np.array([[math.cos(math.radians(yaw_deg)), -math.sin(math.radians(yaw_deg))],
-                               [math.sin(math.radians(yaw_deg)), math.cos(math.radians(yaw_deg))]])
+        rotate = np.array([[math.cos(math.radians(yaw_deg)), math.sin(math.radians(yaw_deg))],
+                               [-math.sin(math.radians(yaw_deg)), math.cos(math.radians(yaw_deg))]])
         r_e = np.dot(rotate,r).flatten() #地面固定座標系における、目標地点との差(ｍ)
         print(f"east:{r_e[0]}, north:{r_e[1]}")
         error_lon = r_e[0] / self.lon_unit
