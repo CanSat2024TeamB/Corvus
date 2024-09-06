@@ -620,12 +620,12 @@ class FlightController:
                     if self.position_manager.adjusted_altitude() < LAND_ALTITUDE:
                         print("got ready to land")
                         # await set_velocity_body(self, VelocityBodyYawspeed(0.0, 0.0, 0.0, 0.0))
-                        return
+                        return True
                     
             else:
                 print("Could not find cone in the searching process.")
                 # await set_velocity_body(self, VelocityBodyYawspeed(0.0, 0.0, 0.0, 0.0))
-                return
+                return False
 
         print("start precise landing")
 
@@ -641,21 +641,21 @@ class FlightController:
             process = multiprocessing.Process(target = self.invoke_detection, args = (PROB_THRESHOLD, finished, arr), daemon = True)
             process.start()
 
-            await approach_cone(self)
-
-            #await cone_detector.stop()
-            #print("stopped cone detector loop")
+            result = await approach_cone(self)
+            
+            finished.value = 1
             await self.drone.offboard.stop()
             print("finished drone offboard control")
 
-            await self.land()
-            finished.value = 1
-
-            return True
+            if result:
+                print("got to the target. Landing...")
+                await self.land()
+                return True
+            else:
+                print("Could not get to the target")
+                return False
         except OffboardError as error:
             print(f"Starting offboard controll failed, {error._result.result}")
-            finished.value = 1
-
             return False
 ##########################################################################################################################        
     async def offboard_land_using_color(self):
