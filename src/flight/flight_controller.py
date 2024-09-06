@@ -638,8 +638,13 @@ class FlightController:
             #print("setting altitude 3 m")
             #await set_altitude(3)
             
-            process = multiprocessing.Process(target = self.invoke_detection, args = (PROB_THRESHOLD, finished, arr), daemon = True)
-            process.start()
+            try:
+                process = multiprocessing.Process(target = self.invoke_detection, args = (PROB_THRESHOLD, finished, arr), daemon = True)
+                process.start()
+            except RuntimeError as error:
+                print(f"Camera does not connected, {error._result.result}")
+                finished.value = 1
+                return False
 
             result = await approach_cone(self)
             
