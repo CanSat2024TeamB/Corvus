@@ -8,6 +8,7 @@ import numpy as np
 
 import time
 import datetime
+import multiprocessing
 
 from control.position_manager import PositionManager
 from control.coordinates import Coordinates
@@ -20,8 +21,6 @@ class FlightController:
         self.drone: System = drone
         self.position_manager: PositionManager = position_manager
         self.logger = logger
-        self.camera_handler: CameraHandler = CameraHandler.get_instance()
-        self.cone_detector: ConeDetector = ConeDetector(self.camera_handler)
         self.target_latitude = 0
         self.target_longitude = 0
         self.target_altitude = 0
@@ -218,15 +217,17 @@ class FlightController:
 ##############################################################################################################
 
     async def precise_land_slope(self) -> bool:
-        if not self.camera_handler.is_connected():
+        camera_handler = CameraHandler.get_instance()
+        cone_detector = ConeDetector(camera_handler)
+        if not camera_handler.is_connected():
             await self.go_to_location(1.0, Coordinates(self.target_longitude,self.target_latitude,self.target_final_altitude), 1.0)
             await self.land()
             raise RuntimeError("Camera is not connected. Stopped the precies land sequence.")
      
         while self.detected_pos == [None,None]:
                 await asyncio.sleep(1)
-                self.detected_pos = self.cone_detector.capture_cone_position_and_save(str(Path(__file__).parent.parent.parent.joinpath(f"assets/log/img_{datetime.datetime.now().strftime('%Y-%m-%d_%H:%M:%S')}.jpg")), 0.3)
-                #self.detected_pos = self.cone_detector.get_pos(use_color_assist = True)
+                self.detected_pos = cone_detector.capture_cone_position_and_save(str(Path(__file__).parent.parent.parent.joinpath(f"assets/log/img_{datetime.datetime.now().strftime('%Y-%m-%d_%H:%M:%S')}.jpg")), 0.3)
+                #self.detected_pos = cone_detector.get_pos(use_color_assist = True)
                 print(self.detected_pos)
                 self.nondetected_counter += 1
                 if self.nondetected_counter == self.nondetected_counter_max:
@@ -265,16 +266,18 @@ class FlightController:
         return
 ################################################################################################################################################
     async def precise_land_right_angle(self) -> bool:
-        if not self.camera_handler.is_connected():
+        camera_handler = CameraHandler.get_instance()
+        cone_detector = ConeDetector(camera_handler)
+        if not camera_handler.is_connected():
             await self.go_to_location(1.0, Coordinates(self.target_longitude,self.target_latitude,self.target_final_altitude), 0.1)
             await self.land()
             raise RuntimeError("Camera is not connected. Stopped the precies land sequence.")
      
         while self.detected_pos == [None,None]:
                 await asyncio.sleep(1)
-                self.detected_pos = self.cone_detector.capture_cone_position_and_save(str(Path(__file__).parent.parent.parent.joinpath(f"assets/log/img_{datetime.datetime.now().strftime('%Y-%m-%d_%H:%M:%S')}.jpg")), 0.3)
+                self.detected_pos = cone_detector.capture_cone_position_and_save(str(Path(__file__).parent.parent.parent.joinpath(f"assets/log/img_{datetime.datetime.now().strftime('%Y-%m-%d_%H:%M:%S')}.jpg")), 0.3)
                 print(self.detected_pos)
-                #self.detected_pos = self.cone_detector.get_pos(use_color_assist = True)
+                #self.detected_pos = cone_detector.get_pos(use_color_assist = True)
                 #print(self.detected_pos)
                 self.nondetected_counter += 1
                 if self.nondetected_counter == self.nondetected_counter_max:
@@ -315,15 +318,17 @@ class FlightController:
         return math.degrees(math.atan2(x, y)) ##-180~180
         
     async def precise_land_right_angle_calc_confirm_test(self,delta):
-        if not self.camera_handler.is_connected():
+        camera_handler = CameraHandler.get_instance()
+        cone_detector = ConeDetector(camera_handler)
+        if not camera_handler.is_connected():
             print('camera cannot use')
             return
      
         while self.detected_pos == [None,None]:
                 await asyncio.sleep(1)
-                self.detected_pos = self.cone_detector.capture_cone_position_and_save(str(Path(__file__).parent.parent.parent.joinpath(f"assets/log/img_{datetime.datetime.now().strftime('%Y-%m-%d_%H:%M:%S')}.jpg")), 0.3)
+                self.detected_pos = cone_detector.capture_cone_position_and_save(str(Path(__file__).parent.parent.parent.joinpath(f"assets/log/img_{datetime.datetime.now().strftime('%Y-%m-%d_%H:%M:%S')}.jpg")), 0.3)
                 print(self.detected_pos)
-                #self.detected_pos = self.cone_detector.get_pos(use_color_assist = True)
+                #self.detected_pos = cone_detector.get_pos(use_color_assist = True)
                 #print(self.detected_pos)
                 self.nondetected_counter += 1
                 if self.nondetected_counter == self.nondetected_counter_max:
@@ -343,23 +348,25 @@ class FlightController:
         return 
 ######################################################################################################################################################    
     async def precise_land_vertical(self):
-        if not self.camera_handler.is_connected():
+        camera_handler = CameraHandler.get_instance()
+        cone_detector = ConeDetector(camera_handler)
+        if not camera_handler.is_connected():
             print('camera cannot use')
             await self.land()
             return
      
         while self.detected_pos == [None,None]:
             await asyncio.sleep(1)
-            image = self.camera_handler.capture_bgr()
-            self.detected_pos = self.cone_detector.calc_color_center(image)
+            image = camera_handler.capture_bgr()
+            self.detected_pos = cone_detector.calc_color_center(image)
             print(self.detected_pos)
-            self.cone_detector.draw_circle_and_save(
+            cone_detector.draw_circle_and_save(
                 image, 
                 self.detected_pos[0], 
                 self.detected_pos[1], 
                 f"/home/admin/corvus/assets/log/color_detect_{datetime.datetime.now().strftime('%Y-%m-%d_%H:%M:%S')}.png"
             )
-            #self.detected_pos = self.cone_detector.get_pos(use_color_assist = True)
+            #self.detected_pos = cone_detector.get_pos(use_color_assist = True)
             #print(self.detected_pos)
             self.nondetected_counter += 1
             if self.nondetected_counter == self.nondetected_counter_max:
@@ -393,22 +400,24 @@ class FlightController:
     
     
     async def precise_land_vertical_calc_test(self):
-        if not self.camera_handler.is_connected():
+        camera_handler = CameraHandler.get_instance()
+        cone_detector = ConeDetector(camera_handler)
+        if not camera_handler.is_connected():
             print('camera cannot use')
             return
      
         while self.detected_pos == [None,None]:
             await asyncio.sleep(1)
-            image = self.camera_handler.capture_bgr()
-            self.detected_pos = self.cone_detector.calc_color_center(image)
+            image = camera_handler.capture_bgr()
+            self.detected_pos = cone_detector.calc_color_center(image)
             print(self.detected_pos)
-            self.cone_detector.draw_circle_and_save(
+            cone_detector.draw_circle_and_save(
                 image, 
                 self.detected_pos[0], 
                 self.detected_pos[1], 
                 f"/home/admin/corvus/assets/log/color_detect_{datetime.datetime.now().strftime('%Y-%m-%d_%H:%M:%S')}.png"
             )
-            #self.detected_pos = self.cone_detector.get_pos(use_color_assist = True)
+            #self.detected_pos = cone_detector.get_pos(use_color_assist = True)
             #print(self.detected_pos)
             self.nondetected_counter += 1
             if self.nondetected_counter == self.nondetected_counter_max:
@@ -434,6 +443,24 @@ class FlightController:
 
     #########################################################################################################
 
+    def invoke_detection(self, conf, finished, arr):
+        camera_handler = CameraHandler.get_instance()
+        cone_detector = ConeDetector(camera_handler)
+
+        print("checking camera connection...")
+        if not camera_handler.is_connected():
+            raise RuntimeError("Camera is not connected. Stopped the precies land sequence.")
+        print("camaera connection checked")
+
+        while finished.value == 0:
+            pos = cone_detector.capture_cone_position_and_save(f"/home/admin/corvus/assets/log/detect_{datetime.datetime.now().strftime('%Y-%m-%d_%H:%M:%S')}.png", conf, use_color_assist = True)
+            if pos[0] is None:
+                arr[0] = -2
+                arr[1] = -2
+            else:
+                arr[0] = pos[0]
+                arr[1] = pos[1]
+
     async def offboard_precise_land(self) -> bool:        
         CAMERA_YAW_DEG = 0 #pixhawk正面からはかったカメラの指向方向 (deg, 右回り正)
         LAND_ALTITUDE = 0.1 #コーンに接近していってlandに移行する高度
@@ -441,10 +468,10 @@ class FlightController:
         DECENDING_SPEED = 0.5 #降下速度
         ADJUST_FACTOR = 1.5 #上下左右方向の補正係数(1.0が無調整)
 
-        print("checking camera connection...")
-        if not self.camera_handler.is_connected():
-            raise RuntimeError("Camera is not connected. Stopped the precies land sequence.")
-        print("camaera connection checked")
+        arr = multiprocessing.Array("f", 2)
+        arr[0] = -2
+        arr[1] = -2
+        finished = multiprocessing.Value("b", 0)
 
         position = PositionNedYaw(0.0, 0.0, 0.0, 0.0)
         velocity_body = VelocityBodyYawspeed(0.0, 0.0, 0.0, 0.0)
@@ -507,14 +534,21 @@ class FlightController:
             #down_vec = math.cos(math.radians(45 + pos[1] * self.theta[1] / 2))
             return VelocityBodyYawspeed(front_vec, right_vec, down_vec, 0.0)
         
+        def get_pos(self):
+            nonlocal arr
+            pos = [None, None]
+            if arr[0] >= -1:
+                pos[0] = arr[0]
+                pos[1] = arr[1]
+            return pos
+
         async def rotate_and_search_cone(self, rotate_rate: float) -> bool:
             search_time = 60 #この秒数見つからなかったら強制的に着陸
             await turn_clock_wise(self, rotate_rate)
             
             time_start = time.perf_counter()
             while True: ####### コーンがみつからなかったときに近くを徘徊するコードがまだない
-                #pos = self.cone_detector.capture_cone_position(PROB_THRESHOLD, use_color_assist = True)
-                pos = self.cone_detector.capture_cone_position_and_save(f"/home/admin/corvus/assets/log/detect_{datetime.datetime.now().strftime('%Y-%m-%d_%H:%M:%S')}.png", PROB_THRESHOLD, use_color_assist = True)
+                pos = get_pos(self)
 
                 if pos[0] is not None:
                     print("cone detected")
@@ -522,9 +556,8 @@ class FlightController:
                     await stop_rotation(self)
                     await asyncio.sleep(1)
 
-                    #pos = self.capture_cone_position(PROB_THRESHOLD, use_color_assist = True)
-                    pos = self.cone_detector.capture_cone_position_and_save(f"/home/admin/corvus/assets/log/detect_{datetime.datetime.now().strftime('%Y-%m-%d_%H:%M:%S')}.png", PROB_THRESHOLD, use_color_assist = True)
-
+                    pos = get_pos(self)
+                    
                     if pos[0] is not None:
                         print("cone position confirmed")
                         print(f"confirmed cone pos: {pos}")
@@ -532,6 +565,7 @@ class FlightController:
                     else:
                         return await rotate_and_search_cone(self, rotate_rate / 2) # コーンを認識して止まった後、静止状態でもう一回とって認識できなかったらゆっくり回ってもう一回（推定のラグを考慮）
 
+                await asyncio.sleep(0.1)
                 time_now = time.perf_counter()
                 if time_now - time_start > search_time:
                     return False
@@ -546,8 +580,8 @@ class FlightController:
                 # await set_velocity_body(self, multiply_velocity_body(calc_velocity_body_to_target(self), DECENDING_SPEED))
 
                 # while True:
-                #     #pos = self.cone_detector.capture_cone_position(PROB_THRESHOLD, use_color_assist = True)
-                #     pos = self.cone_detector.capture_cone_position_and_save(f"/home/admin/corvus/assets/log/detect_{datetime.datetime.now().strftime('%Y-%m-%d_%H:%M:%S')}.png", PROB_THRESHOLD, use_color_assist = True)
+                #     #pos = cone_detector.capture_cone_position(PROB_THRESHOLD, use_color_assist = True)
+                #     pos = cone_detector.capture_cone_position_and_save(f"/home/admin/corvus/assets/log/detect_{datetime.datetime.now().strftime('%Y-%m-%d_%H:%M:%S')}.png", PROB_THRESHOLD, use_color_assist = True)
                 #
                 #     if pos[0] is not None:
                 #         print("cone detected while approaching cone")
@@ -565,8 +599,8 @@ class FlightController:
                 #         return
 
                 while True:
-                    #pos = self.cone_detector.capture_cone_position(PROB_THRESHOLD, use_color_assist = True)
-                    pos = self.cone_detector.capture_cone_position_and_save(f"/home/admin/corvus/assets/log/detect_{datetime.datetime.now().strftime('%Y-%m-%d_%H:%M:%S')}.png", PROB_THRESHOLD, use_color_assist = True)
+                    #pos = cone_detector.capture_cone_position(PROB_THRESHOLD, use_color_assist = True)
+                    pos = get_pos(self)
 
                     if pos[0] is not None:
                         print("cone detected while approaching cone")
@@ -575,7 +609,8 @@ class FlightController:
                     else:
                         MISS_TOLERANCE = 1
                         for i in range(MISS_TOLERANCE):
-                            pos = self.cone_detector.capture_cone_position_and_save(f"/home/admin/corvus/assets/log/detect_{datetime.datetime.now().strftime('%Y-%m-%d_%H:%M:%S')}.png", PROB_THRESHOLD, use_color_assist = True)
+                            pos = get_pos(self)
+                            await asyncio.sleep(0.5)
                             if pos[0] is not None:
                                 break
                         
@@ -585,16 +620,17 @@ class FlightController:
                             print("restarting searching cone")
                             return await approach_cone(self)
                     
+                    await asyncio.sleep(0.1)
                     print(f"lidar value: {self.position_manager.adjusted_altitude()}")
                     if self.position_manager.adjusted_altitude() < LAND_ALTITUDE:
                         print("got ready to land")
                         # await set_velocity_body(self, VelocityBodyYawspeed(0.0, 0.0, 0.0, 0.0))
-                        return
+                        return True
                     
             else:
                 print("Could not find cone in the searching process.")
                 # await set_velocity_body(self, VelocityBodyYawspeed(0.0, 0.0, 0.0, 0.0))
-                return
+                return False
 
         print("start precise landing")
 
@@ -607,18 +643,27 @@ class FlightController:
             #print("setting altitude 3 m")
             #await set_altitude(3)
             
-            #self.cone_detector.start(PROB_THRESHOLD)
+            try:
+                process = multiprocessing.Process(target = self.invoke_detection, args = (PROB_THRESHOLD, finished, arr), daemon = True)
+                process.start()
+            except RuntimeError as error:
+                print(f"Camera does not connected, {error._result.result}")
+                finished.value = 1
+                return False
 
-            await approach_cone(self)
-
-            #await self.cone_detector.stop()
-            #print("stopped cone detector loop")
+            result = await approach_cone(self)
+            
+            finished.value = 1
             await self.drone.offboard.stop()
             print("finished drone offboard control")
 
-            await self.land()
-
-            return True
+            if result:
+                print("got to the target. Landing...")
+                await self.land()
+                return True
+            else:
+                print("Could not get to the target")
+                return False
         except OffboardError as error:
             print(f"Starting offboard controll failed, {error._result.result}")
             return False
@@ -630,8 +675,10 @@ class FlightController:
         DECENDING_SPEED = 0.5 #降下速度
         ADJUST_FACTOR = 2.0 #上下左右方向の補正係数(1.0が無補正、値を大きくすると左右方向の補正が強くなる)
 
+        camera_handler = CameraHandler.get_instance()
+        cone_detector = ConeDetector(camera_handler)
         print("checking camera connection...")
-        if not self.camera_handler.is_connected():
+        if not camera_handler.is_connected():
             raise RuntimeError("Camera is not connected. Stopped the precies land sequence.")
         print("camaera connection checked")
 
@@ -677,18 +724,18 @@ class FlightController:
 
         pos = [None, None]
         for i in range(10):
-            image = self.camera_handler.capture_bgr()
-            pos = self.cone_detector.calc_color_center(image)
-            self.cone_detector.draw_circle_and_save(image, pos[0], pos[1], f"/home/admin/corvus/assets/log/color_detect_{datetime.datetime.now().strftime('%Y-%m-%d_%H:%M:%S')}.png")
+            image = camera_handler.capture_bgr()
+            pos = cone_detector.calc_color_center(image)
+            cone_detector.draw_circle_and_save(image, pos[0], pos[1], f"/home/admin/corvus/assets/log/color_detect_{datetime.datetime.now().strftime('%Y-%m-%d_%H:%M:%S')}.png")
             if pos[0] is not None:
                 break
             await asyncio.sleep(1)
 
         if pos[0] is not None:
             while True:
-                image = self.camera_handler.capture_bgr()
-                pos = self.cone_detector.calc_color_center(image)
-                self.cone_detector.draw_circle_and_save(image, pos[0], pos[1], f"/home/admin/corvus/assets/log/color_detect_{datetime.datetime.now().strftime('%Y-%m-%d_%H:%M:%S')}.png")
+                image = camera_handler.capture_bgr()
+                pos = cone_detector.calc_color_center(image)
+                cone_detector.draw_circle_and_save(image, pos[0], pos[1], f"/home/admin/corvus/assets/log/color_detect_{datetime.datetime.now().strftime('%Y-%m-%d_%H:%M:%S')}.png")
 
                 await set_velocity_body(self, multiply_velocity_body(calc_velocity_body_to_target(self, pos), DECENDING_SPEED))
 

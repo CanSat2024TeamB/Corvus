@@ -7,6 +7,29 @@ from case.case_handler import CaseHandler
 import logger.flight_log as flight_log
 import time
 
+async def sequence_test_goto(drone: DroneController, speed, target_coordinates: Coordinates):
+    logger = drone.get_logger_instance()
+    print("arming")
+    logger.write("arming")
+    await drone.arm()
+    print("taking off...")
+    logger.write("taking off...")
+    await drone.flight_controller.takeoff(target_coordinates.altitude())
+    print('reached')
+    logger.write('reached')
+    await drone.flight_controller.hovering(5)
+    print('goto started')
+    logger.write('goto started')
+    await drone.flight_controller.go_to_location(speed, target_coordinates, 0.5)
+    print('goto finished start hovering')
+    logger.write('goto finished start hovering')
+    await drone.flight_controller.hovering(2)
+    print('hovering finished start landing')
+    logger.write('hovering finished start landing')
+    await drone.flight_controller.land()
+    print("landed")
+    logger.write("landed")
+
 async def main():
     drone = DroneController()
     case = CaseHandler(drone)
@@ -91,7 +114,7 @@ async def main():
     target_coordinates_2 = Coordinates(139.987197098,40.142462332,hov_alt)
     
     
-    await drone.add_sequence_task(drone.sequence_test_goto(speed, target_coordinates_2))
+    await drone.add_sequence_task(sequence_test_goto(drone, speed, target_coordinates_2))
     try:
         await asyncio.Future()
     except asyncio.CancelledError:

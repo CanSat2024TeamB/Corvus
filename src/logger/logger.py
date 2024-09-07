@@ -18,6 +18,8 @@ class Logger:
         return True
 
     def write(self, *msg: str) -> bool:
+        print(' '.join(msg))
+        
         timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         with open(self.path, 'a', encoding="UTF-8") as f:
             f.write(f"{timestamp} {' '.join(msg)}\n")
