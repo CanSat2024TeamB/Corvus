@@ -2,7 +2,6 @@ import asyncio
 from mavsdk import System
 
 from sensor.lidar_handler import LiDARHandler
-from control.coordinates import Coordinates
 from control.battery import Battery_watch
 from control.gps_handler import GPSHandler
 from control.position_manager import PositionManager
@@ -10,7 +9,6 @@ from control.compass_handler import CompassHandler
 from flight.flight_controller import FlightController
 from logger.logger import Logger
 from sensor.acceleration_velocity import Acceleration_Velocity
-from sensor.camera_handler import CameraHandler
 from lora.lora import Lora
 
 
@@ -98,37 +96,7 @@ class DroneController:
             await asyncio.sleep(0.1)
         
         return True
-    
-    async def logger_write(self):
-        while True:
-            await asyncio.sleep(1)
-            message_1 = str(self.position_manager.adjusted_altitude())
-            message_2 = str(self.position_manager.adjusted_coordinates_lon())
-            message_3 = str(self.position_manager.adjusted_coordinates_lat())
-            #message_4 = str(self.ac_vel.get_velocity())
-            #message_5 = str(self.battery_watch.remaining_percent())
-            #message_6 = str(self.battery_watch.voltage_v())
-            #message_7 = str(self.battery_watch.temperature_degc())
-            
-            self.logger.write(message_1,message_2,message_3)
 
-    async def lora_write(self):
-        while True:
-            await asyncio.sleep(5)
-            #message_4 = str(self.position_manager.adjusted_altitude())
-            message_5 = str(round(self.position_manager.adjusted_coordinates_lon(), 4))
-            message_6 = str(round(self.position_manager.adjusted_coordinates_lat(), 4))
-
-            #message_4 = str(self.ac_vel.get_velocity())
-            #message_5 = str(self.battery_watch.remaining_percent())
-            #message_6 = str(self.battery_watch.voltage_v())
-            #message_7 = str(self.battery_watch.temperature_degc())
-            
-            message = ' '.join([message_6, message_5])
-            await self.lora.lora_send(message)
-            await asyncio.sleep(25)
-
-#############################################################################################
     async def invoke_sensor(self) -> None:
         # すべてのタスクをリストに追加
         self.tasks.extend([
@@ -164,6 +132,35 @@ class DroneController:
 
         for task in self.tasks:
             await task
+
+    async def logger_write(self):
+        while True:
+            await asyncio.sleep(1)
+            message_1 = str(self.position_manager.adjusted_altitude())
+            message_2 = str(self.position_manager.adjusted_coordinates_lon())
+            message_3 = str(self.position_manager.adjusted_coordinates_lat())
+            #message_4 = str(self.ac_vel.get_velocity())
+            #message_5 = str(self.battery_watch.remaining_percent())
+            #message_6 = str(self.battery_watch.voltage_v())
+            #message_7 = str(self.battery_watch.temperature_degc())
+            
+            self.logger.write(message_1,message_2,message_3)
+
+    async def lora_write(self):
+        while True:
+            await asyncio.sleep(5)
+            #message_4 = str(self.position_manager.adjusted_altitude())
+            message_5 = str(round(self.position_manager.adjusted_coordinates_lon(), 4))
+            message_6 = str(round(self.position_manager.adjusted_coordinates_lat(), 4))
+
+            #message_4 = str(self.ac_vel.get_velocity())
+            #message_5 = str(self.battery_watch.remaining_percent())
+            #message_6 = str(self.battery_watch.voltage_v())
+            #message_7 = str(self.battery_watch.temperature_degc())
+            
+            message = ' '.join([message_6, message_5])
+            await self.lora.lora_send(message)
+            await asyncio.sleep(25)
         
 ####################################################################################################
 
@@ -174,82 +171,4 @@ class DroneController:
     #     while True:
     #         await asyncio.sleep(1)
     #         if self.battery_watch.remaining_percent()<35:
-    #             await self.flight_controller.land()
-
-###############################################################################################################################
-
-    async def sequence_test_goto_and_precise_land_right_angle(self, speed, target_coordinates: Coordinates):
-        print("arming")
-        self.logger.write("arming")
-        await self.arm()
-        print("taking off...")
-        self.logger.write("taking off...")
-        await self.flight_controller.takeoff(target_coordinates.altitude())
-        print("finished taking off")
-        await self.flight_controller.hovering(5)
-        print('goto started')
-        await self.flight_controller.go_to_location(speed, target_coordinates, 0.1)
-        print("start precise landing")
-        try:
-            await self.flight_controller.precise_land_right_angle()
-        except RuntimeError as e:
-            print(e)
-        print("landed")
-
-    async def sequence_test_goto_and_precise_land_right_angle_calc_test(self):
-        await self.flight_controller.precise_land_right_angle_calc_confirm_test()
-#####################################################################################################################################
-    async def sequence_test_precise_land_vertical(self, speed, target_coordinates: Coordinates):
-        print("arming")
-        self.logger.write("arming")
-        await self.arm()
-        print("taking off...")
-        self.logger.write("taking off...")
-        await self.flight_controller.takeoff(target_coordinates.altitude())
-        print("finished taking off")
-        await self.flight_controller.hovering(5)
-        print('goto started')
-        await self.flight_controller.go_to_location(speed, target_coordinates, 1)
-        print("start precise landing")
-        await self.flight_controller.precise_land_vertical()
-        print('end')
-
-    async def precise_land_vertical_calc_test(self):
-        await self.flight_controller.precise_land_vertical_calc_test()
-
-#########################################################################################################################################
-
-    async def sequence_test_precise_land_using_color(self, speed, target_coordinates: Coordinates):
-        print("arming")
-        self.logger.write("arming")
-        await self.arm()
-        print("taking off...")
-        self.logger.write("taking off...")
-        await self.flight_controller.takeoff(target_coordinates.altitude())
-        print("finished taking off")
-        await self.flight_controller.hovering(5)
-        print('goto started')
-        await self.flight_controller.go_to_location(speed, target_coordinates, 0.1)
-        print("start precise landing")
-        await self.flight_controller.offboard_land_using_color()
-        print('end')
-#########################################################################################################################
-    async def capture_video_during_flight(self, speed, target_coordinates, output_path, video_length):
-        print("arming")
-        self.logger.write("arming")
-        await self.arm()
-        print("taking off...")
-        self.logger.write("taking off...")
-        await self.flight_controller.takeoff(5)
-        print("finished taking off")
-        await self.flight_controller.go_to_location(speed, target_coordinates, 0.1)
-        camera_handler = CameraHandler.get_instance()
-        if camera_handler.is_connected():
-            print(f"start capturing {video_length} s video")
-            camera_handler.capture_video(output_path, video_length)
-        else:
-            print("Camera is not connected.")
-        await self.flight_controller.hovering(video_length)
-        await self.flight_controller.land()
-
-###########################################################################################################    
+    #             await self.flight_controller.land() 

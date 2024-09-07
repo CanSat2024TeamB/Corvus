@@ -9,6 +9,22 @@ from pathlib import Path
 from config.config_manager import ConfigManager
 from drone.drone_controller import DroneController
 
+async def sequence_test_precise_land_vertical(drone: DroneController, speed, target_coordinates: Coordinates):
+    logger = drone.get_logger_instance()
+    print("arming")
+    logger.write("arming")
+    await drone.arm()
+    print("taking off...")
+    logger.write("taking off...")
+    await drone.flight_controller.takeoff(target_coordinates.altitude())
+    print("finished taking off")
+    await drone.flight_controller.hovering(5)
+    print('goto started')
+    await drone.flight_controller.go_to_location(speed, target_coordinates, 1)
+    print("start precise landing")
+    await drone.flight_controller.precise_land_vertical()
+    print('end')
+
 async def main():
     # config_path: str = Path(__file__).resolve().parent.parent.joinpath("assets/config/config.ini")
     # config = ConfigManager(config_path)
@@ -29,7 +45,7 @@ async def main():
     target_coordinates = Coordinates(140.108073773, 35.770522881999995, 5)
 
     # `add_sequence_task`の呼び出し
-    await drone.add_sequence_task(drone.sequence_test_precise_land_vertical(speed, target_coordinates))
+    await drone.add_sequence_task(sequence_test_precise_land_vertical(drone, speed, target_coordinates))
 
     try:
         # 無限ループを維持するためのFutureを作成

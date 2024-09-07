@@ -9,6 +9,27 @@ from control.coordinates import Coordinates
 from pathlib import Path
 from config.config_manager import ConfigManager
 from drone.drone_controller import DroneController
+from sensor.camera_handler import CameraHandler
+
+async def capture_video_during_flight(drone: DroneController, speed, target_coordinates, output_path, video_length):
+        logger = drone.get_logger_instance()
+
+        print("arming")
+        logger.write("arming")
+        await drone.arm()
+        print("taking off...")
+        logger.write("taking off...")
+        await drone.flight_controller.takeoff(5)
+        print("finished taking off")
+        await drone.flight_controller.go_to_location(speed, target_coordinates, 0.1)
+        camera_handler = CameraHandler.get_instance()
+        if camera_handler.is_connected():
+            print(f"start capturing {video_length} s video")
+            camera_handler.capture_video(output_path, video_length)
+        else:
+            print("Camera is not connected.")
+        await drone.flight_controller.hovering(video_length)
+        await drone.flight_controller.land()
 
 async def main():
     # config_path: str = Path(__file__).resolve().parent.parent.joinpath("assets/config/config.ini")
@@ -31,7 +52,7 @@ async def main():
     output_path = str(Path(__file__).parent.parent.parent.joinpath(f"assets/log/mov_{datetime.datetime.now().strftime('%Y-%m-%d_%H:%M:%S')}.mp4"))
 
     # `add_sequence_task`の呼び出し
-    await drone.add_sequence_task(drone.capture_video_during_flight(speed, target_coordinates,output_path,30))
+    await drone.add_sequence_task(capture_video_during_flight(drone, speed, target_coordinates, output_path, 30))
 
     try:
         # 無限ループを維持するためのFutureを作成
