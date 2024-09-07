@@ -7,6 +7,19 @@ import asyncio
 from drone.drone_controller import DroneController
 import logger.flight_log as flight_log
 
+async def sequence_test_precise_land(drone: DroneController):
+    print("taking off")
+    await drone.flight_controller.takeoff(5)
+    print("finished taking off")
+    await drone.flight_controller.hovering(5)
+    print("start landing")
+    try:
+        await drone.flight_controller.offboard_precise_land()
+    except RuntimeError as e:
+        print(e)
+        await drone.flight_controller.land()
+    print("landed")
+
 async def main():
     drone = DroneController()
 
@@ -23,7 +36,7 @@ async def main():
 
     # 5秒待機してから新しいタスクを追加
     await asyncio.sleep(5)
-    await drone.add_sequence_task(drone.sequence_test_precise_land())
+    await drone.add_sequence_task(sequence_test_precise_land(drone))
 
     try:
         await asyncio.Future()
