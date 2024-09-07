@@ -34,6 +34,8 @@ async def sequence(drone: DroneController):
     arr[0] = -2
     arr[1] = -2
     finished = multiprocessing.Value("b", 0)
+
+    logger = drone.get_logger_instance()
     
     def get_pos():
         nonlocal arr
@@ -43,24 +45,24 @@ async def sequence(drone: DroneController):
             pos[1] = arr[1]
         return pos
 
-    print("sleeping...")
+    logger.write("sleeping...")
     await asyncio.sleep(10)
-    print("woke up, starting camera...")
+    logger.write("woke up, starting camera...")
 
     try:
         process = multiprocessing.Process(target = invoke_detection, args = (PROB_THRESHOLD, finished, arr), daemon = True)
         process.start()
     except RuntimeError as error:
-        print(f"Camera does not connected, {error._result.result}")
+        logger.write(f"Camera does not connected, {error._result.result}")
         finished.value = 1
         return False
     
     while True:
-        print(f"pos: {get_pos()}")
+        logger.write(f"pos: {get_pos()}")
         await asyncio.sleep(0.1)
         if drone.get_position_manager_instance().adjusted_altitude() < 0.1:
-            print("altitude < 0.1m")
-            print("landing...")
+            logger.write("altitude < 0.1m")
+            logger.write("landing...")
             break
 
 async def main():

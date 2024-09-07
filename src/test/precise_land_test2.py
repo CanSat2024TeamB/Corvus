@@ -10,19 +10,19 @@ import logger.flight_log as flight_log
 
 async def sequence(drone: DroneController, speed, target_coordinates):
     logger = drone.get_logger_instance()
-    print("taking off")
+    logger.write("taking off")
     await drone.flight_controller.takeoff(5)
-    print("finished taking off")
+    logger.write("finished taking off")
     await drone.flight_controller.hovering(5)
-    print("going to the target position")
+    logger.write("going to the target position")
     await drone.flight_controller.go_to_location(speed, target_coordinates, 0.5)
-    print("start precise landing")
+    logger.write("start precise landing")
     result = await drone.flight_controller.offboard_precise_land()
     if not result:
         await drone.flight_controller.go_to_location(speed, target_coordinates, 0.5)
-        print("starting vertical land")
+        logger.write("starting vertical land")
         await drone.flight_controller.land()
-    print("landed")
+    logger.write("landed")
 
 async def main():
     SPEED = 8
