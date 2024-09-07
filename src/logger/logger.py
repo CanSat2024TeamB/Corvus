@@ -17,8 +17,9 @@ class Logger:
         self.write("Log file created")
         return True
 
-    def write(self, *msg: str) -> bool:
-        print(' '.join(msg))
+    def write(self, *msg: str, no_print = False) -> bool:
+        if not no_print:
+            print(' '.join(msg))
         
         timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         with open(self.path, 'a', encoding="UTF-8") as f:

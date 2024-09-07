@@ -68,22 +68,18 @@ async def main():
 
     countdown(10, logger)
 
-    print(f"1para and case nichrome cut start")
     logger.write(f"1para and case nichrome cut start")
 
     case.para_case_stand_nichrome(nichrome_pin_no)
 
-    print(f"1para and case nichrome cut end")
     logger.write(f"1para and case nichrome cut end")
 
     countdown(10, logger)
 
-    print(f"1para and case nichrome cut start")
     logger.write(f"1para and case nichrome cut start")
 
     case.para_case_stand_nichrome(nichrome_pin_no)
 
-    print(f"1para and case nichrome cut end")
     logger.write(f"1para and case nichrome cut end")
 
     case.nichrome_cleanup()
@@ -109,7 +105,6 @@ async def main():
     try:
         await asyncio.Future()
     except asyncio.CancelledError:
-        print("Main loop cancelled")
         logger.write("Main loop cancelled")
 
     # try:
@@ -120,12 +115,10 @@ async def main():
     
     flight_log.stop()
 
-    print("sequence ended")
     logger.write("sequence ended")
 
 def countdown(seconds, logger):
     while seconds > 0:
-        print(f"{seconds}秒")
         logger.write(f"{seconds}秒")
         time.sleep(1)
         seconds -= 1

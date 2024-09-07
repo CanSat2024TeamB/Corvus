@@ -47,15 +47,12 @@ class DroneController:
         return self.lora
 
     async def connect(self) -> bool:
-        print("Connecting...")
         self.logger.write('Connecting...')
         await self.drone_instance.connect(system_address = self.pixhawk_address)
-        print("Waiting for drone to connect...")
         self.logger.write("Waiting for drone to connect...")
 
         async for state in self.drone_instance.core.connection_state():
             if state.is_connected:
-                print(f"Connected to drone!")
                 self.logger.write("Connected to drone!")
                 break
             await asyncio.sleep(0.1)
@@ -68,29 +65,23 @@ class DroneController:
 
         return True
     
-    
     async def arm(self) -> bool:
-        print('gps check start')
+        self.logger.write('gps check start')
         await self.gps_handler.catch_gps()
-        print('global and local position ok')      
         self.logger.write('global and local position ok')
 
-        print("Waiting for drone to be armable...")
         self.logger.write("Waiting for drone to be armable...")
         async for is_armable in self.drone_instance.telemetry.health():
             if is_armable:
-                print("Drone is armable")
                 self.logger.write("Drone is armable")
                 break
             await asyncio.sleep(0.11)
 
-        print("Arming the drone...")
         self.logger.write("Arming the drone...")
         await self.drone_instance.action.arm()
 
         async for is_armed in self.drone_instance.telemetry.armed():
             if is_armed:
-                print("drone is armed")
                 self.logger.write("drone is armed")
                 break
             await asyncio.sleep(0.1)

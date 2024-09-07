@@ -12,22 +12,20 @@ from drone.drone_controller import DroneController
 async def sequence_test_goto_and_precise_land_slope(drone: DroneController, speed, target_coordinates: Coordinates):
     logger = drone.get_logger_instance()
 
-    print("arming")
     logger.write("arming")
     await drone.arm()
-    print("taking off...")
     logger.write("taking off...")
     await drone.flight_controller.takeoff(target_coordinates.altitude())
-    print("finished taking off")
+    logger.write("finished taking off")
     await drone.flight_controller.hovering(5)
-    print('goto started')
+    logger.write('goto started')
     await drone.flight_controller.go_to_location(speed, target_coordinates, 15)
-    print("start precise landing")
+    logger.write("start precise landing")
     try:
         await drone.flight_controller.precise_land_slope()
     except RuntimeError as e:
         print(e)
-    print("landed")
+    logger.write("landed")
 
 async def main():
     # config_path: str = Path(__file__).resolve().parent.parent.joinpath("assets/config/config.ini")

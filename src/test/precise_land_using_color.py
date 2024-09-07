@@ -12,19 +12,17 @@ from drone.drone_controller import DroneController
 async def sequence_test_precise_land_using_color(drone: DroneController, speed, target_coordinates: Coordinates):
     logger = drone.get_logger_instance()
 
-    print("arming")
     logger.write("arming")
     await drone.arm()
-    print("taking off...")
     logger.write("taking off...")
     await drone.flight_controller.takeoff(target_coordinates.altitude())
-    print("finished taking off")
+    logger.write("finished taking off")
     await drone.flight_controller.hovering(5)
-    print('goto started')
+    logger.write('goto started')
     await drone.flight_controller.go_to_location(speed, target_coordinates, 0.1)
-    print("start precise landing")
+    logger.write("start precise landing")
     await drone.flight_controller.offboard_land_using_color()
-    print('end')
+    logger.write('end')
 
 async def main():
     # config_path: str = Path(__file__).resolve().parent.parent.joinpath("assets/config/config.ini")

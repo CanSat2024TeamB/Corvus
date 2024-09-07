@@ -14,20 +14,18 @@ from sensor.camera_handler import CameraHandler
 async def capture_video_during_flight(drone: DroneController, speed, target_coordinates, output_path, video_length):
         logger = drone.get_logger_instance()
 
-        print("arming")
         logger.write("arming")
         await drone.arm()
-        print("taking off...")
         logger.write("taking off...")
         await drone.flight_controller.takeoff(5)
-        print("finished taking off")
+        logger.write("finished taking off")
         await drone.flight_controller.go_to_location(speed, target_coordinates, 0.1)
         camera_handler = CameraHandler.get_instance()
         if camera_handler.is_connected():
-            print(f"start capturing {video_length} s video")
+            logger.write(f"start capturing {video_length} s video")
             camera_handler.capture_video(output_path, video_length)
         else:
-            print("Camera is not connected.")
+            logger.write("Camera is not connected.")
         await drone.flight_controller.hovering(video_length)
         await drone.flight_controller.land()
 
