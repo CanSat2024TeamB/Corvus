@@ -10,7 +10,7 @@ import multiprocessing
 from drone.drone_controller import DroneController
 from sensor.camera_handler import (CameraHandler, ConeDetector)
 
-async def invoke_detection(conf, finished, arr):
+def invoke_detection(conf, finished, arr):
     camera_handler = CameraHandler.get_instance()
     cone_detector = ConeDetector(camera_handler)
 
@@ -35,7 +35,7 @@ async def sequence():
     arr[1] = -2
     finished = multiprocessing.Value("b", 0)
     
-    def get_pos(self):
+    def get_pos():
         nonlocal arr
         pos = [None, None]
         if arr[0] >= -1:
@@ -65,7 +65,7 @@ async def main():
 
     asyncio.create_task(drone.invoke_sensor())
 
-    await drone.add_sequence_task(invoke_detection())
+    await drone.add_sequence_task(sequence())
 
     try:
         await asyncio.Future()

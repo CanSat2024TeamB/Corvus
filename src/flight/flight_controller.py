@@ -438,7 +438,7 @@ class FlightController:
 
     #########################################################################################################
 
-    async def invoke_detection(self, conf, finished, arr):
+    def invoke_detection(self, conf, finished, arr):
         camera_handler = CameraHandler.get_instance()
         cone_detector = ConeDetector(camera_handler)
 
