@@ -47,7 +47,7 @@ class CaseHandler:
         if self.phase == "Storage":
             for i in range(self.stable_judge_count_release):
                 def_pre = self.pressure.dif_ave_pressure(interval_def_ave_pressure)
-                print(def_pre)####消す
+                # print(def_pre)####消す
                 self.logger.write(f"Pressure_def: {def_pre}")
                 if def_pre <= self.stable_pre_val:
                     stable_count += 1
@@ -62,7 +62,7 @@ class CaseHandler:
         if self.phase == "Released":
             for i in range(self.stable_judge_count_land):
                 def_pre = self.pressure.dif_ave_pressure(interval_def_ave_pressure)
-                print(def_pre)####消す
+                # print(def_pre)####消す
                 self.logger.write(f"Pressure_def: {def_pre}")
                 if abs(def_pre) <= self.stable_pre_val:
                     stable_count += 1
@@ -81,7 +81,7 @@ class CaseHandler:
         stable_count = 0
         for i in range(self.stable_judge_count_vel):
             def_vel = await self.ac_vel.dif_ave_velocity(interval_def_ave_velocity)
-            print(def_vel)  ## 値の確認のための出力、必要ない場合はコメントアウトする
+            # print(def_vel)  ## 値の確認のための出力、必要ない場合はコメントアウトする
             self.logger.write(f"velocity_def: {def_vel}")
 
             if np.all(np.abs(def_vel) <= self.stable_vel_val):
@@ -119,20 +119,20 @@ class CaseHandler:
                     else:
                         self.light_counter = 0#一回でも500以上であるならば外にいる判定
                         self.logger.write("Still Outside")
-                        print("Still Outside") #あとで消す
+                        # print("Still Outside") #あとで消す
                         
                 else:#100回連続で暗い判定ができたら中であると判定
                     break
             else:
                 self.logger.write("CAN NOT USE LIGHT")
-                print("CAN NOT USE LIGHT")
+                # print("CAN NOT USE LIGHT")
             
-            print(light_value)
-            print(self.light_counter) #あとで消す
+            # print(light_value)
+            # print(self.light_counter) #あとで消す
             time.sleep(self.judge_storage_sleep_time)
             self.logger.write(f"LIGHT: {light_value} {self.light_counter}")
 
-        print("Storage Succeeded")
+        # print("Storage Succeeded")
         self.logger.write("Storage Succeeded")
         self.phase = "Storage"
         self.message = "Storage"
@@ -150,13 +150,13 @@ class CaseHandler:
             if self.light.CANUSELIGHT == False:
                 light_value = float('nan')
                 self.light_counter = self.judge_release_lig_countmax
-                print("CAN NOT USE LIGHT")
+                self.logger.write("CAN NOT USE LIGHT")
                 time.sleep(5)
 
             if self.pressure.CANUSEPRESSURE == False:
                 pressure_value = float('nan')
                 self.pressure_counter = self.judge_release_pre_countmax
-                print("CAN NOT USE PRESSURE")
+                self.logger.write("CAN NOT USE PRESSURE")
                 time.sleep(5)
 
             if (self.light_counter < self.judge_release_lig_countmax) and self.light.CANUSELIGHT == True:
@@ -168,7 +168,7 @@ class CaseHandler:
                 
                     self.light_counter = 0
                     self.logger.write("Light still low")
-                    print("Light still low")
+                    # print("Light still low")
 
                 self.logger.write(f"LIGHT: {light_value} {self.light_counter}")
 
@@ -184,7 +184,7 @@ class CaseHandler:
                 else:#10連続で変化を観測できなかったらリセット
                     self.pressure_counter = 0
                     self.logger.write("Disp pressure too stable or minus")
-                    print("Disp pressure too stable or minus")
+                    # print("Disp pressure too stable or minus")
                 
                 self.logger.write(f"Pressure_counter: {self.pressure_counter}")
             
@@ -194,7 +194,7 @@ class CaseHandler:
             time.sleep(self.judge_release_sleep_time)
 
         self.logger.write("Release Succeeded")
-        print("Release Succeeded")
+        # print("Release Succeeded")
         self.phase = "Released"
         self.message = "Released"
     
@@ -205,7 +205,7 @@ class CaseHandler:
         ##############################
         while True:
             self.logger.write("Pressure stability confirmation start")
-            print(f"Pressure stability confirmation start")
+            # print(f"Pressure stability confirmation start")
 
             while (self.read_timer(time_sta) <= self.judge_landing_maxtime):
                 if self.pressure.CANUSEPRESSURE == True:
@@ -213,21 +213,21 @@ class CaseHandler:
                         break
             
             self.logger.write("Pressure stability confirmed")
-            print(f"Pressure stability confirmed")
+            # print(f"Pressure stability confirmed")
 
             await self.dronecontroller.connect()
             self.logger.write("Velocity stability confirmation start")
-            print(f"Velocity stability confirmation start")
+            # print(f"Velocity stability confirmation start")
             if await self.judge_velocity_stable(1):
                 self.logger.write("Velocity stability cinfirmed")
-                print(f"Velocity stability cinfirmed")
+                # print(f"Velocity stability cinfirmed")
                 break
             else:
                 self.logger.write("Velocity not stable.restart")
-                print(f"Velocity not stable.restart")
+                # print(f"Velocity not stable.restart")
         
         self.logger.write("Landing Succeeded")
-        print("Landing Succeeded")
+        # print("Landing Succeeded")
         self.phase = "Land"
         self.message = "Land"
 

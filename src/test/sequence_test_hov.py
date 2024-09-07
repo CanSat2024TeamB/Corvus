@@ -6,6 +6,15 @@ sys.path.append(str(Path(__file__).parent.parent))
 import asyncio
 from drone.drone_controller import DroneController
 
+async def sequence_test_hovering(drone: DroneController):
+    logger = drone.get_drone_instance()
+
+    await drone.flight_controller.takeoff(3)
+    logger.write('reached start hovering')
+    await drone.flight_controller.hovering(10)
+    logger.write('finish hovering start landing')
+    await drone.flight_controller.land()
+
 async def main():
     drone = DroneController()
 
@@ -15,7 +24,7 @@ async def main():
 
     # 5秒待機してから新しいタスクを追加
     await asyncio.sleep(5)
-    await drone.add_sequence_task(drone.sequence_test_hovering())
+    await drone.add_sequence_task(sequence_test_hovering(drone))
 
     try:
         await asyncio.Future()

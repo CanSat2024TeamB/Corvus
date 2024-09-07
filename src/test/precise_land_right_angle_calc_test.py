@@ -6,12 +6,26 @@ sys.path.append(str(Path(__file__).parent.parent))
 from drone.drone_controller import DroneController
 import asyncio
 
+async def sequence_test_goto_and_precise_land_right_angle_calc_test(drone: DroneController):
+    await drone.flight_controller.precise_land_right_angle_calc_confirm_test()
+
+async def camera_calc_test_loop2(drone: DroneController) -> None:
+    # すべてのタスクをリストに追加
+    drone.tasks.extend([
+        asyncio.create_task(drone.lidar_handler.invoke_loop()),
+        asyncio.create_task(drone.compass_handler.invoke_loop()),
+        asyncio.create_task(drone.gps_handler.invoke_loop())
+    ])
+
+    # 全てのタスクが完了するのを待つ
+    await asyncio.sleep(float('inf'))
+
 async def main():
     dronecontroller = DroneController()
     await dronecontroller.connect()
-    asyncio.create_task(dronecontroller.camera_calc_test_loop2())
+    asyncio.create_task(camera_calc_test_loop2(dronecontroller))
     await asyncio.sleep(5)
-    await dronecontroller.add_sequence_task(dronecontroller.sequence_test_goto_and_precise_land_right_angle_calc_test())
+    await dronecontroller.add_sequence_task(sequence_test_goto_and_precise_land_right_angle_calc_test(dronecontroller))
     try:
         await asyncio.Future()
     except asyncio.CancelledError:

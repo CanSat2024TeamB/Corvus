@@ -7,6 +7,22 @@ from case.case_handler import CaseHandler
 import logger.flight_log as flight_log
 import time
 
+async def sequence_test_goto(drone: DroneController, speed, target_coordinates: Coordinates):
+    logger = drone.get_logger_instance()
+    logger.write("arming")
+    await drone.arm()
+    logger.write("taking off...")
+    await drone.flight_controller.takeoff(target_coordinates.altitude())
+    logger.write('reached')
+    await drone.flight_controller.hovering(5)
+    logger.write('goto started')
+    await drone.flight_controller.go_to_location(speed, target_coordinates, 0.5)
+    logger.write('goto finished start hovering')
+    await drone.flight_controller.hovering(2)
+    logger.write('hovering finished start landing')
+    await drone.flight_controller.land()
+    logger.write("landed")
+
 async def main():
     drone = DroneController()
     case = CaseHandler(drone)
@@ -54,22 +70,18 @@ async def main():
 
     countdown(10, logger)
 
-    print(f"1para and case nichrome cut start")
     logger.write(f"1para and case nichrome cut start")
 
     case.para_case_stand_nichrome(nichrome_pin_no)
 
-    print(f"1para and case nichrome cut end")
     logger.write(f"1para and case nichrome cut end")
 
     countdown(10, logger)
 
-    print(f"1para and case nichrome cut start")
     logger.write(f"1para and case nichrome cut start")
 
     case.para_case_stand_nichrome(nichrome_pin_no)
 
-    print(f"1para and case nichrome cut end")
     logger.write(f"1para and case nichrome cut end")
 
     case.nichrome_cleanup()
@@ -91,27 +103,23 @@ async def main():
     target_coordinates_2 = Coordinates(139.987197098,40.142462332,hov_alt)
     
     
-    await drone.add_sequence_task(drone.sequence_test_goto(speed, target_coordinates_2))
+    await drone.add_sequence_task(sequence_test_goto(drone, speed, target_coordinates_2))
     try:
         await asyncio.Future()
     except asyncio.CancelledError:
-        print("Main loop cancelled")
         logger.write("Main loop cancelled")
 
     # try:
     #     await drone.add_sequence_task(drone.sequence_test_mission(speed,target_coordinates_1,target_coordinates_2))
     # except asyncio.CancelledError:
-    #     print("Main loop cancelled")
     #     logger.write("Main loop cancelled")
     
     flight_log.stop()
 
-    print("sequence ended")
     logger.write("sequence ended")
 
 def countdown(seconds, logger):
     while seconds > 0:
-        print(f"{seconds}秒")
         logger.write(f"{seconds}秒")
         time.sleep(1)
         seconds -= 1

@@ -9,6 +9,21 @@ from pathlib import Path
 from config.config_manager import ConfigManager
 from drone.drone_controller import DroneController
 
+async def sequence_test_mission(drone: DroneController, speed, *target_coordinates: Coordinates):
+    logger = drone.get_logger_instance()
+    await drone.flight_controller.go_to(speed, *target_coordinates)
+    logger.write('mission started')
+    while True:
+        await asyncio.sleep(0.1)
+        mission_completed = await drone.flight_controller.if_mission_finished()
+        if mission_completed:
+            logger.write('mission finished start hovering')
+            await drone.flight_controller.hovering(5)
+            logger.write('hovering finished start landing')
+            await drone.flight_controller.land()
+            logger.write("landed")
+            break
+
 async def main():
     #config_path: str = Path(__file__).resolve().parent.parent.joinpath("assets/config/config.ini")
     #config = ConfigManager(config_path)
@@ -26,7 +41,7 @@ async def main():
     target_coordinates_1 = Coordinates(first_lon,first_lat,hov_alt)
     target_coordinates_2 = Coordinates(140.1080417,35.7702389,3)
     
-    await drone.add_sequence_task(drone.sequence_test_mission(speed,target_coordinates_1,target_coordinates_2))
+    await drone.add_sequence_task(sequence_test_mission(drone, speed, target_coordinates_1, target_coordinates_2))
     try:
         await asyncio.Future()
     except asyncio.CancelledError:
