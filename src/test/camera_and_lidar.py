@@ -28,7 +28,7 @@ def invoke_detection(conf, finished, arr):
             arr[0] = pos[0]
             arr[1] = pos[1]
 
-async def sequence():
+async def sequence(drone: DroneController):
     PROB_THRESHOLD = 0.2 #画像認識probabilityの閾値
     arr = multiprocessing.Array("f", 2)
     arr[0] = -2
@@ -57,7 +57,11 @@ async def sequence():
     
     while True:
         print(f"pos: {get_pos()}")
-        await asyncio.sleep(0.5)
+        await asyncio.sleep(0.1)
+        if drone.get_position_manager_instance().adjusted_altitude() < 0.1:
+            print("altitude < 0.1m")
+            print("landing...")
+            break
 
 async def main():
     drone = DroneController()
@@ -65,7 +69,7 @@ async def main():
 
     asyncio.create_task(drone.invoke_sensor())
 
-    await drone.add_sequence_task(sequence())
+    await drone.add_sequence_task(sequence(drone))
 
     try:
         await asyncio.Future()
