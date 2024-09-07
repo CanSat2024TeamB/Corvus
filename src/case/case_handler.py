@@ -16,27 +16,27 @@ class CaseHandler:
         self.wirehandler = WireHandler()
         self.ac_vel = Acceleration_Velocity(self.drone)
         
-        self.stable_pre_val = 0.5 ##1mで大体0.1hpaの差 2.5秒に一回の判定なので、2m/sでも0.5くらい変わる。
+        self.stable_pre_val = 1 ##1mで大体0.1hpaの差 2.5秒に一回の判定なので、2m/sでも0.5くらい変わる。
         self.stable_vel_val = 0.5
         
         self.nichrome_duration = 10
         
         #収納判定用定数
         self.judge_storage_border_light = 500  #あかり消した教室で260くらい　
-        self.judge_storage_countmax = 40 #ARLISSは500、能代は100
-        self.judge_storage_maxtime = 120 #能代は300、ARLISSは1200
+        self.judge_storage_countmax = 500 #ARLISSは500、能代は100
+        self.judge_storage_maxtime = 1200 #能代は300、ARLISSは1200
         self.judge_storage_sleep_time = 0.5
 
         #放出判定用定数 
-        self.judge_release_maxtime = 300 #去年はARLISSで3600を使った、能代は600
-        self.judge_release_lig_countmax = 2 #能代は2、ARLISSは6？
-        self.judge_release_pre_countmax = 2 #能代は2、ARLISSは6？
+        self.judge_release_maxtime = 3600 #去年はARLISSで3600を使った、能代は600
+        self.judge_release_lig_countmax = 6 #能代は2、ARLISSは6？
+        self.judge_release_pre_countmax = 6 #能代は2、ARLISSは6？
         self.judge_release_border_light = 500
         self.judge_release_sleep_time = 0.5
         self.stable_judge_count_release = 1 
         
         #着地判定用定数
-        self.judge_landing_maxtime = 30 #去年は1200、能代は30
+        self.judge_landing_maxtime = 1200 #去年は1200、能代は30
         self.stable_judge_count_vel = 5
         self.stable_judge_count_land = 5
 
@@ -49,7 +49,7 @@ class CaseHandler:
                 def_pre = self.pressure.dif_ave_pressure(interval_def_ave_pressure)
                 print(def_pre)####消す
                 self.logger.write(f"Pressure_def: {def_pre}")
-                if abs(def_pre) <= self.stable_pre_val:
+                if def_pre <= self.stable_pre_val:
                     stable_count += 1
 
                 else:

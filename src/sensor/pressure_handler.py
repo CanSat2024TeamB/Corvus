@@ -19,7 +19,7 @@ class PressureHandler:
             self.sensor.set_filter(bme680.FILTER_SIZE_3)
 
         self.error_count = 0
-        self.interval = 0.5
+        self.interval = 1
     
     def get_temperature(self):
         if self.sensor.get_sensor_data():
@@ -28,14 +28,14 @@ class PressureHandler:
             return None
         
     
-    def get_pressure(self):
+    def get_pressure(self): #このif文で例外処理ができているか??
         if self.sensor.get_sensor_data():
             return self.sensor.data.pressure
         else:
             self.error_count += 1
             if self.error_count >= self.max_errors:
                 self.CANUSEPRESSURE = False
-            return None
+            return 0
         
         
     def ave_pressure(self):

@@ -114,6 +114,7 @@ class DroneController:
 
     async def lora_write(self):
         while True:
+            await asyncio.sleep(5)
             #message_4 = str(self.position_manager.adjusted_altitude())
             message_5 = str(round(self.position_manager.adjusted_coordinates_lon(), 4))
             message_6 = str(round(self.position_manager.adjusted_coordinates_lat(), 4))
@@ -125,7 +126,7 @@ class DroneController:
             
             message = ' '.join([message_6, message_5])
             await self.lora.lora_send(message)
-            await asyncio.sleep(30)
+            await asyncio.sleep(25)
 
 #############################################################################################
     async def invoke_sensor(self) -> None:
@@ -208,7 +209,7 @@ class DroneController:
         print("finished taking off")
         await self.flight_controller.hovering(5)
         print('goto started')
-        await self.flight_controller.go_to_location(speed, target_coordinates, 0.1)
+        await self.flight_controller.go_to_location(speed, target_coordinates, 1)
         print("start precise landing")
         await self.flight_controller.precise_land_vertical()
         print('end')

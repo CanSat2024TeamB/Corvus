@@ -44,6 +44,7 @@ class FlightController:
         take_off_max_time = 0
         await self.drone.action.set_takeoff_altitude(takeoff_altitude*2)
         await self.drone.action.takeoff()
+        await asyncio.sleep(3)
     
         while self.position_manager.adjusted_altitude() <= takeoff_altitude:
             await asyncio.sleep(0.1)
@@ -54,6 +55,10 @@ class FlightController:
         await asyncio.sleep(0.1)
         if self.position_manager.adjusted_altitude() >= 3:    
             return True
+        else:
+            await self.land()
+            await asyncio.sleep(5)
+            await self.takeoff(takeoff_altitude)
 
     async def hovering(self, time: float) -> bool:
         await self.drone.action.hold()
@@ -382,8 +387,8 @@ class FlightController:
         yaw_deg = self.position_manager.yaw_deg()
         r = np.array([[cone_x*self.current_lidar_alt*math.tan(math.radians(self.theta[0]))],
                           [cone_y*self.current_lidar_alt*math.tan(math.radians(self.theta[1]))]]) #機体軸における、目標地点との差(ｍ)
-        rotate = np.array([[math.cos(math.radians(yaw_deg)), -math.sin(math.radians(yaw_deg))],
-                               [math.sin(math.radians(yaw_deg)), math.cos(math.radians(yaw_deg))]])
+        rotate = np.array([[math.cos(math.radians(yaw_deg)), math.sin(math.radians(yaw_deg))],
+                               [-math.sin(math.radians(yaw_deg)), math.cos(math.radians(yaw_deg))]])
         r_e = np.dot(rotate,r).flatten() #地面固定座標系における、目標地点との差(ｍ)
         print(f"east:{r_e[0]}, north:{r_e[1]}")
         error_lon = r_e[0] / self.lon_unit
