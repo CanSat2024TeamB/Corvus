@@ -15,7 +15,7 @@ async def main():
     lora = drone.get_lora_instance()
 
     config = ConfigManager()
-    config_section = "AIRLISS"
+    config_section = "ARLISS"
     nichrome_pin_no = config.read_int(config_section, "Nichrome_pin")
 
     global status 
