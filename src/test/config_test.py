@@ -30,3 +30,26 @@ print(lora_freq, type(lora_freq))
 print(lora_sf, type(lora_sf))
 print(lora_bw, type(lora_bw))
 print(lora_pwr, type(lora_pwr))
+
+a = []
+config_section = "ARLISS"
+a.append(config.read_int(config_section, "JudgeStorageBorderLight"))
+a.append(config.read_int(config_section, "JudgeStorageCountmax"))
+a.append(config.read_int(config_section, "JudgeStorageMaxtime"))
+a.append(config.read_float(config_section, "JudgeStorageSleepTime"))
+
+#放出判定用定数 
+a.append(config.read_int(config_section, "JudgeReleaseMaxtime"))
+a.append(config.read_int(config_section, "JudgeReleaseLigCountmax"))
+a.append(config.read_int(config_section, "JudgeReleasePreCountmax"))
+a.append(config.read_int(config_section, "JudgeReleaseBorderLight"))
+a.append(config.read_float(config_section, "JudgeReleaseSleepTime"))
+a.append(config.read_int(config_section, "StableJudgeCountRelease"))
+
+#着地判定用定数
+a.append(config.read_int(config_section, "JudgeLandingMaxtime"))
+a.append(config.read_int(config_section, "StableJudgeCountVel"))
+a.append(config.read_int(config_section, "StableJudgeCountLand"))
+
+for item in a:
+    print(item, type(item))
