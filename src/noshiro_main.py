@@ -7,7 +7,7 @@ from case.case_handler import CaseHandler
 import logger.flight_log as flight_log
 import time
 
-async def sequence_test_goto(drone: DroneController, speed, target_coordinates: Coordinates):
+async def sequence(drone: DroneController, speed, target_coordinates: Coordinates):
     logger = drone.get_logger_instance()
     logger.write("arming")
     await drone.arm()
@@ -32,7 +32,7 @@ async def main():
 
     config = ConfigManager()
     config_section = "NOSHIRO"
-    nichrome_pin_no = config.read_int(config_section, "Nichrome_pin")
+    nichrome_pin_no = config.read_int(config_section, "NichromePin")
 
     global status 
     status = "outside"
@@ -98,12 +98,13 @@ async def main():
     position_manager = drone.get_position_manager_instance()
     flight_log.start(logger, position_manager)
     
-    speed = 4.0
-    hov_alt = 5
-    target_coordinates_2 = Coordinates(139.987197098,40.142462332,hov_alt)
+    speed = config.read_float(config_section, "Speed")
+    hov_alt = config.read_float(config_section, "HovAlt")
+    target_lon = config.read_float(config_section, "TargetLon")
+    target_lat = config.read_float(config_section, "TargetLat")
+    target_coordinates_2 = Coordinates(target_lon, target_lat, hov_alt)
     
-    
-    await drone.add_sequence_task(sequence_test_goto(drone, speed, target_coordinates_2))
+    await drone.add_sequence_task(sequence(drone, speed, target_coordinates_2))
     try:
         await asyncio.Future()
     except asyncio.CancelledError:
@@ -123,7 +124,6 @@ def countdown(seconds, logger):
         logger.write(f"{seconds}秒")
         time.sleep(1)
         seconds -= 1
-
 
 if __name__ == "__main__":
     asyncio.run(main())

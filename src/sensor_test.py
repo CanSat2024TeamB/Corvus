@@ -12,7 +12,7 @@ async def main():
     
     config = ConfigManager()
     config_section = "NOSHIRO"
-    nichrome_pin_no = config.read_int(config_section, "Nichrome_pin")
+    nichrome_pin_no = config.read_int(config_section, "NichromePin")
 
     while True:
         light_value = case.light.get_light_value()

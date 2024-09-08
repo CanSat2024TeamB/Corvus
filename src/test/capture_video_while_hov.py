@@ -12,22 +12,22 @@ from drone.drone_controller import DroneController
 from sensor.camera_handler import CameraHandler
 
 async def capture_video_during_flight(drone: DroneController, speed, target_coordinates, output_path, video_length):
-        logger = drone.get_logger_instance()
+    logger = drone.get_logger_instance()
 
-        logger.write("arming")
-        await drone.arm()
-        logger.write("taking off...")
-        await drone.flight_controller.takeoff(5)
-        logger.write("finished taking off")
-        await drone.flight_controller.go_to_location(speed, target_coordinates, 0.1)
-        camera_handler = CameraHandler.get_instance()
-        if camera_handler.is_connected():
-            logger.write(f"start capturing {video_length} s video")
-            camera_handler.capture_video(output_path, video_length)
-        else:
-            logger.write("Camera is not connected.")
-        await drone.flight_controller.hovering(video_length)
-        await drone.flight_controller.land()
+    logger.write("arming")
+    await drone.arm()
+    logger.write("taking off...")
+    await drone.flight_controller.takeoff(5)
+    logger.write("finished taking off")
+    await drone.flight_controller.go_to_location(speed, target_coordinates, 0.1)
+    camera_handler = CameraHandler.get_instance()
+    if camera_handler.is_connected():
+        logger.write(f"start capturing {video_length} s video")
+        camera_handler.capture_video(output_path, video_length)
+    else:
+        logger.write("Camera is not connected.")
+    await drone.flight_controller.hovering(video_length)
+    await drone.flight_controller.land()
 
 async def main():
     # config_path: str = Path(__file__).resolve().parent.parent.joinpath("assets/config/config.ini")

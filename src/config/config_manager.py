@@ -7,6 +7,7 @@ class ConfigManager:
 
     def __init__(self, path: str = str(default_path)):
         self.config_ini = configparser.ConfigParser()
+        self.path = path
         self.load(path)
         return
 
@@ -15,6 +16,10 @@ class ConfigManager:
             raise FileNotFoundError(f"{path} does not exist!")
         self.config_ini.read(path, encoding = "utf-8")
         return
+
+    def save(self) -> None:
+        with open(self.path, "w") as file:
+            self.config_ini.write(file)
 
     def read(self, section: str, item: str) -> str:
         return self.config_ini.get(section, item)
@@ -37,3 +42,9 @@ class ConfigManager:
     def get_items(self, section: str) -> dict[str, str]:
         items = self.config_ini.items(section)
         return dict(items)
+    
+    def write(self, section: str, item: str, string: str) -> bool:
+        if not self.config_ini.has_option(section, item):
+            return False
+        self.config_ini[section][item] = string
+        self.save()
