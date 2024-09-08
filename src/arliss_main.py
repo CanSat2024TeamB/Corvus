@@ -6,14 +6,21 @@ from case.case_handler import CaseHandler
 import logger.flight_log as flight_log
 import time
 
-async def sequence(drone: DroneController, speed: float, target_coordinates: Coordinates, goal_radius: float):
+async def sequence(drone: DroneController, speed: float, target_coordinates: Coordinates, goal_radius: float, config: ConfigManager):
     logger = drone.get_logger_instance()
-    logger.write("taking off")
-    await drone.flight_controller.takeoff(target_coordinates.altitude())
-    logger.write("finished taking off")
-    await drone.flight_controller.hovering(5)
+    config_section = "ARLISS"
+    status = config.read(config_section, "Status")
+
+    if not status == "flight":
+        logger.write("taking off")
+        await drone.flight_controller.takeoff(target_coordinates.altitude())
+        logger.write("finished taking off")
+
+        await drone.flight_controller.hovering(5)
+        config.write(config_section, "Status", "flight")
+
     logger.write("going to the target position")
-    await drone.flight_controller.go_to_location(speed, target_coordinates, goal_radius)
+    await drone.flight_controller.go_to_location(speed, target_coordinates, goal_radius, 10)
     logger.write("start precise landing")
     result = await drone.flight_controller.offboard_precise_land()
     if not result:
@@ -33,30 +40,34 @@ async def main():
     config_section = "ARLISS"
     nichrome_pin_no = config.read_int(config_section, "NichromePin")
 
-    status = config.read(config_section, "Status")
-
+    lora_sync = config.read_int(config_section, "LoraSync")
+    lora_freq = config.read_int(config_section, "LoraFreq")
+    lora_sf = config.read_int(config_section, "LoraSf")
+    lora_bw = config.read_int(config_section, "LoraBw")
+    lora_pwr = config.read_int(config_section, "LoraPwr")
+    
     logger.write("Starting Lora...")
     await lora.lora_start()
     logger.write("Lora started.")
     await asyncio.sleep(5)
     logger.write("Setting sync...")
-    await lora.lora_set_sync(72)
+    await lora.lora_set_sync(lora_sync)
     logger.write("Sync set.")
     await asyncio.sleep(5)
     logger.write("Setting frequency...")
-    await lora.lora_set_freq(922000000)
+    await lora.lora_set_freq(lora_freq)
     logger.write("Frequency set.")
     await asyncio.sleep(5)
     logger.write("Setting spreading factor...")
-    await lora.lora_set_sf(12)
+    await lora.lora_set_sf(lora_sf)
     logger.write("Spreading factor set.")
     await asyncio.sleep(5)
     logger.write("Setting bandwidth...")
-    await lora.lora_set_bw(125)
+    await lora.lora_set_bw(lora_bw)
     logger.write("Bandwidth set.")
     await asyncio.sleep(5)
     logger.write("Setting power...")
-    await lora.lora_set_pwr(20)
+    await lora.lora_set_pwr(lora_pwr)
     logger.write('Power set.')
     await asyncio.sleep(5)
     logger.write("Saving settings...")
@@ -64,16 +75,19 @@ async def main():
     logger.write("Settings saved.")
     await asyncio.sleep(5)
 
+    status = config.read(config_section, "Status")
     if status == "outside":
        case.judge_storage()
        config.write(config_section, "Status", "storage")
        await lora.lora_send('storage')
 
+    status = config.read(config_section, "Status")
     if status == "storage":
         case.judge_release()
         config.write(config_section, "Status", "release")
         await lora.lora_send('release')
 
+    status = config.read(config_section, "Status")
     if status == "release":
         countdown(30, logger)
         await case.judge_landing()
@@ -117,7 +131,7 @@ async def main():
     goal_radius = config.read_float(config_section, "GoalRadius")
     target_coordinates_2 = Coordinates(target_lon, target_lat, hov_alt)
     
-    await drone.add_sequence_task(sequence(drone, speed, target_coordinates_2, goal_radius))
+    await drone.add_sequence_task(sequence(drone, speed, target_coordinates_2, goal_radius, config))
     try:
         await asyncio.Future()
     except asyncio.CancelledError:

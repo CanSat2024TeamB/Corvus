@@ -135,14 +135,14 @@ class FlightController:
         return await self.drone.mission.is_mission_finished()
 
     ###################################################################################################
-    async def go_to_location(self, speed, target_coordinates: Coordinates ,circle_radious, YAW_NORTH = False):
+    async def go_to_location(self, speed, target_coordinates: Coordinates, circle_radious, YAW_NORTH = False, margin_to_target = 0):
         self.target_latitude = target_coordinates.latitude()
         self.target_longitude = target_coordinates.longitude()
         #self.target_altitude = target_coordinates.altitude()
         self.current_AMSL = self.position_manager.adjusted_coordinates_AMSL()
         self.current_lidar_alt = self.position_manager.adjusted_altitude()
 
-        #self.set_interval_waypoint(10) ##ゴール10m手前に目標地点を設置 不要ならコメントアウト
+        self.set_interval_waypoint(margin_to_target) ##ゴール10m手前に目標地点を設置 不要ならコメントアウト
         
         self.logger.write('current AMSL', self.current_AMSL)
         self.logger.write('current lidar', self.current_lidar_alt)
