@@ -6,16 +6,17 @@ sys.path.append(str(Path(__file__).parent.parent))
 import asyncio
 from drone.drone_controller import DroneController
 from control.coordinates import Coordinates
+from config.config_manager import ConfigManager
 import logger.flight_log as flight_log
 
-async def sequence(drone: DroneController, speed, target_coordinates: Coordinates):
+async def sequence(drone: DroneController, speed, target_coordinates: Coordinates, goal_radius):
     logger = drone.get_logger_instance()
     logger.write("taking off")
     await drone.flight_controller.takeoff(5)
     logger.write("finished taking off")
     await drone.flight_controller.hovering(5)
     logger.write("going to the target position")
-    await drone.flight_controller.go_to_location(speed, target_coordinates, 0.5, margin_to_target=10)
+    await drone.flight_controller.go_to_location(speed, target_coordinates, goal_radius, margin_to_target=10)
     logger.write("start precise landing")
     result = await drone.flight_controller.offboard_precise_land()
     if not result:
@@ -26,8 +27,15 @@ async def sequence(drone: DroneController, speed, target_coordinates: Coordinate
     logger.write("landed")
 
 async def main():
-    SPEED = 8
-    TARGET = Coordinates(longitude=000.0000, latitude=000.0000, altitude=5)
+    config = ConfigManager()
+    section = "DEBUG"
+    
+    SPEED = config.read_float(section, "Speed")
+    longitude = config.read_float(section, "TargetLon")
+    latitude = config.read_float(section, "targetlat")
+    hov_alt = config.read_float(section, "HovAlt")
+    TARGET = Coordinates(longitude=longitude, latitude=latitude, altitude=hov_alt)
+    GOAL_RADIUS = 0.5
 
     drone = DroneController()
 
@@ -39,7 +47,7 @@ async def main():
 
     # 1秒待機してから新しいタスクを追加
     await asyncio.sleep(1)
-    await drone.add_sequence_task(sequence(drone, SPEED, TARGET))
+    await drone.add_sequence_task(sequence(drone, SPEED, TARGET, GOAL_RADIUS))
 
     try:
         await asyncio.Future()
