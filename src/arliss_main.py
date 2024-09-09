@@ -24,16 +24,11 @@ async def sequence(drone: DroneController, speed: float, target_coordinates: Coo
         config.write(config_section, "Status", "flight")
 
     logger.write("going to the target position")
-
-    try:
-        await drone.flight_controller.go_to_location(speed, target_coordinates, goal_radius, margin_to_target=10)
-    except Exception as e:
-        logger.write("error occured")
-        print(e)
-
+    await drone.flight_controller.go_to_location(speed, target_coordinates, goal_radius, margin_to_target=10)
     logger.write("start precise landing")
     result = await drone.flight_controller.offboard_precise_land()
     if not result:
+        logger.write("failed precise landing, going above the target.")
         await drone.flight_controller.go_to_location(speed, target_coordinates, goal_radius)
         logger.write("starting vertical land")
         await drone.flight_controller.land()

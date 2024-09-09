@@ -50,6 +50,7 @@ a.append(config.read_int(config_section, "StableJudgeCountRelease"))
 a.append(config.read_int(config_section, "JudgeLandingMaxtime"))
 a.append(config.read_int(config_section, "StableJudgeCountVel"))
 a.append(config.read_int(config_section, "StableJudgeCountLand"))
+a.append(config.read_int(config_section, "StableJudgeMaxFailure"))
 
 for item in a:
     print(item, type(item))

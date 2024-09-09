@@ -15,10 +15,11 @@ async def sequence(drone: DroneController, speed, target_coordinates: Coordinate
     logger.write("finished taking off")
     await drone.flight_controller.hovering(5)
     logger.write("going to the target position")
-    await drone.flight_controller.go_to_location(speed, target_coordinates, 0.5, margin_to_target = 5)
+    await drone.flight_controller.go_to_location(speed, target_coordinates, 0.5, margin_to_target=10)
     logger.write("start precise landing")
     result = await drone.flight_controller.offboard_precise_land()
     if not result:
+        logger.write("failed precise landing, going above the target.")
         await drone.flight_controller.go_to_location(speed, target_coordinates, 0.5)
         logger.write("starting vertical land")
         await drone.flight_controller.land()
