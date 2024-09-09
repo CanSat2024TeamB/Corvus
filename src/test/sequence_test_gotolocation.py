@@ -16,7 +16,7 @@ async def sequence_test_goto(drone: DroneController, speed, target_coordinates: 
     logger.write('reached')
     await drone.flight_controller.hovering(5)
     logger.write('goto started')
-    await drone.flight_controller.go_to_location(speed, target_coordinates)
+    await drone.flight_controller.go_to_location(speed, target_coordinates, 0.5)
     logger.write('goto finished start hovering')
     await drone.flight_controller.hovering(5)
     logger.write('hovering finished start landing')

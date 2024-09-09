@@ -8,14 +8,14 @@ from drone.drone_controller import DroneController
 from control.coordinates import Coordinates
 import logger.flight_log as flight_log
 
-async def sequence(drone: DroneController, speed, target_coordinates):
+async def sequence(drone: DroneController, speed, target_coordinates: Coordinates):
     logger = drone.get_logger_instance()
     logger.write("taking off")
     await drone.flight_controller.takeoff(5)
     logger.write("finished taking off")
     await drone.flight_controller.hovering(5)
     logger.write("going to the target position")
-    await drone.flight_controller.go_to_location(speed, target_coordinates, 0.5)
+    await drone.flight_controller.go_to_location(speed, target_coordinates, 0.5, margin_to_target = 5)
     logger.write("start precise landing")
     result = await drone.flight_controller.offboard_precise_land()
     if not result:
@@ -32,7 +32,7 @@ async def main():
 
     await drone.connect()
     await drone.arm()
-    drone.invoke_sensor()
+    asyncio.create_task(drone.invoke_sensor())
 
     flight_log.start(drone.get_logger_instance(), drone.get_position_manager_instance())
 
