@@ -18,11 +18,16 @@ class Logger:
         return True
 
     def write(self, *msg: str, no_print = False) -> bool:
+        string = str(msg[0])
+        if len(msg) > 1:
+            for i in range(1, len(msg)):
+                string += " " + str(msg[i])
+
         if not no_print:
-            print(' '.join(str(msg)))
+            print(string)
         
         timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         with open(self.path, 'a', encoding="UTF-8") as f:
-            f.write(f"{timestamp} {' '.join(str(msg))}\n")
+            f.write(f"{timestamp} {string}\n")
         return True
 
