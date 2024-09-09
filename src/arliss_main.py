@@ -26,7 +26,7 @@ async def sequence(drone: DroneController, speed: float, target_coordinates: Coo
     logger.write("going to the target position")
 
     try:
-        await drone.flight_controller.go_to_location(speed, target_coordinates, goal_radius, margin_to_target=5)
+        await drone.flight_controller.go_to_location(speed, target_coordinates, goal_radius, margin_to_target=10)
     except Exception as e:
         logger.write("error occured")
         print(e)
