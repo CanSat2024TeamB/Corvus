@@ -99,6 +99,8 @@ async def main():
         config.write(config_section, "Status", "land")
         await lora.lora_send('Landind Succeded')
 
+    await drone.connect()
+
     countdown(10, logger)
 
     logger.write(f"1para and case nichrome cut start")
