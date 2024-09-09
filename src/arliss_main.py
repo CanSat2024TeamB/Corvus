@@ -12,6 +12,9 @@ async def sequence(drone: DroneController, speed: float, target_coordinates: Coo
     status = config.read(config_section, "Status")
 
     if not status == "flight":
+        print("arming")
+        logger.write("arming")
+        await drone.arm()
         logger.write("taking off")
         await drone.flight_controller.takeoff(target_coordinates.altitude())
 
