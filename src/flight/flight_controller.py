@@ -33,8 +33,8 @@ class FlightController:
         self.nondetected_counter_max = 10
         self.alp = 45 ## カメラ取り付け角
         self.theta = [54.2993633956, 42.0750220508] ##カメラ視野角
-        self.lat_unit = 110964.031 #m 緯度一度の長さ　八千代
-        self.lon_unit = 90423.832 #m　経度一度の長さ　八千代
+        self.lat_unit = 111051.665 #m 緯度一度の長さ　ARLISS
+        self.lon_unit = 84282.462 #m　経度一度の長さ　ARLISS
 
         
         self.detected_flag = False
