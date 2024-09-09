@@ -9,7 +9,7 @@ from drone.drone_controller import DroneController
 async def sequence_test_hovering(drone: DroneController):
     logger = drone.get_drone_instance()
 
-    await drone.flight_controller.takeoff(3)
+    await drone.flight_controller.takeoff(5)
     logger.write('reached start hovering')
     await drone.flight_controller.hovering(10)
     logger.write('finish hovering start landing')
