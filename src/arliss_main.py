@@ -21,7 +21,7 @@ async def sequence(drone: DroneController, speed: float, target_coordinates: Coo
         config.write(config_section, "Status", "flight")
 
     logger.write("going to the target position")
-    await drone.flight_controller.go_to_location(speed, target_coordinates, goal_radius, 10)
+    await drone.flight_controller.go_to_location(speed, target_coordinates, goal_radius, margin_to_target = 10)
     logger.write("start precise landing")
     result = await drone.flight_controller.offboard_precise_land()
     if not result:
