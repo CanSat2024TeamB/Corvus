@@ -43,8 +43,7 @@ class CaseHandler:
         self.judge_landing_maxtime = config.read_int(config_section, "JudgeLandingMaxtime")
         self.stable_judge_count_vel = config.read_int(config_section, "StableJudgeCountVel")
         self.stable_judge_count_land = config.read_int(config_section, "StableJudgeCountLand")
-
-
+        self.stable_judge_max_failure = config.read_int(config_section, "StableJudgeMaxFailure")
 
     def judge_pressure_stable(self,interval_def_ave_pressure):
         stable_count = 0
@@ -207,21 +206,25 @@ class CaseHandler:
         ##############################
         time_sta = time.perf_counter()
         ##############################
+        
+        self.logger.write("Pressure stability confirmation start")
+        # print(f"Pressure stability confirmation start")
+
+        while (self.read_timer(time_sta) <= self.judge_landing_maxtime):
+            if self.pressure.CANUSEPRESSURE == True:
+                if self.judge_pressure_stable(1): #5秒の測定の平均値を1秒ごとに計算
+                    break
+        
+        self.logger.write("Pressure stability confirmed")
+        # print(f"Pressure stability confirmed")
+
+        await self.dronecontroller.connect()
+
+        self.logger.write("Velocity stability confirmation start")
+        # print(f"Velocity stability confirmation start")
+
+        failure_count = 0
         while True:
-            self.logger.write("Pressure stability confirmation start")
-            # print(f"Pressure stability confirmation start")
-
-            while (self.read_timer(time_sta) <= self.judge_landing_maxtime):
-                if self.pressure.CANUSEPRESSURE == True:
-                    if self.judge_pressure_stable(1): #5秒の測定の平均値を1秒ごとに計算
-                        break
-            
-            self.logger.write("Pressure stability confirmed")
-            # print(f"Pressure stability confirmed")
-
-            await self.dronecontroller.connect()
-            self.logger.write("Velocity stability confirmation start")
-            # print(f"Velocity stability confirmation start")
             if await self.judge_velocity_stable(1):
                 self.logger.write("Velocity stability cinfirmed")
                 # print(f"Velocity stability cinfirmed")
@@ -229,6 +232,11 @@ class CaseHandler:
             else:
                 self.logger.write("Velocity not stable.restart")
                 # print(f"Velocity not stable.restart")
+                failure_count += 1
+            
+            if failure_count >= self.stable_judge_max_failure:
+                self.logger.write("Velocity stability forcibly confirmed")
+                break
         
         self.logger.write("Landing Succeeded")
         # print("Landing Succeeded")
