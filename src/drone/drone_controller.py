@@ -1,4 +1,5 @@
 import asyncio
+import serial
 from mavsdk import System
 
 from sensor.lidar_handler import LiDARHandler
@@ -47,8 +48,20 @@ class DroneController:
         return self.lora
 
     async def connect(self) -> bool:
+        ports = serial.tools.list_ports.comports()
+        dev_lst = []
+        for port in ports:
+            dev_lst.append(port.device)
+        
+        if '/dev/ttyACM0' in dev_lst:
+            self.logger.write("system_address: /dev/ttyACMO")
+            DroneController.pixhawk_address = "serial:///dev/ttyACM0:115200"
+        if '/dev/ttyACM1' in dev_lst:
+            self.logger.write("system_address: /dev/ttyACM1")
+            DroneController.pixhawk_address = "serial:///dev/ttyACM1:115200"
+
         self.logger.write('Connecting...')
-        await self.drone_instance.connect(system_address = self.pixhawk_address)
+        await self.drone_instance.connect(system_address = DroneController.pixhawk_address)
         self.logger.write("Waiting for drone to connect...")
 
         async for state in self.drone_instance.core.connection_state():
