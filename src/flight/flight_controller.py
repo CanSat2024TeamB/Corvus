@@ -137,25 +137,17 @@ class FlightController:
     ###################################################################################################
     async def go_to_location(self, speed, target_coordinates: Coordinates, circle_radious, margin_to_target=0):
         logger = self.logger
-        logger.write("goto called")
         self.target_latitude = target_coordinates.latitude()
-        logger.write("set target lat")
         self.target_longitude = target_coordinates.longitude()
-        logger.write("set")
         #self.target_altitude = target_coordinates.altitude()
         self.current_AMSL = self.position_manager.adjusted_coordinates_AMSL()
-        logger.write("set current ASML")
         self.current_lidar_alt = self.position_manager.adjusted_altitude()
-        logger.write("set lidar alt")
 
         self.set_interval_waypoint(margin_to_target) ##ゴール10m手前に目標地点を設置 不要ならコメントアウト
-        
-        logger.write("adjusted target pos")
 
         logger.write('current AMSL', self.current_AMSL)
         logger.write('current lidar', self.current_lidar_alt)
         
-        logger.write('target got')
         self.target_final_altitude = self.current_AMSL
 
         # if YAW_NORTH == True:
@@ -215,13 +207,9 @@ class FlightController:
             return yaw_deg
     
     def set_interval_waypoint(self, radious_m):
-            print("func called")
             phi = self.calculate_yaw_angle()
-            print("set phi")
             self.target_latitude -= radious_m * math.cos(math.radians(phi))/self.lat_unit
-            print("adjusted target lat")
             self.target_longitude -= radious_m * math.sin(math.radians(phi))/self.lon_unit
-            print("adjusted target lon")
             return
 
 ##############################################################################################################
