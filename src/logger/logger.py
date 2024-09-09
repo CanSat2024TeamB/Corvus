@@ -23,6 +23,6 @@ class Logger:
         
         timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         with open(self.path, 'a', encoding="UTF-8") as f:
-            f.write(f"{timestamp} {' '.join(msg)}\n")
+            f.write(f"{timestamp} {' '.join(str(msg))}\n")
         return True
 
