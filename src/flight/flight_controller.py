@@ -136,25 +136,26 @@ class FlightController:
 
     ###################################################################################################
     async def go_to_location(self, speed, target_coordinates: Coordinates, circle_radious, margin_to_target=0):
-        self.logger("goto called")
+        logger = self.logger
+        logger.write("goto called")
         self.target_latitude = target_coordinates.latitude()
-        self.logger("set target lat")
+        logger.write("set target lat")
         self.target_longitude = target_coordinates.longitude()
-        self.logger("set")
+        logger.write("set")
         #self.target_altitude = target_coordinates.altitude()
         self.current_AMSL = self.position_manager.adjusted_coordinates_AMSL()
-        self.logger("set current ASML")
+        logger.write("set current ASML")
         self.current_lidar_alt = self.position_manager.adjusted_altitude()
-        self.logger("set lidar alt")
+        logger.write("set lidar alt")
 
         self.set_interval_waypoint(margin_to_target) ##ゴール10m手前に目標地点を設置 不要ならコメントアウト
         
-        self.logger("adjusted target pos")
+        logger.write("adjusted target pos")
 
-        self.logger.write('current AMSL', self.current_AMSL)
-        self.logger.write('current lidar', self.current_lidar_alt)
+        logger.write('current AMSL', self.current_AMSL)
+        logger.write('current lidar', self.current_lidar_alt)
         
-        self.logger.write('target got')
+        logger.write('target got')
         self.target_final_altitude = self.current_AMSL
 
         # if YAW_NORTH == True:
@@ -164,7 +165,7 @@ class FlightController:
         self.yaw_deg = self.calculate_yaw_angle()
 
         await self.drone.action.goto_location(self.target_latitude, self.target_longitude, self.target_final_altitude, self.yaw_deg)
-        self.logger.write('goto started')
+        logger.write('goto started')
         await self.drone.action.set_current_speed(speed)
         
         while not self.if_goto_location_finished(self.target_latitude, self.target_longitude, circle_radious):
@@ -172,9 +173,9 @@ class FlightController:
             self.current_lidar_alt = self.position_manager.adjusted_altitude()
             
             if self.current_lidar_alt < 3:
-                self.logger.write('altitude too low')
+                logger.write('altitude too low')
                 self.target_final_altitude += 0.1
-                self.logger.write('target AMSL alt', self.target_final_altitude)
+                logger.write('target AMSL alt', self.target_final_altitude)
 
                 # if YAW_NORTH == True:
                 #     self.yaw_deg = 0
@@ -185,9 +186,9 @@ class FlightController:
                 await self.drone.action.goto_location(self.target_latitude, self.target_longitude,  self.target_final_altitude, self.yaw_deg)
                 
             elif self.current_lidar_alt > 8:
-                self.logger.write('altitude too high')
+                logger.write('altitude too high')
                 self.target_final_altitude -= 0.1
-                self.logger.write('target AMSL alt', self.target_final_altitude)
+                logger.write('target AMSL alt', self.target_final_altitude)
 
                 # if YAW_NORTH == True:
                 #     self.yaw_deg = 0
@@ -196,7 +197,7 @@ class FlightController:
                 self.yaw_deg = self.calculate_yaw_angle()
 
                 await self.drone.action.goto_location(self.target_latitude, self.target_longitude, self.target_final_altitude, self.yaw_deg)
-        self.logger.write('goto finished')
+        logger.write('goto finished')
         await self.drone.action.set_current_speed(0.001)
         return
     
