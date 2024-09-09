@@ -162,8 +162,7 @@ class FlightController:
         #     self.yaw_deg = 0
         # else:
         #     self.yaw_deg = self.calculate_yaw_angle()
-        #self.yaw_deg = self.calculate_yaw_angle()
-        self.yaw_deg = 0
+        self.yaw_deg = self.calculate_yaw_angle()
 
         await self.drone.action.goto_location(self.target_latitude, self.target_longitude, self.target_final_altitude, self.yaw_deg)
         logger.write('goto started')
@@ -182,8 +181,7 @@ class FlightController:
                 #     self.yaw_deg = 0
                 # else:
                 #     self.yaw_deg = self.calculate_yaw_angle()
-                #self.yaw_deg = self.calculate_yaw_angle()
-                self.yaw_deg = 0
+                self.yaw_deg = self.calculate_yaw_angle()
 
                 await self.drone.action.goto_location(self.target_latitude, self.target_longitude,  self.target_final_altitude, self.yaw_deg)
                 
@@ -196,8 +194,7 @@ class FlightController:
                 #     self.yaw_deg = 0
                 # else:
                 #     self.yaw_deg = self.calculate_yaw_angle()
-                #self.yaw_deg = self.calculate_yaw_angle()
-                self.yaw_deg = 0
+                self.yaw_deg = self.calculate_yaw_angle()
 
                 await self.drone.action.goto_location(self.target_latitude, self.target_longitude, self.target_final_altitude, self.yaw_deg)
         logger.write('goto finished')
@@ -210,6 +207,7 @@ class FlightController:
             return lat_dif**2 + lon_dif**2 < circle_radious**2
     
     def calculate_yaw_angle(self):
+            return 0
             lat_dist = (self.target_latitude - self.position_manager.adjusted_coordinates_lat()) *  self.lat_unit
             lon_dist = (self.target_longitude - self.position_manager.adjusted_coordinates_lon()) * self.lon_unit
             yaw_deg =  90.0 - math.degrees(math.atan2(lon_dist, lat_dist))
@@ -218,8 +216,7 @@ class FlightController:
     
     def set_interval_waypoint(self, radious_m):
             print("func called")
-            #phi = self.calculate_yaw_angle()
-            phi = 0
+            phi = self.calculate_yaw_angle()
             print("set phi")
             self.target_latitude -= radious_m * math.cos(math.radians(phi))/self.lat_unit
             print("adjusted target lat")
