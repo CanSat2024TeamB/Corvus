@@ -71,7 +71,7 @@ class FlightController:
     async def land(self) -> bool:
         await self.drone.action.land()
         while True:
-            if self.position_manager.adjusted_altitude < 0.1:
+            if self.position_manager.adjusted_altitude() < 0.1:
                 return True
             await asyncio.sleep(0.05)
     
