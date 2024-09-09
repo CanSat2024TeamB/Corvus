@@ -14,6 +14,7 @@ async def sequence(drone: DroneController, speed: float, target_coordinates: Coo
     if not status == "flight":
         logger.write("taking off")
         await drone.flight_controller.takeoff(target_coordinates.altitude())
+
         logger.write("finished taking off")
 
         await drone.flight_controller.hovering(5)
@@ -74,25 +75,26 @@ async def main():
     await lora.lora_save()
     logger.write("Settings saved.")
     await asyncio.sleep(5)
+    await lora.lora_send('LoRa OK')
 
     status = config.read(config_section, "Status")
     if status == "outside":
        case.judge_storage()
        config.write(config_section, "Status", "storage")
-       await lora.lora_send('storage')
+       await lora.lora_send('Storage Succeeded')
 
     status = config.read(config_section, "Status")
     if status == "storage":
         case.judge_release()
         config.write(config_section, "Status", "release")
-        await lora.lora_send('release')
+        await lora.lora_send('Release Succeeded')
 
     status = config.read(config_section, "Status")
     if status == "release":
         countdown(30, logger)
         await case.judge_landing()
         config.write(config_section, "Status", "land")
-        await lora.lora_send('land')
+        await lora.lora_send('Landind Succeded')
 
     countdown(10, logger)
 
@@ -111,7 +113,7 @@ async def main():
     logger.write(f"1para and case nichrome cut end")
 
     case.nichrome_cleanup()
-    await lora.lora_send('nichrome_end')
+    await lora.lora_send('Nichromecut End')
     countdown(60, logger)
 
     #config_path: str = Path(__file__).resolve().parent.parent.joinpath("assets/config/config.ini")
