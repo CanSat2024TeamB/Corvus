@@ -135,7 +135,7 @@ class FlightController:
         return await self.drone.mission.is_mission_finished()
 
     ###################################################################################################
-    async def go_to_location(self, speed, target_coordinates: Coordinates, circle_radious, YAW_NORTH = False, margin_to_target = 0):
+    async def go_to_location(self, speed, target_coordinates: Coordinates, circle_radious, margin_to_target=0):
         self.logger("goto called")
         self.target_latitude = target_coordinates.latitude()
         self.logger("set target lat")
@@ -157,10 +157,11 @@ class FlightController:
         self.logger.write('target got')
         self.target_final_altitude = self.current_AMSL
 
-        if YAW_NORTH == True:
-            self.yaw_deg = 0
-        else:
-            self.yaw_deg = self.calculate_yaw_angle()
+        # if YAW_NORTH == True:
+        #     self.yaw_deg = 0
+        # else:
+        #     self.yaw_deg = self.calculate_yaw_angle()
+        self.yaw_deg = self.calculate_yaw_angle()
 
         await self.drone.action.goto_location(self.target_latitude, self.target_longitude, self.target_final_altitude, self.yaw_deg)
         self.logger.write('goto started')
@@ -175,10 +176,11 @@ class FlightController:
                 self.target_final_altitude += 0.1
                 self.logger.write('target AMSL alt', self.target_final_altitude)
 
-                if YAW_NORTH == True:
-                    self.yaw_deg = 0
-                else:
-                    self.yaw_deg = self.calculate_yaw_angle()
+                # if YAW_NORTH == True:
+                #     self.yaw_deg = 0
+                # else:
+                #     self.yaw_deg = self.calculate_yaw_angle()
+                self.yaw_deg = self.calculate_yaw_angle()
 
                 await self.drone.action.goto_location(self.target_latitude, self.target_longitude,  self.target_final_altitude, self.yaw_deg)
                 
@@ -187,10 +189,11 @@ class FlightController:
                 self.target_final_altitude -= 0.1
                 self.logger.write('target AMSL alt', self.target_final_altitude)
 
-                if YAW_NORTH == True:
-                    self.yaw_deg = 0
-                else:
-                    self.yaw_deg = self.calculate_yaw_angle()
+                # if YAW_NORTH == True:
+                #     self.yaw_deg = 0
+                # else:
+                #     self.yaw_deg = self.calculate_yaw_angle()
+                self.yaw_deg = self.calculate_yaw_angle()
 
                 await self.drone.action.goto_location(self.target_latitude, self.target_longitude, self.target_final_altitude, self.yaw_deg)
         self.logger.write('goto finished')
