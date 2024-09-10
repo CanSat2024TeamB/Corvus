@@ -82,7 +82,7 @@ async def main():
     await asyncio.sleep(5)
     await lora.lora_send('LoRa OK')
 
-    sensor_log.start(drone.get_logger_instance(), case.light, case.pressure)
+    sensor_log.start(logger, lora, case.light, case.pressure)
 
     status = config.read(config_section, "Status")
     if status == "outside":
