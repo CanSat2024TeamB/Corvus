@@ -140,9 +140,9 @@ async def counter():
             break
 
 async def test():
-    count_task = asyncio.create_task(counter())
+    #count_task = asyncio.create_task(counter())
     task = (asyncio.create_task(test_detection_using_color()))
-    await count_task
+    #await count_task
     await task
 
 if __name__ == "__main__":
