@@ -3,6 +3,7 @@ from drone.drone_controller import DroneController
 from control.coordinates import Coordinates
 from config.config_manager import ConfigManager
 from case.case_handler import CaseHandler
+import logger.sensor_log as sensor_log
 import logger.flight_log as flight_log
 import time
 
@@ -81,6 +82,8 @@ async def main():
     await asyncio.sleep(5)
     await lora.lora_send('LoRa OK')
 
+    sensor_log.start(drone.get_logger_instance(), case.light, case.pressure)
+
     status = config.read(config_section, "Status")
     if status == "outside":
        case.judge_storage()
@@ -100,26 +103,25 @@ async def main():
         config.write(config_section, "Status", "land")
         await lora.lora_send('Landind Succeded')
 
+    sensor_log.stop()
+
     await drone.connect()
 
     countdown(10, logger)
 
     logger.write(f"1para and case nichrome cut start")
-
     case.para_case_stand_nichrome(nichrome_pin_no)
-
     logger.write(f"1para and case nichrome cut end")
 
     countdown(10, logger)
 
     logger.write(f"1para and case nichrome cut start")
-
     case.para_case_stand_nichrome(nichrome_pin_no)
-
     logger.write(f"1para and case nichrome cut end")
 
     case.nichrome_cleanup()
     await lora.lora_send('Nichromecut End')
+
     countdown(60, logger)
 
     #config_path: str = Path(__file__).resolve().parent.parent.joinpath("assets/config/config.ini")
@@ -127,7 +129,6 @@ async def main():
     asyncio.create_task(drone.invoke_sensor())
     #await drone.arm()
     await asyncio.sleep(5)
-
 
     position_manager = drone.get_position_manager_instance()
     flight_log.start(logger, position_manager)
