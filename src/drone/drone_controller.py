@@ -1,5 +1,5 @@
 import asyncio
-import serial
+import serial.tools.list_ports
 from mavsdk import System
 
 from sensor.lidar_handler import LiDARHandler
