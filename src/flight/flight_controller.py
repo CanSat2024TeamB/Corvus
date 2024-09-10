@@ -526,11 +526,11 @@ class FlightController:
             nonlocal ADJUST_FACTOR
             front_vec = math.sin(math.radians(45 + pos[1] * self.theta[1] / 2 * ADJUST_FACTOR))
             right_vec = math.sin(math.radians(pos[0] * self.theta[0] / 2 * ADJUST_FACTOR))
-            down_vec = math.cos(math.radians(pos[0] * self.theta[0] / 2 * ADJUST_FACTOR)) * math.cos(math.radians(45 + pos[1] * self.theta[1] / 2 * ADJUST_FACTOR))
+            down_vec = math.cos(math.radians(pos[0] * self.theta[0] / 2 * ADJUST_FACTOR)) * math.cos(math.radians(45 + pos[1] * self.theta[1] / 2 * ADJUST_FACTOR * 1.3))
             #front_vec = math.sin(math.radians(45 + pos[1] * self.theta[1] / 2)) * math.cos(math.radians(CAMERA_YAW_DEG + pos[0] * self.theta[0] / 2))
             #right_vec = math.sin(math.radians(45 + pos[1] * self.theta[1] / 2)) * math.sin(math.radians(CAMERA_YAW_DEG + pos[0] * self.theta[0] / 2))
             #down_vec = math.cos(math.radians(45 + pos[1] * self.theta[1] / 2))
-            return VelocityBodyYawspeed(front_vec, right_vec, down_vec * 1.3, 0.0)
+            return VelocityBodyYawspeed(front_vec, right_vec, down_vec, 0.0)
         
         def get_pos(self):
             nonlocal arr
