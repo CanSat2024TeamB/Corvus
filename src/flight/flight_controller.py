@@ -44,6 +44,7 @@ class FlightController:
         take_off_max_time = 0
         await self.drone.action.set_takeoff_altitude(takeoff_altitude*2)
         await self.drone.action.takeoff()
+        self.logger.write('sent take off command')
         await asyncio.sleep(3)
     
         while self.position_manager.adjusted_altitude() <= takeoff_altitude:
