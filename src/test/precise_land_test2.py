@@ -42,6 +42,9 @@ async def sequence(drone: DroneController, speed, target_coordinates: Coordinate
 
     logger.write("finished precise landing")
     if result:
+        await asyncio.sleep(5)
+        await drone.flight_controller.disarm()
+
         lat = 0
         lon = 0
         AVE_NUMBER = 10
@@ -51,10 +54,12 @@ async def sequence(drone: DroneController, speed, target_coordinates: Coordinate
             await asyncio.sleep(1)
         lat /= AVE_NUMBER
         lon /= AVE_NUMBER
-        lat_dif = abs(target_coordinates.latitude - lat) * drone.flight_controller.lat_unit 
-        lon_dif = abs(target_coordinates.longitude - lon) * drone.flight_controller.lon_unit
+        logger.write(f"now, position is (lat: {lat}, lon: {lon})")
+        lat_dif = abs(target_coordinates.latitude() - lat) * drone.flight_controller.lat_unit 
+        lon_dif = abs(target_coordinates.longitude() - lon) * drone.flight_controller.lon_unit
         if lat_dif ** 2 + lon_dif ** 2 > offboard_acceptable_distance ** 2:
             logger.write("too far from the target position, trying to re-takeoff")
+            await drone.arm()
             await drone.flight_controller.takeoff(5)
             result = False
 
