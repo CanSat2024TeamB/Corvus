@@ -26,7 +26,13 @@ async def sequence(drone: DroneController, speed: float, target_coordinates: Coo
     logger.write("going to the target position")
     await drone.flight_controller.go_to_location(speed, target_coordinates, goal_radius, margin_to_target=5)
     logger.write("start precise landing")
-    result = await drone.flight_controller.offboard_precise_land()
+
+    try:
+        result = await drone.flight_controller.offboard_precise_land()
+    except Exception as error:
+        await asyncio.sleep(60)
+        await drone.flight_controller.takeoff(5)
+        result = False
 
     if result:
         lat = 0
