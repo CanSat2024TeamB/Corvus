@@ -53,6 +53,7 @@ class FlightController:
             if take_off_max_time > 20:
                 self.logger.write('take off max time')
                 break
+        return
         # await asyncio.sleep(0.1)
         # if self.position_manager.adjusted_altitude() >= 3:    
         #     return True
