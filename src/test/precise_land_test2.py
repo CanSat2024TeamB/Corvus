@@ -18,7 +18,26 @@ async def sequence(drone: DroneController, speed, target_coordinates: Coordinate
     logger.write("going to the target position")
     await drone.flight_controller.go_to_location(speed, target_coordinates, goal_radius, margin_to_target=5)
     logger.write("start precise landing")
-    result = await drone.flight_controller.offboard_precise_land()
+
+    try:
+        result = await drone.flight_controller.offboard_precise_land()
+    except Exception as e:
+        import traceback
+        import re
+        error_class = type(e)
+        error_description = str(e)
+        err_msg = '%s: %s' % (error_class, error_description)
+        logger.write(err_msg)
+        tb = traceback.extract_tb(sys.exc_info()[2])
+        trace = traceback.format_list(tb)
+        logger.write('---- traceback ----')
+        for line in trace:
+            if '~^~' in line:
+                logger.write(line.rstrip())
+            else:
+                text = re.sub(r'\n\s*', ' ', line.rstrip())
+                logger.write(text)
+        logger.write('-------------------')
 
     if result:
         lat = 0
