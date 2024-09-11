@@ -31,6 +31,8 @@ async def main():
         image = cv2.rotate(image, cv2.ROTATE_180)
         cv2.imwrite(f"/home/admin/corvus/assets/log/pic_{time}_{i}.png", image)
         await asyncio.sleep(1)
+    
+    await drone.flight_controller.land()
 
 if __name__ == "__main__":
     asyncio.run(main())
