@@ -38,6 +38,7 @@ async def sequence(drone: DroneController, speed, target_coordinates: Coordinate
                 text = re.sub(r'\n\s*', ' ', line.rstrip())
                 logger.write(text)
         logger.write('-------------------')
+        result = False
 
     if result:
         lat = 0
