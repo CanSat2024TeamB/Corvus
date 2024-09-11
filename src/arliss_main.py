@@ -35,6 +35,7 @@ async def sequence(drone: DroneController, speed: float, target_coordinates: Coo
         for i in range(AVE_NUMBER):
             lat += drone.position_manager.adjusted_coordinates_lat()
             lon += drone.position_manager.adjusted_coordinates_lon()
+            await asyncio.sleep(1)
         lat /= AVE_NUMBER
         lon /= AVE_NUMBER
         lat_dif = abs(target_coordinates.latitude - lat) * drone.flight_controller.lat_unit 
