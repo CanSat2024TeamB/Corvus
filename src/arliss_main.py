@@ -29,16 +29,19 @@ async def sequence(drone: DroneController, speed: float, target_coordinates: Coo
 
     try:
         result = await drone.flight_controller.offboard_precise_land()
+        logger.write("finished precise landing")
     except Exception as error:
+        logger.write("something went wrong during precise landing, landing forcibly")
         await drone.flight_controller.land()
         await asyncio.sleep(20)
+        logger.write("disarming...")
         await drone.flight_controller.disarm()
         await asyncio.sleep(10)
+        logger.write("trying to re-takeoff")
         await drone.arm()
-        await drone.flight_controller.takeoff(5)
+        await drone.flight_controller.takeoff(target_coordinates.altitude())
         result = False
 
-    logger.write("finished precise landing")
     if result:
         await asyncio.sleep(5)
         await drone.flight_controller.disarm()
@@ -58,7 +61,7 @@ async def sequence(drone: DroneController, speed: float, target_coordinates: Coo
         if lat_dif ** 2 + lon_dif ** 2 > offboard_acceptable_distance ** 2:
             logger.write("too far from the target position, trying to re-takeoff")
             await drone.arm()
-            await drone.flight_controller.takeoff(5)
+            await drone.flight_controller.takeoff(target_coordinates.altitude())
             result = False
 
     if not result:
