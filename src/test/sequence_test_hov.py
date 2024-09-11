@@ -7,7 +7,7 @@ import asyncio
 from drone.drone_controller import DroneController
 
 async def sequence_test_hovering(drone: DroneController):
-    logger = drone.get_drone_instance()
+    logger = drone.get_logger_instance()
 
     await drone.flight_controller.takeoff(5)
     logger.write('reached start hovering')
