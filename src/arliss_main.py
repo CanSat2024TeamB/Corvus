@@ -13,7 +13,6 @@ async def sequence(drone: DroneController, speed: float, target_coordinates: Coo
     status = config.read(config_section, "Status")
 
     if not status == "flight":
-        print("arming")
         logger.write("arming")
         await drone.arm()
         logger.write("taking off")
@@ -149,7 +148,6 @@ async def main():
     # try:
     #     await drone.add_sequence_task(drone.sequence_test_mission(speed,target_coordinates_1,target_coordinates_2))
     # except asyncio.CancelledError:
-    #     print("Main loop cancelled")
     #     logger.write("Main loop cancelled")
     
     flight_log.stop()
