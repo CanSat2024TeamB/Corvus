@@ -30,7 +30,8 @@ async def sequence(drone: DroneController, speed: float, target_coordinates: Coo
     try:
         result = await drone.flight_controller.offboard_precise_land()
     except Exception as error:
-        await asyncio.sleep(60)
+        await drone.flight_controller.land()
+        await asyncio.sleep(20)
         await drone.flight_controller.disarm()
         await asyncio.sleep(10)
         await drone.arm()
