@@ -75,7 +75,7 @@ class FlightController:
         while True:
             if self.position_manager.adjusted_altitude() < 0.1:
                 return True
-            await asyncio.sleep(0.05)
+            await asyncio.sleep(1)
     
     async def disarm(self) -> bool:
         await self.drone.action.disarm()
