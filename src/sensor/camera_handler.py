@@ -191,9 +191,10 @@ class ConeDetector:
 
         if not image is None:
             result = cone_detector.get_pos(image, conf)
-
+            color = (255, 255, 255)
+            
             if result[0] >= -1:
-                color = (255, 255, 255)
+                pass
             elif use_color_assist:
                 result = self.calc_color_center(image)
                 color = (0, 255, 255)

@@ -146,4 +146,4 @@ async def test():
     await task
 
 if __name__ == "__main__":
-    asyncio.run(test())
+    test_detection()
