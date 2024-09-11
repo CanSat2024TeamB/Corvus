@@ -21,7 +21,7 @@ def transmit(lora: Lora, pressure_handler: PressureHandler):
     async def _transmit(lora: Lora, pressure_handler: PressureHandler):
         while not finished:
             pressure = pressure_handler.get_pressure()
-            await lora.lora_send(f"Pressure: {pressure}")
+            await lora.lora_send(f"p:{pressure}")
             await asyncio.sleep(30)
 
     loop = asyncio.new_event_loop()
