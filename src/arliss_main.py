@@ -7,7 +7,7 @@ import logger.sensor_log as sensor_log
 import logger.flight_log as flight_log
 import time
 
-async def sequence(drone: DroneController, speed: float, target_coordinates: Coordinates, goal_radius: float, config: ConfigManager):
+async def sequence(drone: DroneController, speed: float, target_coordinates: Coordinates, goal_radius: float, offboard_acceptable_distance, config: ConfigManager):
     logger = drone.get_logger_instance()
     config_section = "ARLISS"
     status = config.read(config_section, "Status")
@@ -27,6 +27,23 @@ async def sequence(drone: DroneController, speed: float, target_coordinates: Coo
     await drone.flight_controller.go_to_location(speed, target_coordinates, goal_radius, margin_to_target=5)
     logger.write("start precise landing")
     result = await drone.flight_controller.offboard_precise_land()
+
+    if result:
+        lat = 0
+        lon = 0
+        AVE_NUMBER = 10
+        for i in range(AVE_NUMBER):
+            lat += drone.position_manager.adjusted_coordinates_lat()
+            lon += drone.position_manager.adjusted_coordinates_lon()
+        lat /= AVE_NUMBER
+        lon /= AVE_NUMBER
+        lat_dif = abs(target_coordinates.latitude - lat) * drone.flight_controller.lat_unit 
+        lon_dif = abs(target_coordinates.longitude - lon) * drone.flight_controller.lon_unit
+        if lat_dif ** 2 + lon_dif ** 2 > offboard_acceptable_distance ** 2:
+            logger.write("too far from the target position, trying to re-takeoff")
+            await drone.flight_controller.takeoff(5)
+            result = False
+
     if not result:
         logger.write("failed precise landing, going above the target.")
         await drone.flight_controller.go_to_location(speed, target_coordinates, goal_radius)
@@ -137,9 +154,10 @@ async def main():
     target_lon = config.read_float(config_section, "TargetLon")
     target_lat = config.read_float(config_section, "TargetLat")
     goal_radius = config.read_float(config_section, "GoalRadius")
+    offboard_acceptable_distance = config.read_float(config_section, "OffboardAcceptableDistance")
     target_coordinates_2 = Coordinates(target_lon, target_lat, hov_alt)
     
-    await drone.add_sequence_task(sequence(drone, speed, target_coordinates_2, goal_radius, config))
+    await drone.add_sequence_task(sequence(drone, speed, target_coordinates_2, goal_radius, offboard_acceptable_distance, config))
     try:
         await asyncio.Future()
     except asyncio.CancelledError:

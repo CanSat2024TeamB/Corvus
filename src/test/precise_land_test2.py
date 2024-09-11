@@ -9,7 +9,7 @@ from control.coordinates import Coordinates
 from config.config_manager import ConfigManager
 import logger.flight_log as flight_log
 
-async def sequence(drone: DroneController, speed, target_coordinates: Coordinates, goal_radius):
+async def sequence(drone: DroneController, speed, target_coordinates: Coordinates, goal_radius, offboard_acceptable_distance):
     logger = drone.get_logger_instance()
     logger.write("taking off")
     await drone.flight_controller.takeoff(5)
@@ -19,6 +19,23 @@ async def sequence(drone: DroneController, speed, target_coordinates: Coordinate
     await drone.flight_controller.go_to_location(speed, target_coordinates, goal_radius, margin_to_target=5)
     logger.write("start precise landing")
     result = await drone.flight_controller.offboard_precise_land()
+
+    if result:
+        lat = 0
+        lon = 0
+        AVE_NUMBER = 10
+        for i in range(AVE_NUMBER):
+            lat += drone.position_manager.adjusted_coordinates_lat()
+            lon += drone.position_manager.adjusted_coordinates_lon()
+        lat /= AVE_NUMBER
+        lon /= AVE_NUMBER
+        lat_dif = abs(target_coordinates.latitude - lat) * drone.flight_controller.lat_unit 
+        lon_dif = abs(target_coordinates.longitude - lon) * drone.flight_controller.lon_unit
+        if lat_dif ** 2 + lon_dif ** 2 > offboard_acceptable_distance ** 2:
+            logger.write("too far from the target position, trying to re-takeoff")
+            await drone.flight_controller.takeoff(5)
+            result = False
+
     if not result:
         logger.write("failed precise landing, going above the target.")
         await drone.flight_controller.go_to_location(speed, target_coordinates, 0.5)
@@ -35,7 +52,8 @@ async def main():
     latitude = config.read_float(section, "targetlat")
     hov_alt = config.read_float(section, "HovAlt")
     TARGET = Coordinates(longitude=longitude, latitude=latitude, altitude=hov_alt)
-    GOAL_RADIUS = 0.5
+    GOAL_RADIUS = config.read_float(section, "GoalRadius")
+    OFFBOARD_ACCEPTABLE_DISTANCE = config.read_float(section, "OffboardAcceptableDistance")
 
     drone = DroneController()
 
@@ -47,7 +65,7 @@ async def main():
 
     # 1秒待機してから新しいタスクを追加
     await asyncio.sleep(1)
-    await drone.add_sequence_task(sequence(drone, SPEED, TARGET, GOAL_RADIUS))
+    await drone.add_sequence_task(sequence(drone, SPEED, TARGET, GOAL_RADIUS, OFFBOARD_ACCEPTABLE_DISTANCE))
 
     try:
         await asyncio.Future()
