@@ -40,6 +40,7 @@ async def sequence(drone: DroneController, speed, target_coordinates: Coordinate
         logger.write('-------------------')
         result = False
 
+    logger.write("finished precise landing")
     if result:
         lat = 0
         lon = 0
