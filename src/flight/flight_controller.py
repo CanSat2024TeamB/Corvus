@@ -466,7 +466,7 @@ class FlightController:
         LAND_ALTITUDE = 0.2 #コーンに接近していってlandに移行する高度
         PROB_THRESHOLD = 0.2 #画像認識probabilityの閾値
         DECENDING_SPEED = 0.5 #降下速度
-        ADJUST_FACTOR = 1.5 #上下左右方向の補正係数(1.0が無調整)
+        ADJUST_FACTOR = 1.7 #上下左右方向の補正係数(1.0が無調整)
 
         arr = multiprocessing.Array("f", 2)
         arr[0] = -2
@@ -526,9 +526,9 @@ class FlightController:
         def calc_velocity_body_to_target(self, pos) -> VelocityBodyYawspeed:
             nonlocal CAMERA_YAW_DEG
             nonlocal ADJUST_FACTOR
-            front_vec = math.sin(math.radians(45 + pos[1] * self.theta[1] / 2 * ADJUST_FACTOR * 1.1))
+            front_vec = math.sin(math.radians(45 + pos[1] * self.theta[1] / 2 * ADJUST_FACTOR))
             right_vec = math.sin(math.radians(pos[0] * self.theta[0] / 2 * ADJUST_FACTOR))
-            down_vec = math.cos(math.radians(pos[0] * self.theta[0] / 2 * ADJUST_FACTOR)) * math.cos(math.radians(45 + pos[1] * self.theta[1] / 2 * ADJUST_FACTOR * 1.1))
+            down_vec = math.cos(math.radians(pos[0] * self.theta[0] / 2 * ADJUST_FACTOR)) * math.cos(math.radians(45 + pos[1] * self.theta[1] / 2 * ADJUST_FACTOR))
             #front_vec = math.sin(math.radians(45 + pos[1] * self.theta[1] / 2)) * math.cos(math.radians(CAMERA_YAW_DEG + pos[0] * self.theta[0] / 2))
             #right_vec = math.sin(math.radians(45 + pos[1] * self.theta[1] / 2)) * math.sin(math.radians(CAMERA_YAW_DEG + pos[0] * self.theta[0] / 2))
             #down_vec = math.cos(math.radians(45 + pos[1] * self.theta[1] / 2))
