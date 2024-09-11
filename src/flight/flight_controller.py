@@ -453,7 +453,7 @@ class FlightController:
         self.logger.write("camaera connection checked")
 
         while finished.value == 0:
-            pos = cone_detector.capture_cone_position_and_save(f"/home/admin/corvus/assets/log/detect_{datetime.datetime.now().strftime('%Y-%m-%d_%H:%M:%S')}.png", conf, use_color_assist = True)
+            pos = cone_detector.capture_cone_position_and_save(f"/home/admin/corvus/assets/log/detect_{datetime.datetime.now().strftime('%Y-%m-%d_%H:%M:%S.%f')}.png", conf, use_color_assist = True)
             if pos[0] is None:
                 arr[0] = -2
                 arr[1] = -2
