@@ -43,7 +43,7 @@ async def sequence(drone: DroneController, speed: float, target_coordinates: Coo
         result = False
 
     if result:
-        await asyncio.sleep(5)
+        await asyncio.sleep(10)
         await drone.flight_controller.disarm()
 
         lat = 0
