@@ -167,10 +167,13 @@ class FlightController:
             self.current_lidar_alt = self.position_manager.adjusted_altitude()
 
             if self.current_lidar_alt < 1:
-                logger.write('dangerous altitude')
+                logger.write('dangerous altitude, landing forcibly')
                 await self.land()
+                logger.write("landed")
                 await asyncio.sleep(10)
+                logger.write("disarming...")
                 await self.disarm()
+                logger.write("disarmed")
                 return False
             
             elif self.current_lidar_alt < 5:
