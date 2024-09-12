@@ -27,7 +27,6 @@ async def sequence(drone: DroneController, speed: float, target_coordinates: Coo
     
     while True:
         if await drone.flight_controller.go_to_location(speed, target_coordinates, goal_radius, margin_to_target=5):
-            logger.write("start precise landing")
             break
         else:
             logger.write("arming")
@@ -38,7 +37,14 @@ async def sequence(drone: DroneController, speed: float, target_coordinates: Coo
             await drone.flight_controller.hovering(5)
             config.write(config_section, "Status", "flight")
 
-        
+    logger.write("got target, landing temporarily")
+    await drone.flight_controller.land()
+    await asyncio.sleep(10)
+    await drone.flight_controller.disarm()
+    logger.write("disarmed, re-taking off")
+    await drone.flight_controller.takeoff(5)
+    logger.write("starting precise land")
+
     try:
         result = await drone.flight_controller.offboard_precise_land()
         logger.write("finished precise landing")
