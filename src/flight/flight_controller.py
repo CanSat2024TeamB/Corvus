@@ -166,7 +166,7 @@ class FlightController:
             await asyncio.sleep(1)
             self.current_lidar_alt = self.position_manager.adjusted_altitude()
 
-            if self.current_lidar_alt < 1:
+            if self.current_lidar_alt < 3:
                 logger.write('dangerous altitude, landing forcibly')
                 await self.land()
                 logger.write("landed")
