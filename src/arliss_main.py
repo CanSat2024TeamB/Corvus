@@ -42,6 +42,7 @@ async def sequence(drone: DroneController, speed: float, target_coordinates: Coo
     await asyncio.sleep(10)
     await drone.flight_controller.disarm()
     logger.write("disarmed, re-taking off")
+    await drone.arm()
     await drone.flight_controller.takeoff(5)
     logger.write("starting precise land")
 
