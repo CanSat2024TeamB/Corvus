@@ -160,11 +160,13 @@ async def main():
     case.nichrome_cleanup()
     await lora.lora_send('Nichromecut End')
 
-    countdown(60, logger)
+    countdown(10, logger)
+    asyncio.create_task(drone.invoke_sensor())
+    countdown(110, logger)
 
     #config_path: str = Path(__file__).resolve().parent.parent.joinpath("assets/config/config.ini")
     #config = ConfigManager(config_path)
-    asyncio.create_task(drone.invoke_sensor())
+    
     #await drone.arm()
     await asyncio.sleep(5)
 
