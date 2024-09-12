@@ -128,6 +128,7 @@ async def main():
 
     status = config.read(config_section, "Status")
     if status == "storage":
+        case.phase = "Storage"
         case.judge_release()
         config.write(config_section, "Status", "release")
         await lora.lora_send('Release Succeeded')
@@ -135,6 +136,7 @@ async def main():
     status = config.read(config_section, "Status")
     if status == "release":
         countdown(30, logger)
+        case.phase = "Released"
         await case.judge_landing()
         config.write(config_section, "Status", "land")
         await lora.lora_send('Landind Succeded')
