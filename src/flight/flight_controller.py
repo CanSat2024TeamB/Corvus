@@ -464,7 +464,7 @@ class FlightController:
     async def offboard_precise_land(self) -> bool:        
         CAMERA_YAW_DEG = 0 #pixhawk正面からはかったカメラの指向方向 (deg, 右回り正)
         LAND_ALTITUDE = 0.2 #コーンに接近していってlandに移行する高度
-        PROB_THRESHOLD = 0.3 #画像認識probabilityの閾値
+        PROB_THRESHOLD = 0.4 #画像認識probabilityの閾値
         DECENDING_SPEED = 0.5 #降下速度
         ADJUST_FACTOR = 1.5 #上下左右方向の補正係数(1.0が無調整)
 
